@@ -1,6 +1,7 @@
 import styles from './index.css';
 
 export default function() {
+    const value = 3
   return (
     <div className={styles.normal}>
       <div className={styles.welcome} />
