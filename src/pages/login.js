@@ -1,10 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Form, Input, Button, Checkbox,
 } from 'antd';
 
-const LoginPage = () => {
+const LoginPage = ({ history }) => {
   const onFinish = (values) => {
+    history.push('/');
     console.log('Success:', values);
   };
 
@@ -51,6 +53,18 @@ const LoginPage = () => {
       </Form>
     </div>
   );
+};
+
+LoginPage.propTypes = {
+  // state: PropTypes.shape({}),
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }),
+};
+
+LoginPage.defaultProps = {
+  // state: {},
+  history: {},
 };
 
 export default LoginPage;

@@ -1,7 +1,7 @@
 
 // ref: https://umijs.org/config/
 export default {
-  treeShaking: true,
+  history: 'hash',
   routes: [
     {
       path: '/',
@@ -20,7 +20,6 @@ export default {
       dynamicImport: { webpackChunkName: true },
       title: 'nprobotics-client-remote',
       dll: false,
-      
       routes: {
         exclude: [
           /models\//,
