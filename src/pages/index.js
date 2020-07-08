@@ -1,23 +1,11 @@
 import React from 'react';
-import styles from './index.css';
+import jeremy from '../assets/jeremy.jpeg';
 
-export default function () {
-  return (
-    <div className={styles.normal}>
-      <div className={styles.welcome} />
-      <ul className={styles.list}>
-        <li>
-          To get started, edit
-          <code>src/pages/index.js</code>
-          {' '}
-          and save to reload.
-        </li>
-        <li>
-          <a href="https://umijs.org/guide/getting-started.html">
-            Getting Started
-          </a>
-        </li>
-      </ul>
-    </div>
-  );
-}
+const IndexPage = () => (
+  <div style={{ textAlign: 'center' }}>
+    <h1>welcome to NP Robotics</h1>
+    <img src={jeremy} style={{ width: '20%', height: '20%' }} alt="jeremy" />
+  </div>
+);
+
+export default IndexPage;

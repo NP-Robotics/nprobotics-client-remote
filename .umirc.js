@@ -5,10 +5,11 @@ export default {
   routes: [
     {
       path: '/',
-      component: '../layouts/index',
-      routes: [
-        { path: '/', component: '../pages/index' }
-      ]
+      component: '../pages/index'
+    },
+    {
+      path: '/login',
+      component: '../pages/login',
     }
   ],
   plugins: [
