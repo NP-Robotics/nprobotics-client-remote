@@ -18,7 +18,7 @@ export const signIn = async (username, password) => {
     return user;
   } catch (error) {
     console.log('error signing in', error);
-    throw new Error(error);
+    throw error;
   }
 };
 

@@ -22,14 +22,14 @@ export default {
       yield put({ type: 'setState' });
     },
 
-    * signIn({ payload, callback }, { call, put }) {
+    * signIn({ payload, callback, error }, { call, put }) {
       const { username } = payload;
       const { password } = payload;
       try {
         const usr = yield signIn(username, password);
-        console.log(usr);
+        callback(usr);
       } catch (err) {
-        callback(err);
+        error(err);
       }
     },
   },

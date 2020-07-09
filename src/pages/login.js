@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
 import {
@@ -6,20 +6,28 @@ import {
 } from 'antd';
 
 const LoginPage = ({ dispatch, history }) => {
+  const [state, setState] = useState({
+    submitting: false,
+  });
+
   const onFinish = (values) => {
+    setState({ submitting: true });
     dispatch({
       type: 'global/signIn',
       payload: {
         username: values.username,
         password: values.password,
       },
-      callback: (err) => {
-        console.log('TEEE');
+      callback: (user) => {
+        console.log('Login Success');
+        console.log(user);
+        history.push('/');
+      },
+      error: (err) => {
         message.info(err.message);
+        setState({ submitting: false });
       },
     });
-    history.push('/');
-    console.log('Success:', values);
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -58,7 +66,7 @@ const LoginPage = ({ dispatch, history }) => {
         </Form.Item>
 
         <Form.Item wrapperCol={{ offset: 8, span: 8 }}>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" disabled={state.submitting}>
             Submit
           </Button>
         </Form.Item>
