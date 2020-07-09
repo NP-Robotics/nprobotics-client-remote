@@ -1,0 +1,48 @@
+service: serverless
+
+provider:
+    name: aws
+    runtime: nodejs12.x
+    profile: serverlessUser
+    region: us-east-1
+    environment:
+        tableName: ${self:custom.tableName}
+    iamRoleStatements:
+        - Effect: Allow
+          Action:
+              - dynamodb:*
+          Resource: '*'
+
+plugins:
+    - serverless-webpack
+
+package:
+    individually: true
+
+custom:
+    tableName: RobotWeb
+
+functions:
+    getData:
+        handler: lambda/endpoints/getData.handler
+        events:
+            - http:
+                  path: get-data/{RobotID}
+                  method: GET
+                  cors: true
+
+resources:
+    Resources:
+        MyDynamoDbTable:
+            Type: AWS::DynamoDB::Table
+            Properties:
+                TableName: ${self:custom.tableName}
+                AttributeDefinitions:
+                    - AttributeName: RobotID
+                      AttributeType: S
+                KeySchema:
+                    - AttributeName: RobotID
+                      KeyType: HASH
+                ProvisionedThroughput:
+                    ReadCapacityUnits: 5
+                    WriteCapacityUnits: 5
