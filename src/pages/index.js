@@ -14,6 +14,7 @@ const IndexPage = ({
       <img src={jeremy} style={{ width: '20%', height: '20%' }} alt="jeremy" />
       <br />
       <Button onClick={() => { history.push('/login'); }}>Login</Button>
+      <Button onClick={() => { history.push('/signup'); }}>Sign Up</Button>
     </div>
   );
 };
