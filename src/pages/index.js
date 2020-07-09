@@ -5,9 +5,9 @@ import { Button } from 'antd';
 import jeremy from '../assets/jeremy.jpeg';
 
 const IndexPage = ({
-  state, history,
+  global, history,
 }) => {
-  console.log(state);
+  console.log(global);
   return (
     <div style={{ textAlign: 'center' }}>
       <h1>welcome to NP Robotics</h1>
@@ -19,15 +19,15 @@ const IndexPage = ({
 };
 
 IndexPage.propTypes = {
-  state: PropTypes.shape({}),
+  global: PropTypes.shape({}),
   history: PropTypes.shape({
     push: PropTypes.func,
   }),
 };
 
 IndexPage.defaultProps = {
-  state: {},
+  global: {},
   history: {},
 };
 
-export default connect(({ state }) => ({ state }))(IndexPage);
+export default connect(({ global }) => ({ global }))(IndexPage);

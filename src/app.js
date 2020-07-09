@@ -4,11 +4,6 @@ const dva = {
       err.preventDefault();
       console.error(err.message);
     },
-    initialState: {
-      state: {
-        text: 'hi umi + dva',
-      },
-    },
   },
 };
 
