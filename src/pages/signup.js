@@ -2,24 +2,30 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
 import {
-  Form, Input, Button, Checkbox, message,
+  Form, Input, Button, message,
 } from 'antd';
 
-const LoginPage = ({ dispatch, history }) => {
+const tailLayout = {
+  wrapperCol: { offset: 8, span: 8 },
+};
+
+const SignUpPage = ({ history, dispatch }) => {
   const [state, setState] = useState({
     submitting: false,
   });
-
   const onFinish = (values) => {
+    console.log('Success:', values);
     setState({ submitting: true });
     dispatch({
-      type: 'global/signIn',
+      type: 'global/signUp',
       payload: {
         username: values.username,
         password: values.password,
+        email: values.email,
+        name: values.name,
       },
       callback: (user) => {
-        console.log('Login Success');
+        console.log('Sign Up Successful');
         console.log(user);
         history.push('/');
       },
@@ -30,25 +36,28 @@ const LoginPage = ({ dispatch, history }) => {
     });
   };
 
-  const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
-  };
-
   return (
     <div style={{ textAlign: 'center' }}>
-      <h1>login</h1>
+      <h1>Sign Up Form</h1>
       <Form
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 8 }}
         name="basic"
         initialValues={{ remember: true }}
         onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
       >
         <Form.Item
           label="Username"
           name="username"
           rules={[{ required: true, message: 'Please input your username!' }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          label="Fullname"
+          name="name"
+          rules={[{ required: true, message: 'Please input your full name!' }]}
         >
           <Input />
         </Form.Item>
@@ -61,13 +70,36 @@ const LoginPage = ({ dispatch, history }) => {
           <Input.Password />
         </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 8, span: 8 }} name="remember" valuePropName="checked">
-          <Checkbox>Remember me</Checkbox>
+        <Form.Item
+          label="Confirm Password"
+          name="confirmPassword"
+          dependencies={['password']}
+          rules={[{ required: true, message: 'Please input your password again!' },
+
+            ({ getFieldValue }) => ({
+              validator(rule, value) {
+                if (!value || getFieldValue('password') === value) { return Promise.resolve(); }
+                return Promise.reject(Error('The two passwords do not match!'));
+              },
+            }),
+          ]}
+        >
+          <Input.Password />
         </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 8, span: 8 }}>
+        <Form.Item
+          label="Email"
+          name="email"
+          rules={[{ required: true, message: 'Please input your email!' }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          wrapperCol={{ offset: 8, span: 8 }}
+        >
           <Button type="primary" htmlType="submit" disabled={state.submitting}>
-            Submit
+            Sign Up
           </Button>
         </Form.Item>
       </Form>
@@ -75,7 +107,7 @@ const LoginPage = ({ dispatch, history }) => {
   );
 };
 
-LoginPage.propTypes = {
+SignUpPage.propTypes = {
   // state: PropTypes.shape({}),
   history: PropTypes.shape({
     push: PropTypes.func,
@@ -83,10 +115,10 @@ LoginPage.propTypes = {
   dispatch: PropTypes.func,
 };
 
-LoginPage.defaultProps = {
+SignUpPage.defaultProps = {
   // state: {},
   history: {},
   dispatch: undefined,
 };
 
-export default connect(({ global }) => ({ global }))(LoginPage);
+export default connect(({ global }) => ({ global }))(SignUpPage);

@@ -10,6 +10,10 @@ export default {
     {
       path: '/login',
       component: '../pages/login',
+    },
+    {
+      path: '/signup',
+      component: '../pages/signup'
     }
   ],
   plugins: [
