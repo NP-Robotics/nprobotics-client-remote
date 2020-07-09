@@ -1,4 +1,7 @@
 {
   "extends": ["airbnb", "airbnb/hooks"],
-  "rules": { "react/jsx-filename-extension": [0] }
+  "rules": { 
+    "react/jsx-filename-extension": [0],
+    "no-unused-vars": [1]
+  }
 }
