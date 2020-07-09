@@ -1,11 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'dva';
 import {
-  Form, Input, Button, Checkbox,
+  Form, Input, Button, Checkbox, message,
 } from 'antd';
 
-const LoginPage = ({ history }) => {
+const LoginPage = ({ dispatch, history }) => {
   const onFinish = (values) => {
+    dispatch({
+      type: 'global/signIn',
+      payload: {
+        username: values.username,
+        password: values.password,
+      },
+      callback: (err) => {
+        console.log('TEEE');
+        message.info(err.message);
+      },
+    });
     history.push('/');
     console.log('Success:', values);
   };
@@ -60,11 +72,13 @@ LoginPage.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func,
   }),
+  dispatch: PropTypes.shape({}),
 };
 
 LoginPage.defaultProps = {
   // state: {},
   history: {},
+  dispatch: undefined,
 };
 
-export default LoginPage;
+export default connect(({ global }) => ({ global }))(LoginPage);
