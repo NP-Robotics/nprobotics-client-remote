@@ -72,7 +72,7 @@ LoginPage.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func,
   }),
-  dispatch: PropTypes.shape({}),
+  dispatch: PropTypes.func,
 };
 
 LoginPage.defaultProps = {

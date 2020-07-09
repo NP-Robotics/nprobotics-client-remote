@@ -6,8 +6,6 @@ export default {
 
   state: {
     authKey: null,
-    name: 'sdfdsf',
-    id: '32324324',
   },
 
   subscriptions: {
@@ -29,7 +27,7 @@ export default {
       const { password } = payload;
       try {
         const usr = yield signIn(username, password);
-        callback(usr);
+        console.log(usr);
       } catch (err) {
         callback(err);
       }
