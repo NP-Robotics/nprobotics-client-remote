@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
 import {
-  Form, Input, Button,
+  Form, Input, Button, message,
 } from 'antd';
 
 const tailLayout = {
@@ -10,8 +10,30 @@ const tailLayout = {
 };
 
 const SignUpPage = ({ history, dispatch }) => {
+  const [state, setState] = useState({
+    submitting: false,
+  });
   const onFinish = (values) => {
     console.log('Success:', values);
+    setState({ submitting: true });
+    dispatch({
+      type: 'global/signUp',
+      payload: {
+        username: values.username,
+        password: values.password,
+        email: values.email,
+        name: values.name,
+      },
+      callback: (user) => {
+        console.log('Sign Up Successful');
+        console.log(user);
+        history.push('/');
+      },
+      error: (err) => {
+        message.info(err.message);
+        setState({ submitting: false });
+      },
+    });
   };
 
   return (
@@ -28,6 +50,14 @@ const SignUpPage = ({ history, dispatch }) => {
           label="Username"
           name="username"
           rules={[{ required: true, message: 'Please input your username!' }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          label="Fullname"
+          name="name"
+          rules={[{ required: true, message: 'Please input your full name!' }]}
         >
           <Input />
         </Form.Item>
@@ -68,7 +98,7 @@ const SignUpPage = ({ history, dispatch }) => {
         <Form.Item
           wrapperCol={{ offset: 8, span: 8 }}
         >
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" disabled={state.submitting}>
             Sign Up
           </Button>
         </Form.Item>

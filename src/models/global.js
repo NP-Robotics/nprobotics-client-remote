@@ -1,4 +1,4 @@
-import { signIn } from '../services/amplify';
+import { ampSignIn, ampSignUp } from '../services/amplify';
 
 export default {
 
@@ -26,7 +26,19 @@ export default {
       const { username } = payload;
       const { password } = payload;
       try {
-        const usr = yield signIn(username, password);
+        const usr = yield ampSignIn(username, password);
+        callback(usr);
+      } catch (err) {
+        error(err);
+      }
+    },
+    * signUp({ payload, callback, error }, { call, put }) {
+      const { username } = payload;
+      const { password } = payload;
+      const { email } = payload;
+      const { name } = payload;
+      try {
+        const usr = yield ampSignUp(username, password, email, name);
         callback(usr);
       } catch (err) {
         error(err);

@@ -11,7 +11,7 @@ Amplify.configure({
   },
 });
 
-export const signIn = async (username, password) => {
+export const ampSignIn = async (username, password) => {
   try {
     console.log('username is ', username);
     const user = await Auth.signIn(username, password);
@@ -22,10 +22,28 @@ export const signIn = async (username, password) => {
   }
 };
 
-export const signOut = async () => {
+export const ampSignOut = async () => {
   try {
     await Auth.signOut();
   } catch (error) {
     console.log('error signing out: ', error);
+  }
+};
+
+export const ampSignUp = async (username, password, email, name) => {
+  try {
+    const user = await Auth.signUp({
+      username,
+      password,
+      attributes: {
+        email, // optional
+        name,
+        // other custom attributes
+      },
+    });
+    console.log({ user });
+  } catch (error) {
+    console.log('error signing up', error);
+    throw error;
   }
 };
