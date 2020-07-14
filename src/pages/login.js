@@ -19,8 +19,13 @@ const LoginPage = ({ dispatch, history }) => {
         password: values.password,
       },
       callback: (user) => {
-        console.log('Login Success');
-        console.log(user);
+        dispatch({
+          type: 'global/setState',
+          payload: {
+            authKey: user.Session,
+          },
+        });
+
         history.push('/');
       },
       error: (err) => {

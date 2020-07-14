@@ -48,7 +48,7 @@ export default {
 
   reducers: {
     setState(state, action) {
-      const newState = { state, ...action.payload };
+      const newState = { ...state, ...action.payload };
       return newState;
     },
   },
