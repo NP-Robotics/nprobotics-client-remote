@@ -14,6 +14,10 @@ export default {
     {
       path: '/signup',
       component: '../pages/signup'
+    },
+    {
+      path: '/forgotpassword',
+      component: '../pages/forgotpassword'
     }
   ],
   plugins: [
