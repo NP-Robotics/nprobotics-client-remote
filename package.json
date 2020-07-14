@@ -8,6 +8,7 @@
     "precommit": "lint-staged"
   },
   "dependencies": {
+    "amazon-chime-sdk-js": "^1.11.0",
     "antd": "^4.4.1",
     "aws-amplify": "^3.0.19",
     "dva": "^2.6.0-beta.6",
