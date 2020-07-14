@@ -2,7 +2,7 @@ import { ampSignIn, ampSignUp } from '../services/amplify';
 
 export default {
 
-  namespace: 'global',
+  namespace: 'iotcore',
 
   state: {
     authKey: null,
@@ -48,7 +48,7 @@ export default {
 
   reducers: {
     setState(state, action) {
-      const newState = { ...state, ...action.payload };
+      const newState = { state, ...action.payload };
       return newState;
     },
   },

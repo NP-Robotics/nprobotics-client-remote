@@ -13,14 +13,14 @@ const LoginPage = ({ dispatch, history }) => {
   const onFinish = (values) => {
     setState({ submitting: true });
     dispatch({
-      type: 'global/signIn',
+      type: 'user/signIn',
       payload: {
         username: values.username,
         password: values.password,
       },
       callback: (user) => {
         dispatch({
-          type: 'global/setState',
+          type: 'user/setState',
           payload: {
             authKey: user.Session,
           },
@@ -94,4 +94,4 @@ LoginPage.defaultProps = {
   dispatch: undefined,
 };
 
-export default connect(({ global }) => ({ global }))(LoginPage);
+export default connect(({ user }) => ({ user }))(LoginPage);
