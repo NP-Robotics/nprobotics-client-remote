@@ -2,7 +2,7 @@ import { ampSignIn, ampSignUp } from '../services/amplify';
 
 export default {
 
-  namespace: 'global',
+  namespace: 'iotcore',
 
   state: {
     authKey: null,
