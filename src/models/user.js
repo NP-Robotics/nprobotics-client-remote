@@ -5,7 +5,7 @@ export default {
   namespace: 'user',
 
   state: {
-    authKey: null,
+    sessionToken: null,
   },
 
   subscriptions: {
@@ -28,6 +28,13 @@ export default {
       try {
         const usr = yield ampSignIn(username, password);
         callback(usr);
+
+        yield put({
+          type: 'setState',
+          payload: {
+            sessionToken: usr.Session,
+          },
+        });
       } catch (err) {
         error(err);
       }
@@ -39,6 +46,7 @@ export default {
       const { name } = payload;
       try {
         const usr = yield ampSignUp(username, password, email, name);
+
         callback(usr);
       } catch (err) {
         error(err);

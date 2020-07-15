@@ -24,13 +24,6 @@ const LoginPage = ({ dispatch, history }) => {
         password: values.password,
       },
       callback: (user) => {
-        dispatch({
-          type: 'user/setState',
-          payload: {
-            authKey: user.Session,
-          },
-        });
-
         history.push('/');
       },
       error: (err) => {
