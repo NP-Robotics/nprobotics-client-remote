@@ -30,7 +30,7 @@ export default {
         callback(usr);
 
         yield put({
-          type: 'setState',
+          type: 'setAuthKey',
           payload: {
             sessionToken: usr.Session,
           },
@@ -58,6 +58,9 @@ export default {
     setState(state, action) {
       const newState = { ...state, ...action.payload };
       return newState;
+    },
+    setAuthKey(state, { payload: sessionToken }) {
+      return { ...state, ...sessionToken };
     },
   },
 };
