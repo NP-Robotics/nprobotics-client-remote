@@ -1,4 +1,4 @@
-import { ampSignIn, ampSignUp } from '../services/amplify';
+import { ampSignIn, ampSignUp, ampGetSession } from '../services/amplify';
 
 export default {
 
@@ -9,12 +9,16 @@ export default {
   },
 
   subscriptions: {
-    /* setup({ dispatch, history }) {  // eslint-disable-line
-      history.listen(({ pathname }) => {
+
+    setup({ dispatch, history }) {  // eslint-disable-line
+      dispatch({
+        type: 'getSessionToken',
+      });
+      /* history.listen(({ pathname }) => {
         if (pathname === '/dashboard') {
         }
-      });
-    }, */
+      }); */
+    },
   },
 
   effects: {
@@ -27,14 +31,14 @@ export default {
       const { password } = payload;
       try {
         const usr = yield ampSignIn(username, password);
-        callback(usr);
 
         yield put({
-          type: 'setAuthKey',
+          type: 'setSessionToken',
           payload: {
             sessionToken: usr.Session,
           },
         });
+        callback(usr);
       } catch (err) {
         error(err);
       }
@@ -52,6 +56,20 @@ export default {
         error(err);
       }
     },
+    * getSessionToken({ payload, callback, error }, { call, put }) {
+      try {
+        const data = yield ampGetSession();
+        yield put({
+          type: 'setSessionToken',
+          payload: {
+            sessionToken: data.accessToken.jwtToken,
+          },
+        });
+        console.log('Received session token');
+      } catch (err) {
+        console.log(err.message);
+      }
+    },
   },
 
   reducers: {
@@ -59,7 +77,7 @@ export default {
       const newState = { ...state, ...action.payload };
       return newState;
     },
-    setAuthKey(state, { payload: sessionToken }) {
+    setSessionToken(state, { payload: sessionToken }) {
       return { ...state, ...sessionToken };
     },
   },
