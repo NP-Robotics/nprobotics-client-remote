@@ -1,11 +1,10 @@
-
 // ref: https://umijs.org/config/
 export default {
   history: 'hash',
   routes: [
     {
       path: '/',
-      component: '../pages/index'
+      component: '../pages/index',
     },
     {
       path: '/login',
@@ -13,26 +12,33 @@ export default {
     },
     {
       path: '/signup',
-      component: '../pages/signup'
-    }
+      component: '../pages/signup',
+    },
+    {
+      path: '/dashboard',
+      component: '../pages/dashboard',
+    },
   ],
   plugins: [
     // ref: https://umijs.org/plugin/umi-plugin-react.html
-    ['umi-plugin-react', {
-      antd: true,
-      dva: true,
-      dynamicImport: { webpackChunkName: true },
-      title: 'nprobotics-client-remote',
-      dll: false,
-      routes: {
-        exclude: [
-          /models\//,
-          /services\//,
-          /model\.(t|j)sx?$/,
-          /service\.(t|j)sx?$/,
-          /components\//,
-        ],
+    [
+      'umi-plugin-react',
+      {
+        antd: true,
+        dva: true,
+        dynamicImport: { webpackChunkName: true },
+        title: 'nprobotics-client-remote',
+        dll: false,
+        routes: {
+          exclude: [
+            /models\//,
+            /services\//,
+            /model\.(t|j)sx?$/,
+            /service\.(t|j)sx?$/,
+            /components\//,
+          ],
+        },
       },
-    }],
+    ],
   ],
-}
+};
