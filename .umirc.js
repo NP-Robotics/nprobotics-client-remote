@@ -22,6 +22,10 @@ export default {
         {
           path: '/robot',
           component: '../pages/robotPage.jsx'
+        },
+        {
+          path: '/forgotpassword',
+          component: '../pages/forgotpassword'
         }
       ]
     }
