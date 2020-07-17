@@ -17,7 +17,7 @@ const SignUpPage = ({ history, dispatch }) => {
     console.log('Success:', values);
     setState({ submitting: true });
     dispatch({
-      type: 'global/signUp',
+      type: 'user/signUp',
       payload: {
         username: values.username,
         password: values.password,
@@ -121,4 +121,4 @@ SignUpPage.defaultProps = {
   dispatch: undefined,
 };
 
-export default connect(({ global }) => ({ global }))(SignUpPage);
+export default connect(({ user }) => ({ user }))(SignUpPage);

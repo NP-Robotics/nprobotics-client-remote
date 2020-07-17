@@ -5,15 +5,19 @@ export default {
   routes: [
     {
       path: '/',
-      component: '../pages/index'
+      component: '../pages/index.jsx'
     },
     {
       path: '/login',
-      component: '../pages/login',
+      component: '../pages/login.jsx',
     },
     {
       path: '/signup',
-      component: '../pages/signup'
+      component: '../pages/signup.jsx'
+    },
+    {
+      path: '/robot',
+      component: '../pages/robotPage.jsx'
     }
   ],
   plugins: [
