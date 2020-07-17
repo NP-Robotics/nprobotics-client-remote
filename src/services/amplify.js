@@ -47,3 +47,13 @@ export const ampSignUp = async (username, password, email, name) => {
     throw error;
   }
 };
+
+export const ampGetSession = async () => {
+  const data = Auth.currentSession();
+  return data;
+};
+
+export const ampGetCredentials = async () => {
+  const credentials = Auth.currentCredentials();
+  return credentials;
+};

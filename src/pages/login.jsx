@@ -4,11 +4,16 @@ import { connect } from 'dva';
 import {
   Form, Input, Button, Checkbox, message,
 } from 'antd';
+import Link from 'umi/link';
 
 const LoginPage = ({ dispatch, history }) => {
   const [state, setState] = useState({
     submitting: false,
   });
+
+  const forgotPassword = () => {
+    history.push('/resetpassword');
+  };
 
   const onFinish = (values) => {
     setState({ submitting: true });
@@ -19,13 +24,6 @@ const LoginPage = ({ dispatch, history }) => {
         password: values.password,
       },
       callback: (user) => {
-        dispatch({
-          type: 'user/setState',
-          payload: {
-            authKey: user.Session,
-          },
-        });
-
         history.push('/');
       },
       error: (err) => {
@@ -75,6 +73,7 @@ const LoginPage = ({ dispatch, history }) => {
             Submit
           </Button>
         </Form.Item>
+        <Link to="/forgotpassword"><p>Forgot password?</p></Link>
       </Form>
     </div>
   );
