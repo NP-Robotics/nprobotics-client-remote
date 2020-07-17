@@ -1,5 +1,5 @@
 import {
-  ampSignIn, ampSignUp, ampGetSession, ampGetCredentials,
+  ampSignIn, ampSignUp, ampGetSession, ampGetCredentials, ampGetAuthenticated,
 } from '../services/amplify';
 
 export default {
@@ -7,6 +7,7 @@ export default {
   namespace: 'user',
 
   state: {
+    authenticated: null,
     jwtToken: null,
     sessionToken: null,
     accessKeyId: null,
@@ -21,10 +22,21 @@ export default {
       dispatch({
         type: 'getSession',
       });
-      /* history.listen(({ pathname }) => {
-        if (pathname === '/dashboard') {
+      history.listen(({ pathname }) => {
+        if (pathname === '/robot') {
+          dispatch({
+            type: 'getAuthenticated',
+            callback: () => {
+              dispatch({
+                type: 'getCredentials',
+              });
+            },
+            error: () => {
+              history.push('/');
+            },
+          });
         }
-      }); */
+      });
     },
   },
 
@@ -39,11 +51,7 @@ export default {
       try {
         const usr = yield ampSignIn(username, password);
         yield put({
-          type: 'setState',
-          payload: {
-            jwtToken: usr.signInUserSession.accessToken.jwtToken,
-            username: usr.username,
-          },
+          type: 'getSession',
         });
         callback(usr);
       } catch (err) {
@@ -72,9 +80,26 @@ export default {
             jwtToken: data.accessToken.jwtToken,
             clientId: data.accessToken.payload.client_id,
             username: data.accessToken.payload.username,
+            authenticated: true,
           },
         });
-        console.log('cognito data', data);
+        if (callback) {
+          callback(data);
+        }
+      } catch (err) {
+        if (error) {
+          error(err);
+        }
+        yield put({
+          type: 'setState',
+          payload: {
+            authenticated: false,
+          },
+        });
+      }
+    },
+    * getCredentials({ payload, callback, error }, { call, put }) {
+      try {
         const cred = yield ampGetCredentials();
         console.log('identity data', cred);
         yield put({
@@ -84,11 +109,39 @@ export default {
             accessKeyId: cred.accessKeyId,
             secretAccessKey: cred.secretAccessKey,
             identityId: cred.identityId,
-
           },
         });
+        if (callback) {
+          callback(cred);
+        }
       } catch (err) {
-        console.log(err.message);
+        if (error) {
+          error(err);
+          yield put({
+            type: 'setState',
+            payload: {
+              authenticated: false,
+            },
+          });
+        }
+      }
+    },
+    * getAuthenticated({ callback, error }, { call, put }) {
+      try {
+        const user = yield ampGetAuthenticated();
+        if (callback) {
+          callback(user);
+        }
+      } catch (err) {
+        if (error) {
+          error(err);
+          yield put({
+            type: 'setState',
+            payload: {
+              authenticated: false,
+            },
+          });
+        }
       }
     },
   },
@@ -96,8 +149,8 @@ export default {
   reducers: {
     setState(state, action) {
       const newState = { ...state, ...action.payload };
-      console.log(newState);
       return newState;
     },
+
   },
 };

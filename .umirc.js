@@ -5,20 +5,27 @@ export default {
   routes: [
     {
       path: '/',
-      component: '../pages/index.jsx'
-    },
-    {
-      path: '/login',
-      component: '../pages/login.jsx',
-    },
-    {
-      path: '/signup',
-      component: '../pages/signup.jsx'
-    },
-    {
-      path: '/robot',
-      component: '../pages/robotPage.jsx'
+      component: '../layouts/index.jsx',
+      routes: [
+        {
+          path: '/',
+          component: '../pages/index.jsx'
+        },
+        {
+          path: '/login',
+          component: '../pages/login.jsx',
+        },
+        {
+          path: '/signup',
+          component: '../pages/signup.jsx'
+        },
+        {
+          path: '/robot',
+          component: '../pages/robotPage.jsx'
+        }
+      ]
     }
+
   ],
   plugins: [
     // ref: https://umijs.org/plugin/umi-plugin-react.html

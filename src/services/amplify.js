@@ -41,7 +41,6 @@ export const ampSignUp = async (username, password, email, name) => {
         // other custom attributes
       },
     });
-    console.log({ user });
   } catch (error) {
     console.log('error signing up', error);
     throw error;
@@ -56,4 +55,9 @@ export const ampGetSession = async () => {
 export const ampGetCredentials = async () => {
   const credentials = Auth.currentCredentials();
   return credentials;
+};
+
+export const ampGetAuthenticated = async () => {
+  const user = Auth.currentAuthenticatedUser();
+  return user;
 };
