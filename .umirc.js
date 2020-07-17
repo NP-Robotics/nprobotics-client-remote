@@ -1,4 +1,3 @@
-
 // ref: https://umijs.org/config/
 export default {
   history: 'hash',
@@ -26,28 +25,35 @@ export default {
         {
           path: '/forgotpassword',
           component: '../pages/forgotpassword.jsx'
-        }
+        },
+        {
+          path: '/dashboard',
+          component: '../pages/dashboard.jsx',
+        },
       ]
     }
 
   ],
   plugins: [
     // ref: https://umijs.org/plugin/umi-plugin-react.html
-    ['umi-plugin-react', {
-      antd: true,
-      dva: true,
-      dynamicImport: { webpackChunkName: true },
-      title: 'nprobotics-client-remote',
-      dll: false,
-      routes: {
-        exclude: [
-          /models\//,
-          /services\//,
-          /model\.(t|j)sx?$/,
-          /service\.(t|j)sx?$/,
-          /components\//,
-        ],
+    [
+      'umi-plugin-react',
+      {
+        antd: true,
+        dva: true,
+        dynamicImport: { webpackChunkName: true },
+        title: 'nprobotics-client-remote',
+        dll: false,
+        routes: {
+          exclude: [
+            /models\//,
+            /services\//,
+            /model\.(t|j)sx?$/,
+            /service\.(t|j)sx?$/,
+            /components\//,
+          ],
+        },
       },
-    }],
+    ],
   ],
-}
+};

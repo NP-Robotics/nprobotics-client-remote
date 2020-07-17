@@ -11,8 +11,9 @@ const LoginPage = ({ dispatch, history }) => {
     submitting: false,
   });
 
-  const forgotPassword = () => {
-    history.push('/resetpassword');
+  const proceed = () => {
+    console.log('proceed');
+    history.push('/dashboard');
   };
 
   const onFinish = (values) => {
@@ -24,7 +25,9 @@ const LoginPage = ({ dispatch, history }) => {
         password: values.password,
       },
       callback: (user) => {
-        history.push('/');
+        console.log('Login Success');
+        console.log(user);
+        history.push('/dashboard');
       },
       error: (err) => {
         message.info(err.message);
@@ -69,7 +72,7 @@ const LoginPage = ({ dispatch, history }) => {
         </Form.Item>
 
         <Form.Item wrapperCol={{ offset: 8, span: 8 }}>
-          <Button type="primary" htmlType="submit" disabled={state.submitting}>
+          <Button onClick={proceed} type="primary" htmlType="submit" disabled={state.submitting}>
             Submit
           </Button>
         </Form.Item>
