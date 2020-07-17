@@ -6,18 +6,15 @@ import jeremy from '../assets/jeremy.jpeg';
 
 const IndexPage = ({
   user, history,
-}) => {
-  console.log(user);
-  return (
-    <div style={{ textAlign: 'center' }}>
-      <h1>welcome to NP Robotics</h1>
-      <img src={jeremy} style={{ width: '20%', height: '20%' }} alt="jeremy" />
-      <br />
-      <Button onClick={() => { history.push('/login'); }}>Login</Button>
-      <Button onClick={() => { history.push('/signup'); }}>Sign Up</Button>
-    </div>
-  );
-};
+}) => (
+  <div style={{ textAlign: 'center' }}>
+    <h1>welcome to NP Robotics</h1>
+    <img src={jeremy} style={{ width: '20%', height: '20%' }} alt="jeremy" />
+    <br />
+    <Button onClick={() => { history.push('/login'); }}>Login</Button>
+    <Button onClick={() => { history.push('/signup'); }}>Sign Up</Button>
+  </div>
+);
 
 IndexPage.propTypes = {
   user: PropTypes.shape({}),

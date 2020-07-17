@@ -1,18 +1,25 @@
-import { ampSignIn, ampSignUp, ampGetSession } from '../services/amplify';
+import {
+  ampSignIn, ampSignUp, ampGetSession, ampGetCredentials,
+} from '../services/amplify';
 
 export default {
 
   namespace: 'user',
 
   state: {
+    jwtToken: null,
     sessionToken: null,
+    accessKeyId: null,
+    secretAccessKey: null,
+    identityId: null,
+    username: null,
   },
 
   subscriptions: {
 
     setup({ dispatch, history }) {  // eslint-disable-line
       dispatch({
-        type: 'getSessionToken',
+        type: 'getSession',
       });
       /* history.listen(({ pathname }) => {
         if (pathname === '/dashboard') {
@@ -31,11 +38,11 @@ export default {
       const { password } = payload;
       try {
         const usr = yield ampSignIn(username, password);
-
         yield put({
-          type: 'setSessionToken',
+          type: 'setState',
           payload: {
-            sessionToken: usr.Session,
+            jwtToken: usr.signInUserSession.accessToken.jwtToken,
+            username: usr.username,
           },
         });
         callback(usr);
@@ -56,16 +63,30 @@ export default {
         error(err);
       }
     },
-    * getSessionToken({ payload, callback, error }, { call, put }) {
+    * getSession({ payload, callback, error }, { call, put }) {
       try {
         const data = yield ampGetSession();
         yield put({
-          type: 'setSessionToken',
+          type: 'setState',
           payload: {
-            sessionToken: data.accessToken.jwtToken,
+            jwtToken: data.accessToken.jwtToken,
+            clientId: data.accessToken.payload.client_id,
+            username: data.accessToken.payload.username,
           },
         });
-        console.log('Received session token');
+        console.log('cognito data', data);
+        const cred = yield ampGetCredentials();
+        console.log('identity data', cred);
+        yield put({
+          type: 'setState',
+          payload: {
+            sessionToken: cred.sessionToken,
+            accessKeyId: cred.accessKeyId,
+            secretAccessKey: cred.secretAccessKey,
+            identityId: cred.identityId,
+
+          },
+        });
       } catch (err) {
         console.log(err.message);
       }
@@ -75,10 +96,8 @@ export default {
   reducers: {
     setState(state, action) {
       const newState = { ...state, ...action.payload };
+      console.log(newState);
       return newState;
-    },
-    setSessionToken(state, { payload: sessionToken }) {
-      return { ...state, ...sessionToken };
     },
   },
 };
