@@ -25,7 +25,7 @@ export default {
         },
         {
           path: '/forgotpassword',
-          component: '../pages/forgotpassword'
+          component: '../pages/forgotpassword.jsx'
         }
       ]
     }
