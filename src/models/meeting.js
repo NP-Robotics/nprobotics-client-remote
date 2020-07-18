@@ -18,25 +18,38 @@ export default {
 
   effects: {
     * join({ payload, callback, error }, { call, put }) {
-      const { name, title, region } = payload;
+      const {
+        username, meetingName, region, jwtToken,
+      } = payload;
       try {
-        const usr = yield call(joinMeeting, name, title, region);
-        callback(usr);
+        const response = yield call(joinMeeting, username, meetingName, region, jwtToken);
+        console.log(response);
+        if (callback) {
+          callback(response);
+        }
       } catch (err) {
-        error(err);
+        console.log(err);
+        if (error) {
+          error(err);
+        }
       }
     },
 
     * end({ payload, callback, error }, { call, put }) {
-      const { meetingId } = payload;
+      const { meetingName, jwtToken } = payload;
       try {
-        const usr = yield call(endMeeting, meetingId);
-        callback(usr);
+        const response = yield call(endMeeting, meetingName, jwtToken);
+        console.log(response);
+        if (callback) {
+          callback(response);
+        }
       } catch (err) {
-        error(err);
+        console.log(err);
+        if (error) {
+          error(err);
+        }
       }
     },
-
   },
 
   reducers: {

@@ -1,25 +1,39 @@
 import makeRequest from '../utils/request';
 
-export const joinMeeting = (name1, title1) => {
-  const { returnVal } = makeRequest('', {
-    params: {
-      name: name1,
-      title: title1,
-      region: 'us-east-1',
-    },
-    skipErrorHandler: true,
-  });
-  return returnVal;
+const makeChimeRequest = (action, payload) => {
+  const url = `ve5bhz6ga3.execute-api.us-east-1.amazonaws.com/Prod/${action}`;
+  const response = makeRequest(url, payload);
+  return response;
 };
 
-export const endMeeting = (name1, title1) => {
-  const { returnVal } = makeRequest('', {
+export const joinMeeting = (name, title, region, jwtToken) => {
+  const action = 'join';
+  const response = makeChimeRequest(action, {
+    method: 'post',
+    headers: {
+      Authorization: `Bearer ${jwtToken}`,
+    },
     params: {
-      name: name1,
-      title: title1,
-      region: 'us-east-1',
+      name,
+      title,
+      region,
     },
     skipErrorHandler: true,
   });
-  return returnVal;
+  return response;
+};
+
+export const endMeeting = (meetingName, jwtToken) => {
+  const action = 'end';
+  const response = makeChimeRequest(action, {
+    method: 'post',
+    headers: {
+      Authorization: `Bearer ${jwtToken}`,
+    },
+    params: {
+      title: meetingName,
+    },
+    skipErrorHandler: true,
+  });
+  return response;
 };

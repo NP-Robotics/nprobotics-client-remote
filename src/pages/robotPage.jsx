@@ -18,6 +18,35 @@ const RobotPage = ({ user, device, dispatch }) => {
   });
   const joystickRef = useRef(null);
 
+  const chimeConnectOnClick = () => {
+    dispatch({
+      type: 'meeting/join',
+      payload: {
+        username: user.username,
+        meetingName: 'dsfaswer',
+        region: 'us-east-1',
+        jwtToken: user.jwtToken,
+      },
+      callback: (response) => {
+        console.log(response);
+      },
+      error: (error) => {
+        message.error(error.message);
+      },
+
+    });
+  };
+
+  const chimeLeaveOnClick = () => {
+    dispatch({
+      type: 'meeting/end',
+      payload: {
+        jwtToken: user.jwtToken,
+        meetingName: 'dsfaswer',
+      },
+    });
+  };
+
   const connectOnClick = () => {
     dispatch({
       type: 'device/initDevice',
@@ -86,6 +115,9 @@ const RobotPage = ({ user, device, dispatch }) => {
       <h1>robot page</h1>
       <Button onClick={connectOnClick}>connect</Button>
       <Button onClick={lockOnClick}>{componentText.lockButton}</Button>
+      <Button onClick={chimeConnectOnClick}>chime connect</Button>
+      <Button onClick={chimeLeaveOnClick}> chime leave</Button>
+
       <div
         draggable={!componentPos.locked}
         onDragEnd={joystickOnDrag}
@@ -112,7 +144,7 @@ RobotPage.propTypes = {
     accessKeyId: PropTypes.string,
     secretAccessKey: PropTypes.string,
     sessionToken: PropTypes.string,
-
+    jwtToken: PropTypes.string,
   }),
   device: PropTypes.shape({}),
 
@@ -126,4 +158,4 @@ RobotPage.defaultProps = {
   user: {},
 };
 
-export default connect(({ user, device }) => ({ user, device }))(RobotPage);
+export default connect(({ user, device, meeting }) => ({ user, device, meeting }))(RobotPage);
