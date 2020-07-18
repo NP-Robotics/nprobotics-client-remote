@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
-import './dashboard.css';
-import 'antd/dist/antd.css';
 import {
   Layout, Typography, Avatar, Menu, Breadcrumb, Button, Space, Row, Col,
 } from 'antd';
