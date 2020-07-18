@@ -102,7 +102,6 @@ export default {
     * getCredentials({ payload, callback, error }, { call, put }) {
       try {
         const cred = yield ampGetCredentials();
-        console.log('identity data', cred);
         yield put({
           type: 'setState',
           payload: {
