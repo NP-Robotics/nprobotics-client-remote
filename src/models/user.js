@@ -1,31 +1,20 @@
-import {
-  ampSignIn, ampSignUp, ampGetSession, ampGetCredentials,
-} from '../services/amplify';
+import { ampSignIn, ampSignUp } from '../services/amplify';
 
 export default {
 
   namespace: 'user',
 
   state: {
-    jwtToken: null,
-    sessionToken: null,
-    accessKeyId: null,
-    secretAccessKey: null,
-    identityId: null,
-    username: null,
+    authKey: null,
   },
 
   subscriptions: {
-
-    setup({ dispatch, history }) {  // eslint-disable-line
-      dispatch({
-        type: 'getSession',
-      });
-      /* history.listen(({ pathname }) => {
+    /* setup({ dispatch, history }) {  // eslint-disable-line
+      history.listen(({ pathname }) => {
         if (pathname === '/dashboard') {
         }
-      }); */
-    },
+      });
+    }, */
   },
 
   effects: {
@@ -34,61 +23,27 @@ export default {
     },
 
     * signIn({ payload, callback, error }, { call, put }) {
-      const { username } = payload;
-      const { password } = payload;
+      const { username, password } = payload;
       try {
-        const usr = yield ampSignIn(username, password);
-        yield put({
-          type: 'setState',
-          payload: {
-            jwtToken: usr.signInUserSession.accessToken.jwtToken,
-            username: usr.username,
-          },
-        });
+        const usr = yield call(ampSignIn, username, password);
         callback(usr);
       } catch (err) {
         error(err);
       }
     },
     * signUp({ payload, callback, error }, { call, put }) {
-      const { username } = payload;
-      const { password } = payload;
-      const { email } = payload;
-      const { name } = payload;
-      try {
-        const usr = yield ampSignUp(username, password, email, name);
+      const {
+        username,
+        password,
+        email,
+        name,
+      } = payload;
 
+      try {
+        const usr = yield call(ampSignUp, username, password, email, name);
         callback(usr);
       } catch (err) {
         error(err);
-      }
-    },
-    * getSession({ payload, callback, error }, { call, put }) {
-      try {
-        const data = yield ampGetSession();
-        yield put({
-          type: 'setState',
-          payload: {
-            jwtToken: data.accessToken.jwtToken,
-            clientId: data.accessToken.payload.client_id,
-            username: data.accessToken.payload.username,
-          },
-        });
-        console.log('cognito data', data);
-        const cred = yield ampGetCredentials();
-        console.log('identity data', cred);
-        yield put({
-          type: 'setState',
-          payload: {
-            sessionToken: cred.sessionToken,
-            accessKeyId: cred.accessKeyId,
-            secretAccessKey: cred.secretAccessKey,
-            identityId: cred.identityId,
-
-          },
-        });
-      } catch (err) {
-        console.log(err.message);
       }
     },
   },
@@ -96,7 +51,6 @@ export default {
   reducers: {
     setState(state, action) {
       const newState = { ...state, ...action.payload };
-      console.log(newState);
       return newState;
     },
   },
