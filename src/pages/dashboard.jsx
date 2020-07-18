@@ -6,8 +6,6 @@ import 'antd/dist/antd.css';
 import {
   Layout, Typography, Avatar, Menu, Breadcrumb, Button, Space, Row, Col,
 } from 'antd';
-import { AiOutlineSetting } from 'react-icons/ai';
-import { FaReact } from 'react-icons/fa';
 import NPLogo from '../assets/np_logo.png';
 import scoutPlaceholder from '../assets/scout_placeholder.png';
 import eaibotPlaceholder from '../assets/eaibot_smart_placeholder.jpg';
@@ -26,10 +24,6 @@ const DashboardPage = ({ history }) => {
   return (
     <Layout>
       <Header style={{ position: 'fixed', zIndex: 1, width: '100%' }}>
-        <AiOutlineSetting
-          style={{ float: 'right', marginTop: 13, marginRight: 15 }}
-          color="white"
-        />
         <Avatar style={{ float: 'right', marginTop: 15 }}>USER</Avatar>
 
         <Row style={{ textAlign: 'left', maxHeight: '100px' }}>
