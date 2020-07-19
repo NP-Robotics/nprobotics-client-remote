@@ -27,19 +27,19 @@ export default {
         type: 'getSession',
       });
       history.listen(({ pathname }) => {
-        if (authenticatedRoutes.has(pathname)) {
-          dispatch({
-            type: 'getAuthenticated',
-            callback: () => {
-              dispatch({
-                type: 'getCredentials',
-              });
-            },
-            error: () => {
+        dispatch({
+          type: 'getAuthenticated',
+          callback: () => {
+            dispatch({
+              type: 'getCredentials',
+            });
+          },
+          error: () => {
+            if (authenticatedRoutes.has(pathname)) {
               history.push('/');
-            },
-          });
-        }
+            }
+          },
+        });
       });
     },
   },
