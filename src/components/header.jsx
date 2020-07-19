@@ -65,7 +65,6 @@ HeaderComponent.propTypes = {
     authenticated: PropTypes.bool,
   }),
   dispatch: PropTypes.func,
-
 };
 
 HeaderComponent.defaultProps = {
