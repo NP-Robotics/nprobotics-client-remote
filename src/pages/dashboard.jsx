@@ -2,8 +2,17 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
 import {
-  Layout, Typography, Avatar, Menu, Breadcrumb, Button, Space, Row, Col,
+  Layout, Typography, Table, Menu,
 } from 'antd';
+
+import {
+  MenuOutlined,
+  ClusterOutlined,
+  SettingOutlined,
+  TeamOutlined,
+  UserOutlined,
+  DownOutlined,
+} from '@ant-design/icons';
 import NPLogo from '../assets/np_logo.png';
 import scoutPlaceholder from '../assets/scout_placeholder.png';
 import eaibotPlaceholder from '../assets/eaibot_smart_placeholder.jpg';
@@ -14,82 +23,109 @@ const {
 } = Layout;
 const { Title } = Typography;
 
-const DashboardPage = ({ history }) => {
+const DashboardPage = ({ history, user }) => {
   const [state, setState] = useState({
     submitting: false,
+    collapsed: false,
   });
 
+  const collapseOnClick = () => {
+    console.log(state);
+    setState({
+      ...state,
+      collapsed: !state.collapsed,
+    });
+  };
+
+  const columns = [
+    {
+      title: 'Robot',
+      dataIndex: 'robot',
+      key: 'robot',
+    },
+    {
+      title: 'Organization',
+      dataIndex: 'organization',
+      key: 'organization',
+    },
+    {
+      title: 'Ready',
+      dataIndex: 'ready',
+      key: 'ready',
+    },
+    {
+      title: 'In Use',
+      dataIndex: 'inUse',
+      key: 'inUse',
+    },
+  ];
+
+  const data = [
+    {
+      key: 1,
+      robot: 'CourtRobot',
+      organization: 'NP',
+      ready: 'Yes',
+      inUse: 'No',
+    },
+  ];
+
   return (
-    <Layout>
-      <Header style={{ position: 'fixed', width: '100%', padding: '0px 25px' }}>
-        <Avatar style={{ float: 'right', marginTop: 15 }}>USER</Avatar>
-        <img
-          src={NPLogo}
-          style={{
-            maxHeight: '50px',
-            float: 'left',
-            padding: '0',
-            margin: '5px 20px',
-          }}
-          alt="NPLogo"
-        />
-        {/* <Menu theme="dark" mode="horizontal">
-          <Menu.Item key="1">nav 1</Menu.Item>
-          <Menu.Item key="2">nav 2</Menu.Item>
-          <Menu.Item key="3">nav 3</Menu.Item>
-        </Menu> */}
-      </Header>
-      {/* <Sider style={{ padding: '0 20px', marginTop: 64 }}>
-          <Menu theme="dark" mode="vertical">
-            <Menu.Item key="1">nav 1</Menu.Item>
-            <Menu.Item key="2">nav 2</Menu.Item>
-            <Menu.Item key="3">nav 3</Menu.Item>
+    <Layout style={{ minHeight: '100vh' }}>
+      <Sider collapsible collapsed={state.collapsed} onCollapse={collapseOnClick}>
+
+        <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
+          <Menu.Item key="title" icon={<MenuOutlined />}>Dashboard</Menu.Item>
+          <Menu.Item key="things" icon={<ClusterOutlined />}>Things</Menu.Item>
+          <Menu.Item key="settings" icon={<SettingOutlined />}>Settings</Menu.Item>
+
+        </Menu>
+      </Sider>
+
+      <Layout>
+
+        <Header style={{ padding: '0px' }}>
+          <img
+            src={NPLogo}
+            style={{
+              maxHeight: '50px',
+              margin: '10px 10px',
+            }}
+            alt="NPLogo"
+          />
+          <Menu theme="dark" mode="horizontal" style={{ float: 'right', marginRight: '50px' }}>
+            <SubMenu key="user" icon={<UserOutlined />} title={user.username}>
+              <Menu.Item key="1">My Account</Menu.Item>
+              <Menu.Item key="2">My Organization</Menu.Item>
+              <Menu.Item key="3">Sign Out</Menu.Item>
+            </SubMenu>
           </Menu>
-          <Menu />
-        </Sider> */}
-      <Content style={{ padding: '0 50px', marginTop: 64 }}>
-        <div style={{ marginTop: 64 }}>
-          <Space>
-            <widget>
-              <img
-                src={scoutPlaceholder}
-                style={{ height: '30%', width: '30%' }}
-                alt="scoutPlaceholder"
-              />
-              <Button type="primary" style={{ padding: '20', alignSelf: 'left', flex: 1 }}>
-                Scout
-              </Button>
-            </widget>
-            <widget>
-              {' '}
-              <img
-                src={eaibotPlaceholder}
-                style={{ height: '25%', width: '25%' }}
-                alt="eaibotPlaceholder"
-              />
-              <Button type="primary" style={{ padding: '20', alignSelf: 'left', flex: 1 }}>
-                eaibot
-              </Button>
-            </widget>
-          </Space>
-        </div>
-        <div className="site-layout-background" style={{ padding: 24, minHeight: 380 }} />
-      </Content>
-      <Footer style={{ textAlign: 'center' }}>Powered by Ngee Ann Robotics</Footer>
+        </Header>
+
+        <Content style={{ margin: '0 50px' }}>
+          <div style={{ marginTop: '64px' }}>
+            <Table columns={columns} dataSource={data} />
+          </div>
+        </Content>
+        <Footer style={{ textAlign: 'center' }}>Powered by Ngee Ann Robotics</Footer>
+      </Layout>
     </Layout>
+
   ); // end return
 }; // end DashboardPage
 
 DashboardPage.propTypes = {
-  global: PropTypes.shape({}),
+  user: PropTypes.shape({
+    username: PropTypes.string,
+  }),
   history: PropTypes.shape({
     push: PropTypes.func,
   }),
 };
 
 DashboardPage.defaultProps = {
-  global: {},
+  user: {},
   history: {},
 };
 
-export default connect(({ global }) => ({ global }))(DashboardPage);
+export default connect(({ user }) => ({ user }))(DashboardPage);
