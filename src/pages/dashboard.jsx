@@ -60,14 +60,11 @@ const DashboardPage = ({ history, user }) => {
   ];
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout style={{ textAlign: 'center', minHeight: '100vh' }}>
       <SiderComponent onCollapse={collapseOnClick} collapsed={state.collapsed} />
-
       <Layout>
-
-        <HeaderComponent user={user} />
-
         <Content style={{ margin: '0 50px' }}>
+
           <div style={{ marginTop: '64px' }}>
             <Table columns={columns} dataSource={data} />
           </div>

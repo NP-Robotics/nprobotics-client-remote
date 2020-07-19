@@ -1,7 +1,12 @@
 import React from 'react';
 import { connect } from 'dva';
 import PropTypes from 'prop-types';
-import { Spin } from 'antd';
+import { Spin, Layout } from 'antd';
+import HeaderComponent from '../components/header';
+
+const {
+  Content,
+} = Layout;
 
 const IndexLayout = ({ children, history, user }) => {
   if (user.authenticated === null) {
@@ -28,9 +33,17 @@ const IndexLayout = ({ children, history, user }) => {
   }
 
   return (
-    <div>
-      {children}
-    </div>
+    <Layout style={{ minHeight: '100vh' }}>
+      <HeaderComponent user={user} />
+
+      <Layout style={{ textAlign: 'center' }}>
+        <Content>
+          {children}
+
+        </Content>
+      </Layout>
+    </Layout>
+
   );
 };
 
