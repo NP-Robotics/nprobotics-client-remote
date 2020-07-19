@@ -1,9 +1,14 @@
 import {
-  ampSignIn, ampSignUp, ampGetSession, ampGetCredentials, ampGetAuthenticated,
+  ampSignIn,
+  ampSignUp,
+  ampGetSession,
+  ampGetCredentials,
+  ampGetAuthenticated,
+  apmForgotPassword,
+  apmForgotPasswordSubmit,
 } from '../services/amplify';
 
 export default {
-
   namespace: 'user',
 
   state: {
@@ -17,8 +22,8 @@ export default {
   },
 
   subscriptions: {
-
-    setup({ dispatch, history }) {  // eslint-disable-line
+    setup({ dispatch, history }) {
+      // eslint-disable-line
       dispatch({
         type: 'getSession',
       });
@@ -41,7 +46,8 @@ export default {
   },
 
   effects: {
-    *fetch({ payload }, { call, put }) {  // eslint-disable-line
+    * fetch({ payload }, { call, put }) {
+      // eslint-disable-line
       yield put({ type: 'setState' });
     },
 
@@ -144,6 +150,27 @@ export default {
         }
       }
     },
+    * forgotPassword({ payload, callback, error }, { call, put }) {
+      const { username } = payload;
+      try {
+        const usr = yield apmForgotPassword(username);
+        callback(usr);
+      } catch (err) {
+        error(err);
+      }
+    },
+    * forgotPasswordSubmit({ payload, callback, error }, { call, put }) {
+      const { username } = payload;
+      const { code } = payload;
+      const { newPassword } = payload;
+      console.log('success', payload);
+      try {
+        const usr = yield apmForgotPasswordSubmit(username, code, newPassword);
+        callback(usr);
+      } catch (err) {
+        error(err);
+      }
+    },
   },
 
   reducers: {
@@ -151,6 +178,5 @@ export default {
       const newState = { ...state, ...action.payload };
       return newState;
     },
-
   },
 };

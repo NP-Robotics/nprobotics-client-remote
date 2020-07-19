@@ -8,7 +8,7 @@ export default {
       routes: [
         {
           path: '/',
-          component: '../pages/index.jsx'
+          component: '../pages/index.jsx',
         },
         {
           path: '/login',
@@ -16,23 +16,26 @@ export default {
         },
         {
           path: '/signup',
-          component: '../pages/signup.jsx'
+          component: '../pages/signup.jsx',
         },
         {
           path: '/robot',
-          component: '../pages/robotPage.jsx'
+          component: '../pages/robotPage.jsx',
         },
         {
           path: '/forgotpassword',
-          component: '../pages/forgotpassword.jsx'
+          component: '../pages/forgotpassword.jsx',
+        },
+        {
+          path: '/resetpassword',
+          component: '../pages/resetpassword.jsx',
         },
         {
           path: '/dashboard',
           component: '../pages/dashboard.jsx',
         },
-      ]
-    }
-
+      ],
+    },
   ],
   plugins: [
     // ref: https://umijs.org/plugin/umi-plugin-react.html
