@@ -4,6 +4,7 @@ import { connect } from 'dva';
 import {
   Layout, Table,
 } from 'antd';
+import Link from 'umi/link';
 
 import SiderComponent from '../components/sider';
 import HeaderComponent from '../components/header';
@@ -31,6 +32,9 @@ const DashboardPage = ({ history, user }) => {
       title: 'Robot',
       dataIndex: 'robot',
       key: 'robot',
+      render: (text) => (
+        <Link to="/robot"><p>{text}</p></Link>
+      ),
     },
     {
       title: 'Organization',
@@ -54,7 +58,21 @@ const DashboardPage = ({ history, user }) => {
       key: 1,
       robot: 'CourtRobot',
       organization: 'NP',
-      ready: 'Yes',
+      ready: 'No',
+      inUse: 'No',
+    },
+    {
+      key: 2,
+      robot: 'Scout',
+      organization: 'NP',
+      ready: 'No',
+      inUse: 'No',
+    },
+    {
+      key: 3,
+      robot: 'Xian Hui\'s Robot',
+      organization: 'NP',
+      ready: 'No',
       inUse: 'No',
     },
   ];
