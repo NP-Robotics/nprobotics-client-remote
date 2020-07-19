@@ -31,7 +31,7 @@ export default {
           component: '../pages/dashboard.jsx',
         },
       ]
-    }
+    },
 
   ],
   plugins: [
