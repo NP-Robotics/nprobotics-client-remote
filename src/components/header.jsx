@@ -18,7 +18,6 @@ const HeaderComponent = ({ user, dispatch }) => {
     dispatch({
       type: 'user/signOut',
       callback: () => {
-        console.log('Callbck ran');
         router.push('/');
       },
     });

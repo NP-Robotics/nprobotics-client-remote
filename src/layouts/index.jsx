@@ -9,7 +9,8 @@ const {
 } = Layout;
 
 const IndexLayout = ({ children, history, user }) => {
-  if (user.authenticated === null) {
+  if (user.authenticated === null
+    || (user.authenticated === true && user.secretAccessKey === null)) {
     return (
       <div style={{
         textAlign: 'center',
@@ -20,18 +21,6 @@ const IndexLayout = ({ children, history, user }) => {
       </div>
     );
   }
-  if (user.secretAccessKey === null && history.location.pathname === '/robot') {
-    return (
-      <div style={{
-        textAlign: 'center',
-        margin: '50vh',
-      }}
-      >
-        <Spin size="large" />
-      </div>
-    );
-  }
-
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <HeaderComponent />

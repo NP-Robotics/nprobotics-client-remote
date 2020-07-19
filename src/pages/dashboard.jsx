@@ -7,7 +7,6 @@ import {
 import Link from 'umi/link';
 
 import SiderComponent from '../components/sider';
-import HeaderComponent from '../components/header';
 
 const {
   Footer, Content,

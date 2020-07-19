@@ -2,6 +2,10 @@ import {
   ampSignIn, ampSignUp, ampGetSession, ampGetCredentials, ampGetAuthenticated, ampSignOut,
 } from '../services/amplify';
 
+const authenticatedRoutes = new Set([
+  '/robot', '/dashboard',
+]);
+
 export default {
 
   namespace: 'user',
@@ -23,7 +27,7 @@ export default {
         type: 'getSession',
       });
       history.listen(({ pathname }) => {
-        if (pathname === '/robot') {
+        if (authenticatedRoutes.has(pathname)) {
           dispatch({
             type: 'getAuthenticated',
             callback: () => {
