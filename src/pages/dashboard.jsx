@@ -2,26 +2,15 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
 import {
-  Layout, Typography, Table, Menu,
+  Layout, Table,
 } from 'antd';
 
-import {
-  MenuOutlined,
-  ClusterOutlined,
-  SettingOutlined,
-  TeamOutlined,
-  UserOutlined,
-  DownOutlined,
-} from '@ant-design/icons';
-import NPLogo from '../assets/np_logo.png';
-import scoutPlaceholder from '../assets/scout_placeholder.png';
-import eaibotPlaceholder from '../assets/eaibot_smart_placeholder.jpg';
+import SiderComponent from '../components/sider';
+import HeaderComponent from '../components/header';
 
-const { SubMenu } = Menu;
 const {
-  Header, Footer, Sider, Content,
+  Footer, Content,
 } = Layout;
-const { Title } = Typography;
 
 const DashboardPage = ({ history, user }) => {
   const [state, setState] = useState({
@@ -72,35 +61,11 @@ const DashboardPage = ({ history, user }) => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider collapsible collapsed={state.collapsed} onCollapse={collapseOnClick}>
-
-        <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
-          <Menu.Item key="title" icon={<MenuOutlined />}>Dashboard</Menu.Item>
-          <Menu.Item key="things" icon={<ClusterOutlined />}>Things</Menu.Item>
-          <Menu.Item key="settings" icon={<SettingOutlined />}>Settings</Menu.Item>
-
-        </Menu>
-      </Sider>
+      <SiderComponent onCollapse={collapseOnClick} collapsed={state.collapsed} />
 
       <Layout>
 
-        <Header style={{ padding: '0px' }}>
-          <img
-            src={NPLogo}
-            style={{
-              maxHeight: '50px',
-              margin: '10px 10px',
-            }}
-            alt="NPLogo"
-          />
-          <Menu theme="dark" mode="horizontal" style={{ float: 'right', marginRight: '50px' }}>
-            <SubMenu key="user" icon={<UserOutlined />} title={user.username}>
-              <Menu.Item key="1">My Account</Menu.Item>
-              <Menu.Item key="2">My Organization</Menu.Item>
-              <Menu.Item key="3">Sign Out</Menu.Item>
-            </SubMenu>
-          </Menu>
-        </Header>
+        <HeaderComponent user={user} />
 
         <Content style={{ margin: '0 50px' }}>
           <div style={{ marginTop: '64px' }}>
