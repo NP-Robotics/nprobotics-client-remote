@@ -11,11 +11,6 @@ const LoginPage = ({ dispatch, history }) => {
     submitting: false,
   });
 
-  const proceed = () => {
-    console.log('proceed');
-    history.push('/dashboard');
-  };
-
   const onFinish = (values) => {
     setState({ submitting: true });
     dispatch({
@@ -72,7 +67,7 @@ const LoginPage = ({ dispatch, history }) => {
         </Form.Item>
 
         <Form.Item wrapperCol={{ offset: 8, span: 8 }}>
-          <Button onClick={proceed} type="primary" htmlType="submit" disabled={state.submitting}>
+          <Button type="primary" htmlType="submit" disabled={state.submitting}>
             Submit
           </Button>
         </Form.Item>

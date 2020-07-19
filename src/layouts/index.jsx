@@ -34,7 +34,7 @@ const IndexLayout = ({ children, history, user }) => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <HeaderComponent user={user} />
+      <HeaderComponent />
 
       <Layout style={{ textAlign: 'center' }}>
         <Content>
