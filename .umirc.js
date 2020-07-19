@@ -34,8 +34,9 @@ export default {
           path: '/dashboard',
           component: '../pages/dashboard.jsx',
         },
-      ],
+      ]
     },
+
   ],
   plugins: [
     // ref: https://umijs.org/plugin/umi-plugin-react.html
