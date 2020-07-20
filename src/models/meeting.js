@@ -53,9 +53,11 @@ export default {
             meetingSession,
           },
         });
-
         yield put({
-          type: 'getAudioVideo',
+          type: 'audioVideo',
+          payload: {
+            meetingSession,
+          },
         });
 
         if (callback) {
@@ -85,13 +87,21 @@ export default {
       }
     },
 
-    * getAudioVideo({ payload, callback, error }, { call, put, select }) {
-      const { meetingSession } = yield select((state) => state.meeting);
-      console.log('yeeeetet', meetingSession);
+    * audioVideo({ payload, callback, error }, { call, put, select }) {
+      const { meetingSession } = payload;
       const audioInput = yield meetingSession.audioVideo.listAudioInputDevices();
       const audioOutput = yield meetingSession.audioVideo.listAudioOutputDevices();
       const videoInput = yield meetingSession.audioVideo.listVideoInputDevices();
-      console.log(audioInput);
+      console.log(meetingSession);
+
+      // selecting devices from list of devices
+      const audioInputDeviceInfo = audioInput[0];
+      yield meetingSession.audioVideo.chooseAudioInputDevice(audioInputDeviceInfo.deviceId);
+      const audioOutputDeviceInfo = audioOutput[0];
+      yield meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDeviceInfo.deviceId);
+      const videoInputDeviceInfo = videoInput[0];
+      yield meetingSession.audioVideo.chooseVideoInputDevice(videoInputDeviceInfo.deviceId);
+
       yield put({
         type: 'setState',
         payload: {
@@ -106,7 +116,6 @@ export default {
   reducers: {
     setState(state, { payload }) {
       const newState = { ...state, ...payload };
-      console.log(newState);
       return newState;
     },
   },
