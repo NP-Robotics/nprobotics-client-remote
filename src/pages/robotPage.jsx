@@ -23,7 +23,7 @@ const RobotPage = ({ user, device, dispatch }) => {
       type: 'meeting/join',
       payload: {
         username: user.username,
-        meetingName: 'fdsgfgds',
+        meetingName: 'fdsgfgds1',
         region: 'us-east-1',
         jwtToken: user.jwtToken,
       },
@@ -42,7 +42,7 @@ const RobotPage = ({ user, device, dispatch }) => {
       type: 'meeting/end',
       payload: {
         jwtToken: user.jwtToken,
-        meetingName: 'fdsgfgds',
+        meetingName: 'fdsgfgds12',
       },
     });
   };
