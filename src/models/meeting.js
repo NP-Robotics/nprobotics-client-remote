@@ -28,7 +28,7 @@ export default {
   },
 
   effects: {
-    * join({ payload, callback, error }, { call, put }) {
+    * join({ payload, callback, error }, { call, put, select }) {
       const {
         username, meetingName, region, jwtToken,
       } = payload;
@@ -59,7 +59,7 @@ export default {
         });
 
         if (callback) {
-          callback(response);
+          callback(meetingSession);
         }
       } catch (err) {
         console.log(err);

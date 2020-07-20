@@ -16,19 +16,30 @@ const RobotPage = ({ user, device, dispatch }) => {
   const [componentText, setComponentText] = useState({
     lockButton: 'lock',
   });
+
   const joystickRef = useRef(null);
+  const chimeAudioRef = useRef(null);
+  const chimeVideoRef = useRef(null);
 
   const chimeConnectOnClick = () => {
     dispatch({
       type: 'meeting/join',
       payload: {
         username: `${user.username}heyeee`,
-        meetingName: 'hjkgghjkhjkghjgkfdffd',
+        meetingName: 'hjkgghjkhjkghjgkfdffdfff',
         region: 'us-east-1',
         jwtToken: user.jwtToken,
       },
-      callback: (response) => {
-        console.log(response);
+      callback: (meetingSession) => {
+        console.log(meetingSession);
+        meetingSession.audioVideo.bindAudioElement(chimeAudioRef);
+        const observer = {
+          audioVideoDidStart: () => {
+            console.log('Started');
+          },
+        };
+        meetingSession.audioVideo.addObserver(observer);
+        meetingSession.audioVideo.start();
       },
       error: (error) => {
         message.error(error.message);
@@ -112,6 +123,7 @@ const RobotPage = ({ user, device, dispatch }) => {
   };
   return (
     <div style={{ textAlign: 'center' }}>
+      <audio ref={chimeAudioRef} />
       <h1>robot page</h1>
       <Button onClick={connectOnClick}>connect</Button>
       <Button onClick={lockOnClick}>{componentText.lockButton}</Button>
