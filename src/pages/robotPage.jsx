@@ -26,13 +26,13 @@ const RobotPage = ({ user, device, dispatch }) => {
       type: 'meeting/join',
       payload: {
         username: `${user.username}heyeee`,
-        meetingName: 'hjkgghjkhjkghjgkfdffdfffaaa',
+        meetingName: 'hjkgghjkhjkfdffdffa',
         region: 'us-east-1',
         jwtToken: user.jwtToken,
       },
       callback: (meetingSession) => {
-        console.log(meetingSession);
-        meetingSession.audioVideo.bindAudioElement(chimeAudioRef);
+        console.log('yeeeet', meetingSession);
+        meetingSession.audioVideo.bindAudioElement(chimeAudioRef.current);
         const observer = {
           audioVideoDidStart: () => {
             console.log('Started');

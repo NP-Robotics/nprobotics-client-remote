@@ -46,7 +46,6 @@ export default {
           logger,
           deviceController,
         );
-        console.log(meetingSession);
         yield put({
           type: 'setState',
           payload: {
@@ -92,7 +91,6 @@ export default {
       const audioInput = yield meetingSession.audioVideo.listAudioInputDevices();
       const audioOutput = yield meetingSession.audioVideo.listAudioOutputDevices();
       const videoInput = yield meetingSession.audioVideo.listVideoInputDevices();
-      console.log(meetingSession);
 
       // selecting devices from list of devices
       const audioInputDeviceInfo = audioInput[0];
