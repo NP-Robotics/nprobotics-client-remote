@@ -1,13 +1,15 @@
 import {
-  ampSignIn, ampSignUp, ampGetSession, ampGetCredentials, ampGetAuthenticated, ampSignOut,
+  ampSignIn,
+  ampSignUp,
+  ampGetSession,
+  ampGetCredentials,
+  ampGetAuthenticated,
+  ampSignOut,
 } from '../services/amplify';
 
-const authenticatedRoutes = new Set([
-  '/robot', '/dashboard',
-]);
+const authenticatedRoutes = new Set(['/robot', '/dashboard']);
 
 export default {
-
   namespace: 'user',
 
   state: {
@@ -18,11 +20,12 @@ export default {
     secretAccessKey: null,
     identityId: null,
     username: null,
+    organization: null,
   },
 
   subscriptions: {
-
-    setup({ dispatch, history }) {  // eslint-disable-line
+    setup({ dispatch, history }) {
+      // eslint-disable-line
       dispatch({
         type: 'getSession',
       });
@@ -45,7 +48,8 @@ export default {
   },
 
   effects: {
-    *fetch({ payload }, { call, put }) {  // eslint-disable-line
+    * fetch({ payload }, { call, put }) {
+      // eslint-disable-line
       yield put({ type: 'setState' });
     },
 
@@ -182,6 +186,5 @@ export default {
       };
       return newState;
     },
-
   },
 };

@@ -1,22 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
 import {
-  Layout, Table,
+  Layout, Table, Input, Button, message,
 } from 'antd';
 import Link from 'umi/link';
 
 import SiderComponent from '../components/sider';
 
-const {
-  Footer, Content,
-} = Layout;
+const { Footer, Content } = Layout;
 
-const DashboardPage = ({ history, user }) => {
+const DashboardPage = ({ dispatch, history }) => {
   const [state, setState] = useState({
     submitting: false,
     collapsed: false,
   });
+
+  const onClick = () => {
+    setState({ submitting: true });
+    dispatch({
+      type: 'updateData/NP',
+      payload: {
+        organisation: 'NP',
+      },
+      callback: (user) => {
+        console.log('Query Success');
+      },
+      error: (err) => {
+        message.info(err.message);
+        setState({ submitting: false });
+      },
+    });
+  };
 
   const collapseOnClick = () => {
     console.log(state);
@@ -32,11 +47,13 @@ const DashboardPage = ({ history, user }) => {
       dataIndex: 'robot',
       key: 'robot',
       render: (text) => (
-        <Link to="/robot"><p>{text}</p></Link>
+        <Link to="/robot">
+          <p>{text}</p>
+        </Link>
       ),
     },
     {
-      title: 'Organization',
+      title: 'Organisation',
       dataIndex: 'organization',
       key: 'organization',
     },
@@ -55,7 +72,7 @@ const DashboardPage = ({ history, user }) => {
   const data = [
     {
       key: 1,
-      robot: 'CourtRobot',
+      robot: 'Court Robot',
       organization: 'NP',
       ready: 'No',
       inUse: 'No',
@@ -69,7 +86,7 @@ const DashboardPage = ({ history, user }) => {
     },
     {
       key: 3,
-      robot: 'Xian Hui\'s Robot',
+      robot: 'Anastasia (SRTC)',
       organization: 'NP',
       ready: 'No',
       inUse: 'No',
@@ -81,15 +98,16 @@ const DashboardPage = ({ history, user }) => {
       <SiderComponent onCollapse={collapseOnClick} collapsed={state.collapsed} />
       <Layout>
         <Content style={{ margin: '0 50px' }}>
-
           <div style={{ marginTop: '64px' }}>
+            <Button onClick={onClick} type="primary">
+              QueryData Button
+            </Button>
             <Table columns={columns} dataSource={data} />
           </div>
         </Content>
         <Footer style={{ textAlign: 'center' }}>Powered by Ngee Ann Robotics</Footer>
       </Layout>
     </Layout>
-
   ); // end return
 }; // end DashboardPage
 
@@ -100,11 +118,13 @@ DashboardPage.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func,
   }),
+  dispatch: PropTypes.func,
 };
 
 DashboardPage.defaultProps = {
   user: {},
   history: {},
+  dispatch: undefined,
 };
 
-export default connect(({ user }) => ({ user }))(DashboardPage);
+export default connect(({ user, updateData }) => ({ user }))(DashboardPage);
