@@ -83,10 +83,19 @@ export default {
 
     * audioVideo({ payload, callback, error }, { call, put, select }) {
       const meetingSession = yield select((state) => state.meetingSession);
-      const audioInput = yield call(meetingSession.audioVideo.listAudioInputDevices);
-      const audioOutput = yield call(meetingSession.audioVideo.listAudioOutputDevices);
-      const videoInput = yield call(meetingSession.audioVideo.listVideoInputDevices);
+      const audioInput = yield meetingSession.audioVideo.listAudioInputDevices();
+      const audioOutput = yield meetingSession.audioVideo.listAudioOutputDevices();
+      const videoInput = yield meetingSession.audioVideo.listVideoInputDevices();
       console.log(meetingSession);
+
+      // selecting devices from list of devices
+      const audioInputDeviceInfo = audioInput[0];
+      yield meetingSession.audioVideo.chooseAudioInputDevice(audioInputDeviceInfo.deviceId);
+      const audioOutputDeviceInfo = audioOutput[0];
+      yield meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDeviceInfo.deviceId);
+      const videoInputDeviceInfo = videoInput[0];
+      yield meetingSession.audioVideo.chooseVideoInputDevice(videoInputDeviceInfo.deviceId);
+
       yield put({
         type: 'setState',
         payload: {
