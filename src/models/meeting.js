@@ -1,3 +1,10 @@
+import {
+  MeetingSessionConfiguration,
+  ConsoleLogger,
+  DefaultDeviceController,
+  LogLevel,
+  DefaultMeetingSession,
+} from 'amazon-chime-sdk-js';
 import { joinMeeting, endMeeting } from '../services/chime';
 
 export default {
@@ -24,6 +31,25 @@ export default {
       try {
         const response = yield call(joinMeeting, username, meetingName, region, jwtToken);
         console.log(response);
+        const { Attendee, Meeting } = response.JoinInfo;
+        const configuration = new MeetingSessionConfiguration(Meeting, Attendee);
+
+        const logger = new ConsoleLogger('MyLogger', LogLevel.INFO);
+        const deviceController = new DefaultDeviceController(logger);
+
+        const meetingSession = new DefaultMeetingSession(
+          configuration,
+          logger,
+          deviceController,
+        );
+        console.log(meetingSession);
+        yield put({
+          type: 'setState',
+          payload: {
+            meetingSession,
+          },
+        });
+
         if (callback) {
           callback(response);
         }
@@ -53,6 +79,10 @@ export default {
   },
 
   reducers: {
-
+    setState(state, { payload }) {
+      const newState = { ...state, ...payload };
+      return newState;
+    },
   },
+
 };

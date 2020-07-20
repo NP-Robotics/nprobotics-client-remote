@@ -8,7 +8,7 @@
     "precommit": "lint-staged"
   },
   "dependencies": {
-    "amazon-chime-sdk-js": "^1.11.0",
+    "amazon-chime-sdk-js": "^1.12.0",
     "antd": "^4.4.1",
     "aws-amplify": "^3.0.19",
     "aws-iot-device-sdk": "^2.2.6",
