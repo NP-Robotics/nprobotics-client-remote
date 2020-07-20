@@ -5,6 +5,10 @@ export default {
 
   state: {
     authKey: null,
+    meetingSession: null,
+    audioInput: null,
+    audioOutput: null,
+    videoInput: null,
   },
 
   subscriptions: {
@@ -50,9 +54,28 @@ export default {
         }
       }
     },
+
+    * audioVideo({ payload, callback, error }, { call, put, select }) {
+      const meetingSession = yield select((state) => state.meetingSession);
+      const audioInput = yield call(meetingSession.audioVideo.listAudioInputDevices);
+      const audioOutput = yield call(meetingSession.audioVideo.listAudioOutputDevices);
+      const videoInput = yield call(meetingSession.audioVideo.listVideoInputDevices);
+      console.log(meetingSession);
+      yield put({
+        type: 'setState',
+        payload: {
+          audioInput,
+          audioOutput,
+          videoInput,
+        },
+      });
+    },
   },
 
   reducers: {
-
+    setState(state, action) {
+      const newState = { ...state, ...action.payload };
+      return newState;
+    },
   },
 };
