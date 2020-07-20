@@ -90,10 +90,13 @@ export default {
 
       // selecting devices from list of devices
       const audioInputDeviceInfo = audioInput[0];
+      console.log('FUUUUUUUUUUUUUUUCK', audioInput[0].deviceId);
       yield meetingSession.audioVideo.chooseAudioInputDevice(audioInputDeviceInfo.deviceId);
       const audioOutputDeviceInfo = audioOutput[0];
+      console.log(audioOutput[0].deviceId);
       yield meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDeviceInfo.deviceId);
       const videoInputDeviceInfo = videoInput[0];
+      console.log(videoInput[0].deviceId);
       yield meetingSession.audioVideo.chooseVideoInputDevice(videoInputDeviceInfo.deviceId);
 
       yield put({
