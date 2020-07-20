@@ -28,7 +28,7 @@ export default {
   },
 
   effects: {
-    * join({ payload, callback, error }, { call, put }) {
+    * join({ payload, callback, error }, { call, put, select }) {
       const {
         username, meetingName, region, jwtToken,
       } = payload;
@@ -53,9 +53,15 @@ export default {
             meetingSession,
           },
         });
+        yield put({
+          type: 'audioVideo',
+          payload: {
+            meetingSession,
+          },
+        });
 
         if (callback) {
-          callback(response);
+          callback(meetingSession);
         }
       } catch (err) {
         console.log(err);
@@ -82,7 +88,7 @@ export default {
     },
 
     * audioVideo({ payload, callback, error }, { call, put, select }) {
-      const meetingSession = yield select((state) => state.meetingSession);
+      const { meetingSession } = payload;
       const audioInput = yield meetingSession.audioVideo.listAudioInputDevices();
       const audioOutput = yield meetingSession.audioVideo.listAudioOutputDevices();
       const videoInput = yield meetingSession.audioVideo.listVideoInputDevices();

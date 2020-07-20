@@ -2,6 +2,7 @@
   "extends": ["airbnb", "airbnb/hooks"],
   "rules": { 
     "no-unused-vars": [1],
-    "no-underscore-dangle": [0]
+    "no-underscore-dangle": [0],
+    "jsx-a11y/media-has-caption": [0]
   }
 }
