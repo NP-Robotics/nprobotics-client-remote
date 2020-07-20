@@ -38,7 +38,7 @@ export default {
         const { Attendee, Meeting } = response.JoinInfo;
         const configuration = new MeetingSessionConfiguration(Meeting, Attendee);
 
-        const logger = new ConsoleLogger('MyLogger', LogLevel.INFO);
+        const logger = new ConsoleLogger('MyLogger', LogLevel.ERROR);
         const deviceController = new DefaultDeviceController(logger);
 
         const meetingSession = new DefaultMeetingSession(
