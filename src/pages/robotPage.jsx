@@ -26,7 +26,7 @@ const RobotPage = ({ user, device, dispatch }) => {
       type: 'meeting/join',
       payload: {
         username: `${user.username}gaydog`,
-        meetingName: 'testmeeting',
+        meetingName: 'testmeeting1',
         region: 'us-east-1',
         jwtToken: user.jwtToken,
       },
@@ -37,8 +37,18 @@ const RobotPage = ({ user, device, dispatch }) => {
           audioVideoDidStart: () => {
             console.log('Started');
           },
+          videoTileDidUpdate: (tileState) => {
+            // Ignore a tile without attendee ID and other attendee's tile.
+            if (!tileState.boundAttendeeId || !tileState.localTile) {
+              return;
+            }
+
+            meetingSession.audioVideo.bindVideoElement(tileState.tileId, chimeVideoRef.current);
+          },
         };
         meetingSession.audioVideo.addObserver(observer);
+        meetingSession.audioVideo.startLocalVideoTile();
+
         meetingSession.audioVideo.start();
       },
       error: (error) => {
@@ -124,6 +134,7 @@ const RobotPage = ({ user, device, dispatch }) => {
   return (
     <div style={{ textAlign: 'center' }}>
       <audio ref={chimeAudioRef} />
+      <video ref={chimeVideoRef} />
       <h1>robot page</h1>
       <Button onClick={connectOnClick}>connect</Button>
       <Button onClick={lockOnClick}>{componentText.lockButton}</Button>
