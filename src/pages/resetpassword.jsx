@@ -47,7 +47,6 @@ const ResetPasswordPage = ({ dispatch, history }) => {
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 8 }}
         name="basic"
-        initialValues={{ remember: true }}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
       >
@@ -86,7 +85,6 @@ const ResetPasswordPage = ({ dispatch, history }) => {
 };
 
 ResetPasswordPage.propTypes = {
-  // state: PropTypes.shape({}),
   history: PropTypes.shape({
     push: PropTypes.func,
   }),
@@ -94,7 +92,6 @@ ResetPasswordPage.propTypes = {
 };
 
 ResetPasswordPage.defaultProps = {
-  // state: {},
   history: {},
   dispatch: undefined,
 };
