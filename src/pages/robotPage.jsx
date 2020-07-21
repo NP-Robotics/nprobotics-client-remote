@@ -25,31 +25,12 @@ const RobotPage = ({ user, device, dispatch }) => {
     dispatch({
       type: 'meeting/join',
       payload: {
-        username: `${user.username}gaydog`,
-        meetingName: 'testmeeting1',
-        region: 'us-east-1',
+        username: `${user.username}`,
+        meetingName: 'testmeeting17',
+        region: 'ap-southeast-1',
         jwtToken: user.jwtToken,
-      },
-      callback: (meetingSession) => {
-        console.log('yeeeet', meetingSession);
-        meetingSession.audioVideo.bindAudioElement(chimeAudioRef.current);
-        const observer = {
-          audioVideoDidStart: () => {
-            console.log('Started');
-          },
-          videoTileDidUpdate: (tileState) => {
-            // Ignore a tile without attendee ID and other attendee's tile.
-            if (!tileState.boundAttendeeId || !tileState.localTile) {
-              return;
-            }
-
-            meetingSession.audioVideo.bindVideoElement(tileState.tileId, chimeVideoRef.current);
-          },
-        };
-        meetingSession.audioVideo.addObserver(observer);
-        meetingSession.audioVideo.startLocalVideoTile();
-
-        meetingSession.audioVideo.start();
+        videoRef: chimeVideoRef.current,
+        audioRef: chimeAudioRef.current,
       },
       error: (error) => {
         message.error(error.message);

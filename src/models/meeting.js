@@ -1,11 +1,12 @@
+import { joinMeeting, endMeeting } from '../services/chimeAPI';
 import {
-  MeetingSessionConfiguration,
-  ConsoleLogger,
-  DefaultDeviceController,
-  LogLevel,
-  DefaultMeetingSession,
-} from 'amazon-chime-sdk-js';
-import { joinMeeting, endMeeting } from '../services/chime';
+  initMeeting,
+  setupAudioVideo,
+  setupObservers,
+  bindVideoElement,
+  bindAudioElement,
+  startMeetingSession,
+} from '../services/chimeSession';
 
 export default {
   namespace: 'meeting',
@@ -30,37 +31,19 @@ export default {
   effects: {
     * join({ payload, callback, error }, { call, put, select }) {
       const {
-        username, meetingName, region, jwtToken,
+        username, meetingName, region, jwtToken, audioRef, videoRef,
       } = payload;
       try {
         const response = yield call(joinMeeting, username, meetingName, region, jwtToken);
-        console.log(response);
-        const { Attendee, Meeting } = response.JoinInfo;
-        const configuration = new MeetingSessionConfiguration(Meeting, Attendee);
-
-        const logger = new ConsoleLogger('MyLogger', LogLevel.ERROR);
-        const deviceController = new DefaultDeviceController(logger);
-
-        const meetingSession = new DefaultMeetingSession(
-          configuration,
-          logger,
-          deviceController,
-        );
-        yield put({
-          type: 'setState',
-          payload: {
-            meetingSession,
-          },
-        });
-        yield put({
-          type: 'audioVideo',
-          payload: {
-            meetingSession,
-          },
-        });
+        const { Meeting, Attendee } = response.JoinInfo;
+        console.log(audioRef);
+        yield initMeeting(Meeting, Attendee);
+        bindAudioElement(audioRef);
+        bindVideoElement(videoRef);
+        startMeetingSession();
 
         if (callback) {
-          callback(meetingSession);
+          callback();
         }
       } catch (err) {
         console.log(err);
@@ -86,32 +69,6 @@ export default {
       }
     },
 
-    * audioVideo({ payload, callback, error }, { call, put, select }) {
-      const { meetingSession } = payload;
-      const audioInput = yield meetingSession.audioVideo.listAudioInputDevices();
-      const audioOutput = yield meetingSession.audioVideo.listAudioOutputDevices();
-      const videoInput = yield meetingSession.audioVideo.listVideoInputDevices();
-
-      // selecting devices from list of devices
-      const audioInputDeviceInfo = audioInput[0];
-      console.log('FUUUUUUUUUUUUUUUCK', audioInput[0].deviceId);
-      yield meetingSession.audioVideo.chooseAudioInputDevice(audioInputDeviceInfo.deviceId);
-      const audioOutputDeviceInfo = audioOutput[0];
-      console.log(audioOutput[0].deviceId);
-      yield meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDeviceInfo.deviceId);
-      const videoInputDeviceInfo = videoInput[0];
-      console.log(videoInput[0].deviceId);
-      yield meetingSession.audioVideo.chooseVideoInputDevice(videoInputDeviceInfo.deviceId);
-
-      yield put({
-        type: 'setState',
-        payload: {
-          audioInput,
-          audioOutput,
-          videoInput,
-        },
-      });
-    },
   },
 
   reducers: {
