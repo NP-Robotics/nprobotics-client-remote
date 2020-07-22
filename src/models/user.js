@@ -1,6 +1,10 @@
 import {
-  ampSignIn, ampSignUp, ampGetSession, ampGetCredentials, ampGetAuthenticated,
+  ampSignIn, ampSignUp, ampGetSession, ampGetCredentials, ampGetAuthenticated, ampSignOut,
 } from '../services/amplify';
+
+const authenticatedRoutes = new Set([
+  '/robot', '/dashboard',
+]);
 
 export default {
 
@@ -23,19 +27,19 @@ export default {
         type: 'getSession',
       });
       history.listen(({ pathname }) => {
-        if (pathname === '/robot') {
-          dispatch({
-            type: 'getAuthenticated',
-            callback: () => {
-              dispatch({
-                type: 'getCredentials',
-              });
-            },
-            error: () => {
+        dispatch({
+          type: 'getAuthenticated',
+          callback: () => {
+            dispatch({
+              type: 'getCredentials',
+            });
+          },
+          error: () => {
+            if (authenticatedRoutes.has(pathname)) {
               history.push('/');
-            },
-          });
-        }
+            }
+          },
+        });
       });
     },
   },
@@ -55,6 +59,21 @@ export default {
         callback(usr);
       } catch (err) {
         error(err);
+      }
+    },
+    * signOut({ payload, callback, error }, { call, put }) {
+      try {
+        const usr = yield call(ampSignOut);
+        yield put({
+          type: 'clearAuthentication',
+        });
+        if (callback) {
+          callback(usr);
+        }
+      } catch (err) {
+        if (error) {
+          error(err);
+        }
       }
     },
     * signUp({ payload, callback, error }, { call, put }) {
@@ -149,6 +168,18 @@ export default {
   reducers: {
     setState(state, action) {
       const newState = { ...state, ...action.payload };
+      return newState;
+    },
+    clearAuthentication(state, action) {
+      const newState = {
+        authenticated: false,
+        jwtToken: null,
+        sessionToken: null,
+        accessKeyId: null,
+        secretAccessKey: null,
+        identityId: null,
+        username: null,
+      };
       return newState;
     },
 
