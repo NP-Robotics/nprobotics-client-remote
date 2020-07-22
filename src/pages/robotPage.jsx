@@ -17,16 +17,23 @@ const RobotPage = ({ user, device, dispatch }) => {
     lockButton: 'lock',
   });
 
+  const [state, setState] = useState({
+    chimeConnect: false,
+  });
+
   const joystickRef = useRef(null);
   const chimeAudioRef = useRef(null);
   const chimeVideoRef = useRef(null);
+  const robotMovement = useRef(null);
+  const robotNavigation = useRef(null);
+  const chatBox = useRef(null);
 
   const chimeConnectOnClick = () => {
     dispatch({
       type: 'meeting/join',
       payload: {
         username: `${user.username}`,
-        meetingName: 'testmeeting18',
+        meetingName: 'testmeeting19',
         region: 'ap-southeast-1',
         jwtToken: user.jwtToken,
         videoRef: chimeVideoRef.current,
@@ -37,6 +44,9 @@ const RobotPage = ({ user, device, dispatch }) => {
       },
 
     });
+
+    console.log('button setting');
+    setState({ chimeConnect: true });
   };
 
   const chimeLeaveOnClick = () => {
@@ -116,6 +126,11 @@ const RobotPage = ({ user, device, dispatch }) => {
     <div style={{ textAlign: 'center' }}>
       <audio ref={chimeAudioRef} />
       <video ref={chimeVideoRef} />
+      <div className="robotFunctions">
+        <Button disabled={state.chimeConnect} hidden={!state.chimeConnect}>Move</Button>
+        <Button disabled={state.chimeConnect} hidden={!state.chimeConnect}>Navigate</Button>
+        <Button disabled={state.chimeConnect} hidden={!state.chimeConnect}>Chat</Button>
+      </div>
       <h1>robot page</h1>
       <Button onClick={connectOnClick}>connect</Button>
       <Button onClick={lockOnClick}>{componentText.lockButton}</Button>
