@@ -26,7 +26,7 @@ const RobotPage = ({ user, device, dispatch }) => {
       type: 'meeting/join',
       payload: {
         username: `${user.username}`,
-        meetingName: 'testmeeting1',
+        meetingName: 'testmeeting2',
         region: 'ap-southeast-1',
         jwtToken: user.jwtToken,
       },

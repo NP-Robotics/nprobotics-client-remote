@@ -7,6 +7,8 @@ import {
   ampSignOut,
 } from '../services/amplify';
 
+import { queryData } from '../services/dynamo';
+
 const authenticatedRoutes = new Set(['/robot', '/dashboard']);
 
 export default {
@@ -21,6 +23,7 @@ export default {
     identityId: null,
     username: null,
     organization: null,
+    robots: [],
   },
 
   subscriptions: {
@@ -104,6 +107,13 @@ export default {
             authenticated: true,
           },
         });
+        yield put({
+          type: 'getRobots',
+          payload: {
+            jwtToken: data.accessToken.jwtToken,
+            organisation: 'NP',
+          },
+        });
         if (callback) {
           callback(data);
         }
@@ -122,6 +132,7 @@ export default {
     * getCredentials({ payload, callback, error }, { call, put }) {
       try {
         const cred = yield ampGetCredentials();
+
         yield put({
           type: 'setState',
           payload: {
@@ -149,6 +160,8 @@ export default {
     * getAuthenticated({ callback, error }, { call, put }) {
       try {
         const user = yield ampGetAuthenticated();
+        console.log(user);
+
         if (callback) {
           callback(user);
         }
@@ -161,6 +174,28 @@ export default {
               authenticated: false,
             },
           });
+        }
+      }
+    },
+    * getRobots({ payload, callback, error }, { call, put }) {
+      const { organisation, jwtToken } = payload;
+      try {
+        const response = yield call(queryData, organisation, jwtToken);
+        console.log(response);
+        if (callback) {
+          callback(response);
+        }
+
+        yield put({
+          type: 'setState',
+          payload: {
+            robots: response,
+          },
+        });
+      } catch (err) {
+        console.log(err);
+        if (error) {
+          error(err);
         }
       }
     },
@@ -180,6 +215,7 @@ export default {
         secretAccessKey: null,
         identityId: null,
         username: null,
+        robots: [],
       };
       return newState;
     },
