@@ -24,18 +24,15 @@ export default {
   },
 
   subscriptions: {
-    setup({ dispatch, history }) {
+    setup({ dispatch, history, user }) {
       // eslint-disable-line
-      dispatch({
-        type: 'getSession',
-      });
+      dispatch({ type: 'getSession' });
+
       history.listen(({ pathname }) => {
         dispatch({
           type: 'getAuthenticated',
           callback: () => {
-            dispatch({
-              type: 'getCredentials',
-            });
+            dispatch({ type: 'getCredentials' });
           },
           error: () => {
             if (authenticatedRoutes.has(pathname)) {
@@ -124,7 +121,6 @@ export default {
     * getCredentials({ payload, callback, error }, { call, put }) {
       try {
         const cred = yield ampGetCredentials();
-        console.log('identity data', cred);
         yield put({
           type: 'setState',
           payload: {

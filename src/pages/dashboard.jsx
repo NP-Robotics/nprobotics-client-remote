@@ -19,7 +19,7 @@ const DashboardPage = ({ dispatch, history }) => {
   const onClick = () => {
     setState({ submitting: true });
     dispatch({
-      type: 'updateData/NP',
+      type: 'robotDB/getRobotInfo',
       payload: {
         organisation: 'NP',
       },
