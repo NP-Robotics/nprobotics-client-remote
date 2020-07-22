@@ -51,10 +51,9 @@ export default {
     },
 
     * signIn({ payload, callback, error }, { call, put }) {
-      const { username } = payload;
-      const { password } = payload;
+      const { username, password } = payload;
       try {
-        const usr = yield ampSignIn(username, password);
+        const usr = yield call(ampSignIn, username, password);
         yield put({
           type: 'getSession',
         });
@@ -79,13 +78,15 @@ export default {
       }
     },
     * signUp({ payload, callback, error }, { call, put }) {
-      const { username } = payload;
-      const { password } = payload;
-      const { email } = payload;
-      const { name } = payload;
-      try {
-        const usr = yield ampSignUp(username, password, email, name);
+      const {
+        username,
+        password,
+        email,
+        name,
+      } = payload;
 
+      try {
+        const usr = yield call(ampSignUp, username, password, email, name);
         callback(usr);
       } catch (err) {
         error(err);

@@ -1,30 +1,13 @@
-import { request } from 'umi';
+import request from 'umi-request';
 
-function parseJSON(response) {
-  return response.json();
-}
-
-function checkStatus(response) {
-  if (response.status >= 200 && response.status < 300) {
+const makeRequest = (url, options) => {
+  const requestUrl = `https://cors-anywhere.herokuapp.com/${url}`;
+  try {
+    const response = request(requestUrl, options);
     return response;
+  } catch (err) {
+    return err;
   }
+};
 
-  const error = new Error(response.statusText);
-  error.response = response;
-  throw error;
-}
-
-/**
- * Requests a URL, returning a promise.
- *
- * @param  {string} url       The URL we want to request
- * @param  {object} [options] The options we want to pass to "fetch"
- * @return {object}           An object containing either "data" or "err"
- */
-export default function makeRequest(url, options) {
-  return request(url, options)
-    .then(checkStatus)
-    .then(parseJSON)
-    .then((data) => ({ data }))
-    .catch((err) => ({ err }));
-}
+export default makeRequest;

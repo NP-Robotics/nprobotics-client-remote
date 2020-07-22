@@ -5,6 +5,8 @@ import { connect } from 'dva';
 import { Button, message } from 'antd';
 import { Joystick } from 'react-joystick-component';
 
+import ChimeVideoStream from '../components/ChimeVideoStream';
+
 const RobotPage = ({ user, device, dispatch }) => {
   const [componentPos, setComponentPos] = useState({
     locked: false,
@@ -16,7 +18,34 @@ const RobotPage = ({ user, device, dispatch }) => {
   const [componentText, setComponentText] = useState({
     lockButton: 'lock',
   });
+
   const joystickRef = useRef(null);
+
+  const chimeConnectOnClick = () => {
+    dispatch({
+      type: 'meeting/join',
+      payload: {
+        username: `${user.username}`,
+        meetingName: 'testmeeting1',
+        region: 'ap-southeast-1',
+        jwtToken: user.jwtToken,
+      },
+      error: (error) => {
+        message.error(error.message);
+      },
+
+    });
+  };
+
+  const chimeLeaveOnClick = () => {
+    dispatch({
+      type: 'meeting/end',
+      payload: {
+        jwtToken: user.jwtToken,
+        meetingName: 'fdsgfgds12',
+      },
+    });
+  };
 
   const connectOnClick = () => {
     dispatch({
@@ -83,9 +112,13 @@ const RobotPage = ({ user, device, dispatch }) => {
   };
   return (
     <div style={{ textAlign: 'center' }}>
+      <ChimeVideoStream />
       <h1>robot page</h1>
       <Button onClick={connectOnClick}>connect</Button>
       <Button onClick={lockOnClick}>{componentText.lockButton}</Button>
+      <Button onClick={chimeConnectOnClick}>chime connect</Button>
+      <Button onClick={chimeLeaveOnClick}> chime leave</Button>
+
       <div
         draggable={!componentPos.locked}
         onDragEnd={joystickOnDrag}
@@ -112,7 +145,7 @@ RobotPage.propTypes = {
     accessKeyId: PropTypes.string,
     secretAccessKey: PropTypes.string,
     sessionToken: PropTypes.string,
-
+    jwtToken: PropTypes.string,
   }),
   device: PropTypes.shape({}),
 
@@ -126,4 +159,4 @@ RobotPage.defaultProps = {
   user: {},
 };
 
-export default connect(({ user, device }) => ({ user, device }))(RobotPage);
+export default connect(({ user, device, meeting }) => ({ user, device, meeting }))(RobotPage);
