@@ -123,6 +123,7 @@ const RobotPage = ({ user, device, dispatch }) => {
   const enableChatTextBox = () => {
     setState({ chatTextBox: true });
   };
+
   return (
     <div style={{ textAlign: 'center' }}>
       <ChimeVideoStream />
