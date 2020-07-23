@@ -13,7 +13,7 @@ const RobotPage = ({
   const [state, setState] = useState({
     RobotName: null,
     MeetingRoom: null,
-    joining: false,
+    attemptedJoin: false,
   });
   const [componentPos, setComponentPos] = useState({
     locked: false,
@@ -49,8 +49,8 @@ const RobotPage = ({
 
   // join meeting if all parameters are present
   useEffect(() => {
-    if (!meeting.joined && state.MeetingRoom != null && !state.joining) {
-      setState({ ...state, joining: true });
+    if (!meeting.joined && state.MeetingRoom != null && !state.attemptedJoin) {
+      setState({ ...state, attemptedJoin: true });
 
       dispatch({
         type: 'meeting/join',
@@ -62,7 +62,6 @@ const RobotPage = ({
         },
         callback: () => {
           message.success('Joined meeting!');
-          setState({ ...state, joining: false });
         },
         error: () => {
           message.error('Robot is offline');
