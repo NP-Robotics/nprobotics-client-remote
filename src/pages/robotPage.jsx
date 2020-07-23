@@ -1,22 +1,95 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { connect } from 'dva';
 import { Button, message } from 'antd';
 import { Joystick } from 'react-joystick-component';
 
-const RobotPage = ({ user, device, dispatch }) => {
+import ChimeVideoStream from '../components/ChimeVideoStream';
+
+const RobotPage = ({
+  user, meeting, dispatch, history,
+}) => {
+  const [state, setState] = useState({
+    RobotName: null,
+    MeetingRoom: null,
+    joining: false,
+  });
   const [componentPos, setComponentPos] = useState({
     locked: false,
     joystick: {
-      x: 50,
-      y: 50,
+      x: 500,
+      y: 500,
     },
   });
   const [componentText, setComponentText] = useState({
     lockButton: 'lock',
   });
+
+  // prevent access if query string is missing
+  useEffect(() => {
+    if (!history.location.query.robotName) {
+      history.push('/dashboard');
+    }
+  });
+
+  // load selected robot into local state
+  useEffect(() => {
+    if (state.RobotName === null) {
+      const { robotName } = history.location.query;
+      if (user.robots.length > 0) {
+        const selectedRobot = user.robots.find((robot) => robot.RobotName === robotName);
+        setState({
+          ...state,
+          ...selectedRobot,
+        });
+      }
+    }
+  }, [state, user.robots, history.location.query]);
+
+  // join meeting if all parameters are present
+  useEffect(() => {
+    if (!meeting.joined && state.MeetingRoom != null && !state.joining) {
+      setState({ ...state, joining: true });
+
+      dispatch({
+        type: 'meeting/join',
+        payload: {
+          username: `${user.username}`,
+          meetingName: `${state.MeetingRoom}`,
+          region: 'ap-southeast-1',
+          jwtToken: user.jwtToken,
+        },
+        callback: () => {
+          message.success('Joined meeting!');
+          setState({ ...state, joining: false });
+        },
+        error: () => {
+          message.error('Robot is offline');
+          history.push('/dashboard');
+        },
+      });
+    }
+  }, [state, meeting, user, dispatch, history]);
+
   const joystickRef = useRef(null);
+
+  // cleanup when unmount
+  useEffect(() => () => {
+    if (meeting.joined) {
+      dispatch({
+        type: 'meeting/end',
+        payload: {
+          jwtToken: user.jwtToken,
+          meetingName: state.MeetingRoom,
+        },
+      });
+    }
+  });
+
+  const chimeLeaveOnClick = () => {
+
+  };
 
   const connectOnClick = () => {
     dispatch({
@@ -82,10 +155,19 @@ const RobotPage = ({ user, device, dispatch }) => {
     });
   };
   return (
-    <div style={{ textAlign: 'center' }}>
-      <h1>robot page</h1>
+    <div style={{ }}>
+      <ChimeVideoStream
+        endpoint={state.endpoint}
+        style={{
+          margin: '0 auto',
+        }}
+      />
+      {/* <h1>robot page</h1>
       <Button onClick={connectOnClick}>connect</Button>
       <Button onClick={lockOnClick}>{componentText.lockButton}</Button>
+      <Button onClick={chimeConnectOnClick}>chime connect</Button>
+      <Button onClick={chimeLeaveOnClick}> chime leave</Button>
+
       <div
         draggable={!componentPos.locked}
         onDragEnd={joystickOnDrag}
@@ -95,8 +177,9 @@ const RobotPage = ({ user, device, dispatch }) => {
           top: `${String(componentPos.joystick.y)}px`,
         }}
       >
-        <Joystick ref={joystickRef} size={100} baseColor="red" stickColor="blue" move={joystickOnMove} stop={joystickOnStop} disabled={!componentPos.locked} />
-      </div>
+        <Joystick ref={joystickRef} size={100} baseColor="red" stickColor="blue"
+        move={joystickOnMove} stop={joystickOnStop} disabled={!componentPos.locked} />
+      </div> */}
     </div>
   );
 };
@@ -105,6 +188,11 @@ RobotPage.propTypes = {
   // state: PropTypes.shape({}),
   history: PropTypes.shape({
     push: PropTypes.func,
+    location: PropTypes.shape({
+      query: PropTypes.shape({
+        robotName: null,
+      }),
+    }),
   }),
   dispatch: PropTypes.func,
   user: PropTypes.shape({
@@ -112,10 +200,13 @@ RobotPage.propTypes = {
     accessKeyId: PropTypes.string,
     secretAccessKey: PropTypes.string,
     sessionToken: PropTypes.string,
-
+    jwtToken: PropTypes.string,
+    robots: PropTypes.arrayOf(PropTypes.shape({})),
   }),
   device: PropTypes.shape({}),
-
+  meeting: PropTypes.shape({
+    joined: PropTypes.bool,
+  }),
 };
 
 RobotPage.defaultProps = {
@@ -124,6 +215,9 @@ RobotPage.defaultProps = {
   dispatch: undefined,
   device: {},
   user: {},
+  meeting: {
+    joined: false,
+  },
 };
 
-export default connect(({ user, device }) => ({ user, device }))(RobotPage);
+export default connect(({ user, device, meeting }) => ({ user, device, meeting }))(RobotPage);
