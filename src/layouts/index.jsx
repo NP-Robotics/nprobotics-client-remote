@@ -1,10 +1,16 @@
 import React from 'react';
 import { connect } from 'dva';
 import PropTypes from 'prop-types';
-import { Spin } from 'antd';
+import { Spin, Layout } from 'antd';
+import HeaderComponent from '../components/header';
+
+const {
+  Content,
+} = Layout;
 
 const IndexLayout = ({ children, history, user }) => {
-  if (user.authenticated === null) {
+  if (user.authenticated === null
+    || (user.authenticated === true && user.secretAccessKey === null)) {
     return (
       <div style={{
         textAlign: 'center',
@@ -15,22 +21,18 @@ const IndexLayout = ({ children, history, user }) => {
       </div>
     );
   }
-  if (user.secretAccessKey === null && history.location.pathname === '/robot') {
-    return (
-      <div style={{
-        textAlign: 'center',
-        margin: '50vh',
-      }}
-      >
-        <Spin size="large" />
-      </div>
-    );
-  }
-
   return (
-    <div>
-      {children}
-    </div>
+    <Layout style={{ minHeight: '100vh' }}>
+      <HeaderComponent />
+
+      <Layout style={{ textAlign: 'center' }}>
+        <Content>
+          {children}
+
+        </Content>
+      </Layout>
+    </Layout>
+
   );
 };
 
