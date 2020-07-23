@@ -9,7 +9,7 @@ import {
 
 import { queryData } from '../services/dynamo';
 
-const authenticatedRoutes = new Set(['/robot', '/dashboard']);
+const unauthenticatedRoutes = new Set(['/', '/login', '/signup', '/resetpassword', '/forgotpassword']);
 
 export default {
   namespace: 'user',
@@ -38,7 +38,7 @@ export default {
             dispatch({ type: 'getCredentials' });
           },
           error: () => {
-            if (authenticatedRoutes.has(pathname)) {
+            if (!unauthenticatedRoutes.has(pathname)) {
               history.push('/');
             }
           },
