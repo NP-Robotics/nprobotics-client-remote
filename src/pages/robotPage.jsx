@@ -8,26 +8,12 @@ import { Joystick } from 'react-joystick-component';
 import ChimeVideoStream from '../components/ChimeVideoStream';
 
 const RobotPage = ({
-  user, device, dispatch, history,
+  user, meeting, dispatch, history,
 }) => {
-  const [state, setState] = useState({});
-
-  useEffect(() => {
-    if (!history.location.query.robotName) {
-      history.push('/dashboard');
-    } else if (state.RobotName === undefined) {
-      const { robotName } = history.location.query;
-      if (user.robots) {
-        const selectedRobot = user.robots.find((robot) => robot.RobotName === robotName);
-        setState({
-          ...state,
-          ...selectedRobot,
-        });
-        console.log(state);
-      }
-    }
-  }, [history, state, user.robots]);
-
+  const [state, setState] = useState({
+    RobotName: null,
+    MeetingRoom: null,
+  });
   const [componentPos, setComponentPos] = useState({
     locked: false,
     joystick: {
@@ -39,22 +25,53 @@ const RobotPage = ({
     lockButton: 'lock',
   });
 
+  useEffect(() => {
+    if (!history.location.query.robotName) {
+      history.push('/dashboard');
+    }
+  });
+
+  // load selected robot into local state
+  useEffect(() => {
+    if (state.RobotName === null) {
+      const { robotName } = history.location.query;
+      if (user.robots.length > 0) {
+        const selectedRobot = user.robots.find((robot) => robot.RobotName === robotName);
+        setState({
+          ...state,
+          ...selectedRobot,
+        });
+      }
+    }
+  }, [state, user.robots, history.location.query]);
+
+  useEffect(() => {
+    if (!meeting.joined && state.MeetingRoom != null) {
+      console.log('payload', {
+        username: `${user.username}`,
+        meetingName: `${state.MeetingRoom}`,
+        region: 'ap-southeast-1',
+        jwtToken: user.jwtToken,
+      });
+      dispatch({
+        type: 'meeting/join',
+        payload: {
+          username: `${user.username}`,
+          meetingName: `${state.MeetingRoom}`,
+          region: 'ap-southeast-1',
+          jwtToken: user.jwtToken,
+        },
+        error: (error) => {
+          message.error(error.message);
+        },
+      });
+    }
+  }, [state, meeting, user, dispatch]);
+
   const joystickRef = useRef(null);
 
   const chimeConnectOnClick = () => {
-    dispatch({
-      type: 'meeting/join',
-      payload: {
-        username: `${user.username}`,
-        meetingName: `${state.meetingName}`,
-        region: 'ap-southeast-1',
-        jwtToken: user.jwtToken,
-      },
-      error: (error) => {
-        message.error(error.message);
-      },
 
-    });
   };
 
   const chimeLeaveOnClick = () => {
@@ -62,7 +79,7 @@ const RobotPage = ({
       type: 'meeting/end',
       payload: {
         jwtToken: user.jwtToken,
-        meetingName: 'fdsgfgds12',
+        meetingName: state.MeetingRoom,
       },
     });
   };
@@ -161,7 +178,6 @@ RobotPage.propTypes = {
     location: PropTypes.shape({
       query: PropTypes.shape({
         robotName: null,
-
       }),
     }),
   }),
@@ -175,7 +191,9 @@ RobotPage.propTypes = {
     robots: PropTypes.arrayOf(PropTypes.shape({})),
   }),
   device: PropTypes.shape({}),
-
+  meeting: PropTypes.shape({
+    joined: PropTypes.bool,
+  }),
 };
 
 RobotPage.defaultProps = {
@@ -184,6 +202,9 @@ RobotPage.defaultProps = {
   dispatch: undefined,
   device: {},
   user: {},
+  meeting: {
+    joined: false,
+  },
 };
 
 export default connect(({ user, device, meeting }) => ({ user, device, meeting }))(RobotPage);
