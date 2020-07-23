@@ -21,7 +21,6 @@ const ForgotPasswordPage = ({ dispatch, history }) => {
   };
 
   const onFinish = (values) => {
-    setModalState({ visible: true });
     setState({ submitting: true });
     dispatch({
       type: 'user/forgotPassword',
@@ -31,6 +30,7 @@ const ForgotPasswordPage = ({ dispatch, history }) => {
       callback: (user) => {
         console.log('Resetting password');
         console.log(user);
+        setModalState({ visible: true });
         // history.push('/resetpassword');
       },
       error: (err) => {
@@ -78,7 +78,7 @@ const ForgotPasswordPage = ({ dispatch, history }) => {
         onOk={handleModal}
         onCancel={handleModal}
       >
-        <p>Verification code has been sent to your email!</p>
+        <p>Please check your email for the verification code to reset your password!</p>
       </Modal>
     </div>
   );
