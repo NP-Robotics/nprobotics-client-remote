@@ -2,36 +2,20 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
 import {
-  Layout, Table, Input, Button, message,
+  Layout, Table,
 } from 'antd';
 import Link from 'umi/link';
+import queryString from 'query-string';
 
 import SiderComponent from '../components/sider';
 
 const { Footer, Content } = Layout;
 
-const DashboardPage = ({ dispatch, history }) => {
+const DashboardPage = ({ dispatch, history, user }) => {
   const [state, setState] = useState({
     submitting: false,
     collapsed: false,
   });
-
-  const onClick = () => {
-    setState({ submitting: true });
-    dispatch({
-      type: 'robotDB/getRobotInfo',
-      payload: {
-        organisation: 'NP',
-      },
-      callback: (user) => {
-        console.log('Query Success');
-      },
-      error: (err) => {
-        message.info(err.message);
-        setState({ submitting: false });
-      },
-    });
-  };
 
   const collapseOnClick = () => {
     console.log(state);
@@ -44,54 +28,46 @@ const DashboardPage = ({ dispatch, history }) => {
   const columns = [
     {
       title: 'Robot',
-      dataIndex: 'robot',
+      dataIndex: 'RobotName',
       key: 'robot',
       render: (text) => (
-        <Link to="/robot">
+        <Link to={`/robot/?${queryString.stringify({ robotName: text })}`}>
           <p>{text}</p>
         </Link>
       ),
     },
     {
       title: 'Organisation',
-      dataIndex: 'organization',
-      key: 'organization',
+      dataIndex: 'organisation',
+      key: 'organisation',
     },
     {
-      title: 'Ready',
-      dataIndex: 'ready',
-      key: 'ready',
+      title: 'Online',
+      dataIndex: 'isOnline',
+      key: 'online',
+      render: (val) => {
+        console.log(val);
+        if (val) {
+          return (<p>Yes</p>);
+        }
+        return (<p>No</p>);
+      },
     },
     {
       title: 'In Use',
       dataIndex: 'inUse',
       key: 'inUse',
+      render: (val) => {
+        console.log(val);
+        if (val) {
+          return (<p>Yes</p>);
+        }
+        return (<p>No</p>);
+      },
     },
   ];
 
-  const data = [
-    {
-      key: 1,
-      robot: 'Court Robot',
-      organization: 'NP',
-      ready: 'No',
-      inUse: 'No',
-    },
-    {
-      key: 2,
-      robot: 'Scout',
-      organization: 'NP',
-      ready: 'No',
-      inUse: 'No',
-    },
-    {
-      key: 3,
-      robot: 'Anastasia (SRTC)',
-      organization: 'NP',
-      ready: 'No',
-      inUse: 'No',
-    },
-  ];
+  const data = user.robots;
 
   return (
     <Layout style={{ textAlign: 'center', minHeight: '100vh' }}>
@@ -99,9 +75,6 @@ const DashboardPage = ({ dispatch, history }) => {
       <Layout>
         <Content style={{ margin: '0 50px' }}>
           <div style={{ marginTop: '64px' }}>
-            <Button onClick={onClick} type="primary">
-              QueryData Button
-            </Button>
             <Table columns={columns} dataSource={data} />
           </div>
         </Content>
@@ -114,6 +87,7 @@ const DashboardPage = ({ dispatch, history }) => {
 DashboardPage.propTypes = {
   user: PropTypes.shape({
     username: PropTypes.string,
+    robots: PropTypes.arrayOf(PropTypes.shape({})),
   }),
   history: PropTypes.shape({
     push: PropTypes.func,
@@ -122,9 +96,10 @@ DashboardPage.propTypes = {
 };
 
 DashboardPage.defaultProps = {
-  user: {},
+  user: {
+  },
   history: {},
   dispatch: undefined,
 };
 
-export default connect(({ user, updateData }) => ({ user }))(DashboardPage);
+export default connect(({ user }) => ({ user }))(DashboardPage);

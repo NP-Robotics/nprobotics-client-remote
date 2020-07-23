@@ -98,6 +98,14 @@ export default {
     * getSession({ payload, callback, error }, { call, put }) {
       try {
         const data = yield ampGetSession();
+        // getrobots first so loading screen will show before robots are gotten
+        yield put({
+          type: 'getRobots',
+          payload: {
+            jwtToken: data.accessToken.jwtToken,
+            organisation: 'NP',
+          },
+        });
         yield put({
           type: 'setState',
           payload: {
@@ -105,13 +113,6 @@ export default {
             clientId: data.accessToken.payload.client_id,
             username: data.accessToken.payload.username,
             authenticated: true,
-          },
-        });
-        yield put({
-          type: 'getRobots',
-          payload: {
-            jwtToken: data.accessToken.jwtToken,
-            organisation: 'NP',
           },
         });
         if (callback) {
@@ -181,7 +182,6 @@ export default {
       const { organisation, jwtToken } = payload;
       try {
         const response = yield call(queryData, organisation, jwtToken);
-        console.log(response);
         if (callback) {
           callback(response);
         }

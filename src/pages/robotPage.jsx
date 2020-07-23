@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { connect } from 'dva';
@@ -7,7 +7,27 @@ import { Joystick } from 'react-joystick-component';
 
 import ChimeVideoStream from '../components/ChimeVideoStream';
 
-const RobotPage = ({ user, device, dispatch }) => {
+const RobotPage = ({
+  user, device, dispatch, history,
+}) => {
+  const [state, setState] = useState({});
+
+  useEffect(() => {
+    if (!history.location.query.robotName) {
+      history.push('/dashboard');
+    } else if (state.RobotName === undefined) {
+      const { robotName } = history.location.query;
+      if (user.robots) {
+        const selectedRobot = user.robots.find((robot) => robot.RobotName === robotName);
+        setState({
+          ...state,
+          ...selectedRobot,
+        });
+        console.log(state);
+      }
+    }
+  }, [history, state, user.robots]);
+
   const [componentPos, setComponentPos] = useState({
     locked: false,
     joystick: {
@@ -26,7 +46,7 @@ const RobotPage = ({ user, device, dispatch }) => {
       type: 'meeting/join',
       payload: {
         username: `${user.username}`,
-        meetingName: 'testmeeting2',
+        meetingName: `${state.meetingName}`,
         region: 'ap-southeast-1',
         jwtToken: user.jwtToken,
       },
@@ -112,7 +132,7 @@ const RobotPage = ({ user, device, dispatch }) => {
   };
   return (
     <div style={{ textAlign: 'center' }}>
-      <ChimeVideoStream />
+      <ChimeVideoStream endpoint={state.endpoint} />
       <h1>robot page</h1>
       <Button onClick={connectOnClick}>connect</Button>
       <Button onClick={lockOnClick}>{componentText.lockButton}</Button>
@@ -138,6 +158,12 @@ RobotPage.propTypes = {
   // state: PropTypes.shape({}),
   history: PropTypes.shape({
     push: PropTypes.func,
+    location: PropTypes.shape({
+      query: PropTypes.shape({
+        robotName: null,
+
+      }),
+    }),
   }),
   dispatch: PropTypes.func,
   user: PropTypes.shape({
@@ -146,6 +172,7 @@ RobotPage.propTypes = {
     secretAccessKey: PropTypes.string,
     sessionToken: PropTypes.string,
     jwtToken: PropTypes.string,
+    robots: PropTypes.arrayOf(PropTypes.shape({})),
   }),
   device: PropTypes.shape({}),
 
