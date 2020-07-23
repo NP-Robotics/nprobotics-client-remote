@@ -1,22 +1,12 @@
 import { joinMeeting, endMeeting } from '../services/chimeAPI';
-import {
-  initMeeting,
-  setupAudioVideo,
-  setupObservers,
-  bindVideoElement,
-  bindAudioElement,
-  startMeetingSession,
-} from '../services/chimeSession';
 
 export default {
   namespace: 'meeting',
 
   state: {
-    authKey: null,
-    meetingSession: null,
-    audioInput: null,
-    audioOutput: null,
-    videoInput: null,
+    meetingResponse: null,
+    attendeeResponse: null,
+    joined: false,
   },
 
   subscriptions: {
@@ -29,18 +19,23 @@ export default {
   },
 
   effects: {
-    * join({ payload, callback, error }, { call, put, select }) {
+    * join({ payload, callback, error }, { call, put }) {
       const {
-        username, meetingName, region, jwtToken, audioRef, videoRef,
+        username, meetingName, region, jwtToken,
       } = payload;
+
       try {
         const response = yield call(joinMeeting, username, meetingName, region, jwtToken);
         const { Meeting, Attendee } = response.JoinInfo;
-        console.log(audioRef);
-        yield initMeeting(Meeting, Attendee);
-        bindAudioElement(audioRef);
-        bindVideoElement(videoRef);
-        startMeetingSession();
+
+        yield put({
+          type: 'setState',
+          payload: {
+            meetingResponse: Meeting,
+            attendeeResponse: Attendee,
+            joined: true,
+          },
+        });
 
         if (callback) {
           callback();
@@ -58,6 +53,8 @@ export default {
       try {
         const response = yield call(endMeeting, meetingName, jwtToken);
         console.log(response);
+
+        yield put({ type: 'clearMeeting' });
         if (callback) {
           callback(response);
         }
@@ -74,6 +71,15 @@ export default {
   reducers: {
     setState(state, { payload }) {
       const newState = { ...state, ...payload };
+      return newState;
+    },
+    clearMeeting(state) {
+      const newState = {
+        ...state,
+        meetingResponse: null,
+        attendeeResponse: null,
+        joined: false,
+      };
       return newState;
     },
   },

@@ -5,6 +5,8 @@ import { connect } from 'dva';
 import { Button, message } from 'antd';
 import { Joystick } from 'react-joystick-component';
 
+import ChimeVideoStream from '../components/ChimeVideoStream';
+
 const RobotPage = ({ user, device, dispatch }) => {
   const [componentPos, setComponentPos] = useState({
     locked: false,
@@ -22,22 +24,15 @@ const RobotPage = ({ user, device, dispatch }) => {
   });
 
   const joystickRef = useRef(null);
-  const chimeAudioRef = useRef(null);
-  const chimeVideoRef = useRef(null);
-  const robotMovement = useRef(null);
-  const robotNavigation = useRef(null);
-  const chatBox = useRef(null);
 
   const chimeConnectOnClick = () => {
     dispatch({
       type: 'meeting/join',
       payload: {
         username: `${user.username}`,
-        meetingName: 'testmeeting19',
+        meetingName: 'testmeeting1',
         region: 'ap-southeast-1',
         jwtToken: user.jwtToken,
-        videoRef: chimeVideoRef.current,
-        audioRef: chimeAudioRef.current,
       },
       error: (error) => {
         message.error(error.message);
@@ -124,8 +119,7 @@ const RobotPage = ({ user, device, dispatch }) => {
   };
   return (
     <div style={{ textAlign: 'center' }}>
-      <audio ref={chimeAudioRef} />
-      <video ref={chimeVideoRef} />
+      <ChimeVideoStream />
       <div className="robotFunctions">
         <Button disabled={state.chimeConnect} hidden={!state.chimeConnect}>Move</Button>
         <Button disabled={state.chimeConnect} hidden={!state.chimeConnect}>Navigate</Button>

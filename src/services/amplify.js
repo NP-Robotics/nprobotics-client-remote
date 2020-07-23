@@ -13,7 +13,6 @@ Amplify.configure({
 
 export const ampSignIn = async (username, password) => {
   try {
-    console.log('username is ', username);
     const user = await Auth.signIn(username, password);
     return user;
   } catch (error) {
@@ -27,6 +26,7 @@ export const ampSignOut = async () => {
     await Auth.signOut();
   } catch (error) {
     console.log('error signing out: ', error);
+    throw error;
   }
 };
 
