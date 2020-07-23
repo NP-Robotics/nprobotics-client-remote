@@ -2,23 +2,26 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
 import {
-  Form, Input, Button, message,
+  Form, Input, Button, message, Modal,
 } from 'antd';
-import Link from 'umi/link';
-
 import bignoob from '../assets/bignoob.jpg';
 
 const ForgotPasswordPage = ({ dispatch, history }) => {
   const [state, setState] = useState({
     submitting: false,
+    buttonState: true,
+  });
+  const [modalState, setModalState] = useState({
+    visible: false,
   });
 
-  const proceed = () => {
-    console.log('proceed');
+  const handleModal = () => {
+    setModalState({ visible: false });
     history.push('/resetpassword');
   };
 
   const onFinish = (values) => {
+    setModalState({ visible: true });
     setState({ submitting: true });
     dispatch({
       type: 'user/forgotPassword',
@@ -28,7 +31,7 @@ const ForgotPasswordPage = ({ dispatch, history }) => {
       callback: (user) => {
         console.log('Resetting password');
         console.log(user);
-        history.push('/resetpassword');
+        // history.push('/resetpassword');
       },
       error: (err) => {
         message.info(err.message);
@@ -64,11 +67,19 @@ const ForgotPasswordPage = ({ dispatch, history }) => {
         </Form.Item>
 
         <Form.Item wrapperCol={{ offset: 8, span: 8 }}>
-          <Button onClick={proceed} type="primary" htmlType="submit" disabled={state.submitting}>
+          <Button type="primary" htmlType="submit" disabled={state.submitting}>
             Submit
           </Button>
         </Form.Item>
       </Form>
+      <Modal
+        title="Verification Code"
+        visible={modalState.visible}
+        onOk={handleModal}
+        onCancel={handleModal}
+      >
+        <p>Verification code has been sent to your email!</p>
+      </Modal>
     </div>
   );
 };

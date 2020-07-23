@@ -10,11 +10,6 @@ const ResetPasswordPage = ({ dispatch, history }) => {
     submitting: false,
   });
 
-  const proceed = () => {
-    console.log('proceed');
-    history.push('/login');
-  };
-
   const onFinish = (values) => {
     setState({ submitting: true });
     dispatch({
@@ -74,8 +69,28 @@ const ResetPasswordPage = ({ dispatch, history }) => {
           <Input.Password />
         </Form.Item>
 
+        <Form.Item
+          label="Confirm New Password"
+          name="confirmNewPassword"
+          dependencies={['password']}
+          rules={[
+            { required: true, message: 'Please input your password again!' },
+
+            ({ getFieldValue }) => ({
+              validator(rule, value) {
+                if (!value || getFieldValue('newPassword') === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(Error('The two passwords do not match!'));
+              },
+            }),
+          ]}
+        >
+          <Input.Password />
+        </Form.Item>
+
         <Form.Item wrapperCol={{ offset: 8, span: 8 }}>
-          <Button onClick={proceed} type="primary" htmlType="submit" disabled={state.submitting}>
+          <Button type="primary" htmlType="submit" disabled={state.submitting}>
             Submit
           </Button>
         </Form.Item>
