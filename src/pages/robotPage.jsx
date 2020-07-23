@@ -50,6 +50,8 @@ const RobotPage = ({
   // join meeting if all parameters are present
   useEffect(() => {
     if (!meeting.joined && state.MeetingRoom != null && !state.joining) {
+      setState({ ...state, joining: true });
+
       dispatch({
         type: 'meeting/join',
         payload: {
@@ -67,7 +69,6 @@ const RobotPage = ({
           history.push('/dashboard');
         },
       });
-      setState({ ...state, joining: true });
     }
   }, [state, meeting, user, dispatch, history]);
 
@@ -75,13 +76,15 @@ const RobotPage = ({
 
   // cleanup when unmount
   useEffect(() => () => {
-    dispatch({
-      type: 'meeting/end',
-      payload: {
-        jwtToken: user.jwtToken,
-        meetingName: state.MeetingRoom,
-      },
-    });
+    if (meeting.joined) {
+      dispatch({
+        type: 'meeting/end',
+        payload: {
+          jwtToken: user.jwtToken,
+          meetingName: state.MeetingRoom,
+        },
+      });
+    }
   });
 
   const chimeLeaveOnClick = () => {

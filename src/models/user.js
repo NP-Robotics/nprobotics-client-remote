@@ -161,7 +161,6 @@ export default {
     * getAuthenticated({ callback, error }, { call, put }) {
       try {
         const user = yield ampGetAuthenticated();
-        console.log(user);
 
         if (callback) {
           callback(user);

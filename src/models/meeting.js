@@ -52,7 +52,6 @@ export default {
       const { meetingName, jwtToken } = payload;
       try {
         const response = yield call(endMeeting, meetingName, jwtToken);
-        console.log(response);
 
         yield put({ type: 'clearMeeting' });
         if (callback) {
