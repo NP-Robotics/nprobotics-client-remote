@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { DropdownButton, Dropdown } from 'react-bootstrap';
 
 import { connect } from 'dva';
 import { Button, message } from 'antd';
@@ -21,6 +22,7 @@ const RobotPage = ({ user, device, dispatch }) => {
 
   const [state, setState] = useState({
     chimeConnect: false,
+    chatTextBox: false,
   });
 
   const joystickRef = useRef(null);
@@ -117,13 +119,27 @@ const RobotPage = ({ user, device, dispatch }) => {
       },
     });
   };
+
+  const enableChatTextBox = () => {
+    setState({ chatTextBox: true });
+  };
   return (
     <div style={{ textAlign: 'center' }}>
       <ChimeVideoStream />
       <div className="robotFunctions">
-        <Button disabled={state.chimeConnect} hidden={!state.chimeConnect}>Move</Button>
-        <Button disabled={state.chimeConnect} hidden={!state.chimeConnect}>Navigate</Button>
-        <Button disabled={state.chimeConnect} hidden={!state.chimeConnect}>Chat</Button>
+        <DropdownButton hidden={!state.chimeConnect} id="emotes" title="Emotes">
+          <Dropdown.Item as="button" href="emote1">Wave</Dropdown.Item>
+          <Dropdown.Item as="button" href="emote2">Raise Arm</Dropdown.Item>
+          <Dropdown.Item as="button" href="emote3">Gang Sign</Dropdown.Item>
+        </DropdownButton>
+        <DropdownButton hidden={!state.chimeConnect} id="navigate" title="Navigate">
+          <Dropdown.Item as="button" href="waypoint1">Geylang</Dropdown.Item>
+          <Dropdown.Item as="button" href="waypoint2">Malaysia</Dropdown.Item>
+          <Dropdown.Item as="button" href="waypoint3">Tek Whye Lane</Dropdown.Item>
+        </DropdownButton>
+        <Button onClick={enableChatTextBox} hidden={!state.chimeConnect}>Chat</Button>
+        <input disabled={state.chatTextBox} hidden={!state.chimeConnect} />
+        <Button disabled={state.chatTextBox} hidden={!state.chimeConnect}>Submit</Button>
       </div>
       <h1>robot page</h1>
       <Button onClick={connectOnClick}>connect</Button>
