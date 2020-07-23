@@ -12,7 +12,7 @@ import {
   MeetingSessionStatusCode,
 } from 'amazon-chime-sdk-js';
 
-const ChimeVideoStream = ({ meeting }) => {
+const ChimeVideoStream = ({ meeting, style }) => {
   const videoRef = useRef(null);
   const audioRef = useRef(null);
 
@@ -142,13 +142,11 @@ const ChimeVideoStream = ({ meeting }) => {
   };
 
   return (
-    <div>
+    <div style={style}>
       <video
         ref={videoRef}
         style={{
-          width: '50vw',
-          height: '50vh',
-          backgroundColor: 'black',
+
         }}
       />
       <audio ref={audioRef} />
@@ -158,14 +156,20 @@ const ChimeVideoStream = ({ meeting }) => {
 
 ChimeVideoStream.propTypes = {
   meeting: PropTypes.shape({
-    joined: false,
-    meetingResponse: null,
-    attendeeResponse: null,
+    joined: PropTypes.bool,
+    meetingResponse: PropTypes.shape({}),
+    attendeeResponse: PropTypes.shape({}),
   }),
+  style: PropTypes.shape({}),
 };
 
 ChimeVideoStream.defaultProps = {
-  meeting: {},
+  meeting: {
+    joined: false,
+    meetingResponse: null,
+    attendeeResponse: null,
+  },
+  style: {},
 };
 
 export default connect(({ meeting }) => ({ meeting }))(ChimeVideoStream);

@@ -13,18 +13,20 @@ const RobotPage = ({
   const [state, setState] = useState({
     RobotName: null,
     MeetingRoom: null,
+    joining: false,
   });
   const [componentPos, setComponentPos] = useState({
     locked: false,
     joystick: {
-      x: 50,
-      y: 50,
+      x: 500,
+      y: 500,
     },
   });
   const [componentText, setComponentText] = useState({
     lockButton: 'lock',
   });
 
+  // prevent access if query string is missing
   useEffect(() => {
     if (!history.location.query.robotName) {
       history.push('/dashboard');
@@ -45,14 +47,9 @@ const RobotPage = ({
     }
   }, [state, user.robots, history.location.query]);
 
+  // join meeting if all parameters are present
   useEffect(() => {
-    if (!meeting.joined && state.MeetingRoom != null) {
-      console.log('payload', {
-        username: `${user.username}`,
-        meetingName: `${state.MeetingRoom}`,
-        region: 'ap-southeast-1',
-        jwtToken: user.jwtToken,
-      });
+    if (!meeting.joined && state.MeetingRoom != null && !state.joining) {
       dispatch({
         type: 'meeting/join',
         payload: {
@@ -61,20 +58,23 @@ const RobotPage = ({
           region: 'ap-southeast-1',
           jwtToken: user.jwtToken,
         },
-        error: (error) => {
-          message.error(error.message);
+        callback: () => {
+          message.success('Joined meeting!');
+          setState({ ...state, joining: false });
+        },
+        error: () => {
+          message.error('Robot is offline');
+          history.push('/dashboard');
         },
       });
+      setState({ ...state, joining: true });
     }
-  }, [state, meeting, user, dispatch]);
+  }, [state, meeting, user, dispatch, history]);
 
   const joystickRef = useRef(null);
 
-  const chimeConnectOnClick = () => {
-
-  };
-
-  const chimeLeaveOnClick = () => {
+  // cleanup when unmount
+  useEffect(() => () => {
     dispatch({
       type: 'meeting/end',
       payload: {
@@ -82,6 +82,10 @@ const RobotPage = ({
         meetingName: state.MeetingRoom,
       },
     });
+  });
+
+  const chimeLeaveOnClick = () => {
+
   };
 
   const connectOnClick = () => {
@@ -148,9 +152,14 @@ const RobotPage = ({
     });
   };
   return (
-    <div style={{ textAlign: 'center' }}>
-      <ChimeVideoStream endpoint={state.endpoint} />
-      <h1>robot page</h1>
+    <div style={{ }}>
+      <ChimeVideoStream
+        endpoint={state.endpoint}
+        style={{
+          margin: '0 auto',
+        }}
+      />
+      {/* <h1>robot page</h1>
       <Button onClick={connectOnClick}>connect</Button>
       <Button onClick={lockOnClick}>{componentText.lockButton}</Button>
       <Button onClick={chimeConnectOnClick}>chime connect</Button>
@@ -165,8 +174,9 @@ const RobotPage = ({
           top: `${String(componentPos.joystick.y)}px`,
         }}
       >
-        <Joystick ref={joystickRef} size={100} baseColor="red" stickColor="blue" move={joystickOnMove} stop={joystickOnStop} disabled={!componentPos.locked} />
-      </div>
+        <Joystick ref={joystickRef} size={100} baseColor="red" stickColor="blue"
+        move={joystickOnMove} stop={joystickOnStop} disabled={!componentPos.locked} />
+      </div> */}
     </div>
   );
 };
