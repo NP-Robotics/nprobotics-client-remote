@@ -18,7 +18,6 @@ const DashboardPage = ({ dispatch, history, user }) => {
   });
 
   const collapseOnClick = () => {
-    console.log(state);
     setState({
       ...state,
       collapsed: !state.collapsed,
@@ -46,7 +45,6 @@ const DashboardPage = ({ dispatch, history, user }) => {
       dataIndex: 'isOnline',
       key: 'online',
       render: (val) => {
-        console.log(val);
         if (val) {
           return (<p>Yes</p>);
         }
@@ -58,7 +56,6 @@ const DashboardPage = ({ dispatch, history, user }) => {
       dataIndex: 'inUse',
       key: 'inUse',
       render: (val) => {
-        console.log(val);
         if (val) {
           return (<p>Yes</p>);
         }
@@ -67,7 +64,7 @@ const DashboardPage = ({ dispatch, history, user }) => {
     },
   ];
 
-  const data = user.robots;
+  const data = user.robots.map((obj, index) => ({ key: index, ...obj }));
 
   return (
     <Layout style={{ textAlign: 'center', minHeight: '100vh' }}>
