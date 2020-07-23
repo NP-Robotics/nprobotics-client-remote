@@ -143,12 +143,7 @@ const ChimeVideoStream = ({ meeting, style }) => {
 
   return (
     <div style={style}>
-      <video
-        ref={videoRef}
-        style={{
-
-        }}
-      />
+      <video ref={videoRef} />
       <audio ref={audioRef} />
     </div>
   );
