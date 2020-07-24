@@ -13,7 +13,7 @@ const RobotPage = ({
   const [state, setState] = useState({
     RobotName: null,
     MeetingRoom: null,
-    joining: false,
+    attemptedJoin: false,
   });
   const [componentPos, setComponentPos] = useState({
     locked: false,
@@ -49,7 +49,9 @@ const RobotPage = ({
 
   // join meeting if all parameters are present
   useEffect(() => {
-    if (!meeting.joined && state.MeetingRoom != null && !state.joining) {
+    if (!meeting.joined && state.MeetingRoom != null && !state.attemptedJoin) {
+      setState({ ...state, attemptedJoin: true });
+
       dispatch({
         type: 'meeting/join',
         payload: {
@@ -60,14 +62,12 @@ const RobotPage = ({
         },
         callback: () => {
           message.success('Joined meeting!');
-          setState({ ...state, joining: false });
         },
         error: () => {
           message.error('Robot is offline');
           history.push('/dashboard');
         },
       });
-      setState({ ...state, joining: true });
     }
   }, [state, meeting, user, dispatch, history]);
 
@@ -75,13 +75,15 @@ const RobotPage = ({
 
   // cleanup when unmount
   useEffect(() => () => {
-    dispatch({
-      type: 'meeting/end',
-      payload: {
-        jwtToken: user.jwtToken,
-        meetingName: state.MeetingRoom,
-      },
-    });
+    if (meeting.joined) {
+      dispatch({
+        type: 'meeting/end',
+        payload: {
+          jwtToken: user.jwtToken,
+          meetingName: state.MeetingRoom,
+        },
+      });
+    }
   });
 
   const chimeLeaveOnClick = () => {
