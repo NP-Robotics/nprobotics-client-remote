@@ -11,7 +11,6 @@ const ResetPasswordPage = ({ dispatch, history }) => {
   });
 
   const onFinish = (values) => {
-    message.success('Password has successfully been reset!');
     setState({ submitting: true });
     dispatch({
       type: 'user/forgotPasswordSubmit',
@@ -21,8 +20,7 @@ const ResetPasswordPage = ({ dispatch, history }) => {
         newPassword: values.newPassword,
       },
       callback: (user) => {
-        console.log('Resetting password');
-        console.log(user);
+        message.success('Password has successfully been reset!');
         history.push('/login');
       },
       error: (err) => {

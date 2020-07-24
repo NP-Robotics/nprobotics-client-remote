@@ -64,9 +64,7 @@ export const ampGetAuthenticated = async () => {
 
 export const apmForgotPassword = async (username) => {
   try {
-    const user = await Auth.forgotPassword(username)
-      .then((data) => console.log(data))
-      .catch((err) => console.log(err));
+    const user = await Auth.forgotPassword(username);
     return user;
   } catch (error) {
     console.log('error sending verification code', error);
@@ -77,9 +75,7 @@ export const apmForgotPassword = async (username) => {
 export const apmForgotPasswordSubmit = async (username, code, newPassword) => {
   console.log('success', code);
   try {
-    const user = Auth.forgotPasswordSubmit(username, code, newPassword)
-      .then((data) => console.log(data))
-      .catch((err) => console.log(err));
+    const user = await Auth.forgotPasswordSubmit(username, code, newPassword);
     return user;
   } catch (error) {
     console.log('error resetting password', error);
