@@ -11,7 +11,7 @@ const RobotPage = ({
   user, meeting, dispatch, history,
 }) => {
   const [state, setState] = useState({
-    RobotName: null,
+    robotName: null,
     MeetingRoom: null,
     attemptedJoin: false,
   });
@@ -35,10 +35,10 @@ const RobotPage = ({
 
   // load selected robot into local state
   useEffect(() => {
-    if (state.RobotName === null) {
+    if (state.robotName === null) {
       const { robotName } = history.location.query;
       if (user.robots.length > 0) {
-        const selectedRobot = user.robots.find((robot) => robot.RobotName === robotName);
+        const selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
         setState({
           ...state,
           ...selectedRobot,
