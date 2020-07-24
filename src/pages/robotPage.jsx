@@ -11,8 +11,8 @@ const RobotPage = ({
   user, meeting, dispatch, history,
 }) => {
   const [state, setState] = useState({
-    RobotName: null,
-    MeetingRoom: null,
+    robotName: null,
+    meetingName: null,
     attemptedJoin: false,
   });
   const [componentPos, setComponentPos] = useState({
@@ -35,10 +35,10 @@ const RobotPage = ({
 
   // load selected robot into local state
   useEffect(() => {
-    if (state.RobotName === null) {
+    if (state.robotName === null) {
       const { robotName } = history.location.query;
       if (user.robots.length > 0) {
-        const selectedRobot = user.robots.find((robot) => robot.RobotName === robotName);
+        const selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
         setState({
           ...state,
           ...selectedRobot,
@@ -49,14 +49,14 @@ const RobotPage = ({
 
   // join meeting if all parameters are present
   useEffect(() => {
-    if (!meeting.joined && state.MeetingRoom != null && !state.attemptedJoin) {
+    if (!meeting.joined && state.meetingName != null && !state.attemptedJoin) {
       setState({ ...state, attemptedJoin: true });
 
       dispatch({
         type: 'meeting/join',
         payload: {
           username: `${user.username}`,
-          meetingName: `${state.MeetingRoom}`,
+          meetingName: `${state.meetingName}`,
           region: 'ap-southeast-1',
           jwtToken: user.jwtToken,
         },
@@ -80,7 +80,7 @@ const RobotPage = ({
         type: 'meeting/end',
         payload: {
           jwtToken: user.jwtToken,
-          meetingName: state.MeetingRoom,
+          meetingName: state.meetingName,
         },
       });
     }

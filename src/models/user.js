@@ -1,3 +1,4 @@
+import responsiveObserve from 'antd/lib/_util/responsiveObserve';
 import {
   ampSignIn,
   ampSignUp,
@@ -204,7 +205,11 @@ export default {
     * getRobots({ payload, callback, error }, { call, put }) {
       const { organisation, jwtToken } = payload;
       try {
-        const response = yield call(queryData, organisation, jwtToken);
+        let response = yield call(queryData, organisation, jwtToken);
+        response = response.map((obj) => ({
+          ...obj,
+          topics: JSON.parse(obj.topics),
+        }));
         if (callback) {
           callback(response);
         }
