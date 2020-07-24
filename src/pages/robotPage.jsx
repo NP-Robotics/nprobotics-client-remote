@@ -12,7 +12,7 @@ const RobotPage = ({
 }) => {
   const [state, setState] = useState({
     robotName: null,
-    MeetingRoom: null,
+    meetingName: null,
     attemptedJoin: false,
   });
   const [componentPos, setComponentPos] = useState({
@@ -49,14 +49,14 @@ const RobotPage = ({
 
   // join meeting if all parameters are present
   useEffect(() => {
-    if (!meeting.joined && state.MeetingRoom != null && !state.attemptedJoin) {
+    if (!meeting.joined && state.meetingName != null && !state.attemptedJoin) {
       setState({ ...state, attemptedJoin: true });
 
       dispatch({
         type: 'meeting/join',
         payload: {
           username: `${user.username}`,
-          meetingName: `${state.MeetingRoom}`,
+          meetingName: `${state.meetingName}`,
           region: 'ap-southeast-1',
           jwtToken: user.jwtToken,
         },
@@ -80,7 +80,7 @@ const RobotPage = ({
         type: 'meeting/end',
         payload: {
           jwtToken: user.jwtToken,
-          meetingName: state.MeetingRoom,
+          meetingName: state.meetingName,
         },
       });
     }
