@@ -6,6 +6,10 @@ const Device = ({ dispatch, device }) => {
     device: null,
   });
 
+  useEffect(() => {
+
+  });
+
   return null;
 };
 
