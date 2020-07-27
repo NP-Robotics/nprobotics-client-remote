@@ -38,6 +38,7 @@ export const ampSignUp = async (username, password, email, name) => {
       attributes: {
         email, // optional
         name,
+        Organisation: 'NP',
         // other custom attributes
       },
     });
@@ -60,4 +61,25 @@ export const ampGetCredentials = async () => {
 export const ampGetAuthenticated = async () => {
   const user = Auth.currentAuthenticatedUser();
   return user;
+};
+
+export const apmForgotPassword = async (username) => {
+  try {
+    const user = await Auth.forgotPassword(username);
+    return user;
+  } catch (error) {
+    console.log('error sending verification code', error);
+    throw error;
+  }
+};
+
+export const apmForgotPasswordSubmit = async (username, code, newPassword) => {
+  console.log('success', code);
+  try {
+    const user = await Auth.forgotPasswordSubmit(username, code, newPassword);
+    return user;
+  } catch (error) {
+    console.log('error resetting password', error);
+    throw error;
+  }
 };

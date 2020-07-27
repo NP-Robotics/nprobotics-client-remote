@@ -51,12 +51,9 @@ export default {
     * end({ payload, callback, error }, { call, put }) {
       const { meetingName, jwtToken } = payload;
       try {
-        const response = yield call(endMeeting, meetingName, jwtToken);
-        console.log(response);
-
         yield put({ type: 'clearMeeting' });
         if (callback) {
-          callback(response);
+          callback();
         }
       } catch (err) {
         console.log(err);
@@ -73,13 +70,14 @@ export default {
       const newState = { ...state, ...payload };
       return newState;
     },
-    clearMeeting(state) {
+    clearMeeting(state, { payload }) {
       const newState = {
         ...state,
         meetingResponse: null,
         attendeeResponse: null,
         joined: false,
       };
+
       return newState;
     },
   },
