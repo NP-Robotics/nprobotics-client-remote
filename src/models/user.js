@@ -1,13 +1,20 @@
+import responsiveObserve from 'antd/lib/_util/responsiveObserve';
 import {
-  ampSignIn, ampSignUp, ampGetSession, ampGetCredentials, ampGetAuthenticated, ampSignOut,
+  ampSignIn,
+  ampSignUp,
+  ampGetSession,
+  ampGetCredentials,
+  ampGetAuthenticated,
+  apmForgotPassword,
+  apmForgotPasswordSubmit,
+  ampSignOut,
 } from '../services/amplify';
 
-const authenticatedRoutes = new Set([
-  '/robot', '/dashboard',
-]);
+import { queryData } from '../services/dynamo';
+
+const unauthenticatedRoutes = new Set(['/', '/login', '/signup', '/resetpassword', '/forgotpassword']);
 
 export default {
-
   namespace: 'user',
 
   state: {
@@ -18,24 +25,23 @@ export default {
     secretAccessKey: null,
     identityId: null,
     username: null,
+    organization: null,
+    robots: [],
   },
 
   subscriptions: {
+    setup({ dispatch, history, user }) {
+      // eslint-disable-line
+      dispatch({ type: 'getSession' });
 
-    setup({ dispatch, history }) {  // eslint-disable-line
-      dispatch({
-        type: 'getSession',
-      });
       history.listen(({ pathname }) => {
         dispatch({
           type: 'getAuthenticated',
           callback: () => {
-            dispatch({
-              type: 'getCredentials',
-            });
+            dispatch({ type: 'getCredentials' });
           },
           error: () => {
-            if (authenticatedRoutes.has(pathname)) {
+            if (!unauthenticatedRoutes.has(pathname)) {
               history.push('/');
             }
           },
@@ -45,7 +51,8 @@ export default {
   },
 
   effects: {
-    *fetch({ payload }, { call, put }) {  // eslint-disable-line
+    * fetch({ payload }, { call, put }) {
+      // eslint-disable-line
       yield put({ type: 'setState' });
     },
 
@@ -94,6 +101,14 @@ export default {
     * getSession({ payload, callback, error }, { call, put }) {
       try {
         const data = yield ampGetSession();
+        // getrobots first so loading screen will show before robots are gotten
+        yield put({
+          type: 'getRobots',
+          payload: {
+            jwtToken: data.accessToken.jwtToken,
+            organisation: 'NP',
+          },
+        });
         yield put({
           type: 'setState',
           payload: {
@@ -121,6 +136,7 @@ export default {
     * getCredentials({ payload, callback, error }, { call, put }) {
       try {
         const cred = yield ampGetCredentials();
+
         yield put({
           type: 'setState',
           payload: {
@@ -148,6 +164,7 @@ export default {
     * getAuthenticated({ callback, error }, { call, put }) {
       try {
         const user = yield ampGetAuthenticated();
+
         if (callback) {
           callback(user);
         }
@@ -160,6 +177,53 @@ export default {
               authenticated: false,
             },
           });
+        }
+      }
+    },
+    * forgotPassword({ payload, callback, error }, { call, put }) {
+      const { username } = payload;
+      try {
+        const usr = yield apmForgotPassword(username);
+        callback(usr);
+      } catch (err) {
+        error(err);
+      }
+    },
+    * forgotPasswordSubmit({ payload, callback, error }, { call, put }) {
+      const { username } = payload;
+      const { code } = payload;
+      const { newPassword } = payload;
+      console.log('success', payload);
+      try {
+        const usr = yield apmForgotPasswordSubmit(username, code, newPassword);
+        callback(usr);
+      } catch (err) {
+        error(err);
+      }
+    },
+
+    * getRobots({ payload, callback, error }, { call, put }) {
+      const { organisation, jwtToken } = payload;
+      try {
+        let response = yield call(queryData, organisation, jwtToken);
+        response = response.map((obj) => ({
+          ...obj,
+          topics: JSON.parse(obj.topics),
+        }));
+        if (callback) {
+          callback(response);
+        }
+
+        yield put({
+          type: 'setState',
+          payload: {
+            robots: response,
+          },
+        });
+      } catch (err) {
+        console.log(err);
+        if (error) {
+          error(err);
         }
       }
     },
@@ -179,9 +243,9 @@ export default {
         secretAccessKey: null,
         identityId: null,
         username: null,
+        robots: [],
       };
       return newState;
     },
-
   },
 };
