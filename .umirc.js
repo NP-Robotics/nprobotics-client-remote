@@ -34,6 +34,10 @@ export default {
           path: '/dashboard',
           component: '../pages/dashboard.jsx',
         },
+        {
+          path: '/robotface',
+          component: '../pages/robotFace.jsx',
+        },
       ]
     },
 

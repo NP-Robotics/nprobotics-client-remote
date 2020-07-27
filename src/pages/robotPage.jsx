@@ -39,6 +39,7 @@ const RobotPage = ({
       const { robotName } = history.location.query;
       if (user.robots.length > 0) {
         const selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
+        console.log(selectedRobot);
         setState({
           ...state,
           ...selectedRobot,
