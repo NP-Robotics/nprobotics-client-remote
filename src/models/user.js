@@ -1,9 +1,12 @@
+import responsiveObserve from 'antd/lib/_util/responsiveObserve';
 import {
   ampSignIn,
   ampSignUp,
   ampGetSession,
   ampGetCredentials,
   ampGetAuthenticated,
+  apmForgotPassword,
+  apmForgotPasswordSubmit,
   ampSignOut,
 } from '../services/amplify';
 
@@ -177,10 +180,36 @@ export default {
         }
       }
     },
+    * forgotPassword({ payload, callback, error }, { call, put }) {
+      const { username } = payload;
+      try {
+        const usr = yield apmForgotPassword(username);
+        callback(usr);
+      } catch (err) {
+        error(err);
+      }
+    },
+    * forgotPasswordSubmit({ payload, callback, error }, { call, put }) {
+      const { username } = payload;
+      const { code } = payload;
+      const { newPassword } = payload;
+      console.log('success', payload);
+      try {
+        const usr = yield apmForgotPasswordSubmit(username, code, newPassword);
+        callback(usr);
+      } catch (err) {
+        error(err);
+      }
+    },
+
     * getRobots({ payload, callback, error }, { call, put }) {
       const { organisation, jwtToken } = payload;
       try {
-        const response = yield call(queryData, organisation, jwtToken);
+        let response = yield call(queryData, organisation, jwtToken);
+        response = response.map((obj) => ({
+          ...obj,
+          topics: JSON.parse(obj.topics),
+        }));
         if (callback) {
           callback(response);
         }

@@ -8,6 +8,7 @@
     "precommit": "lint-staged"
   },
   "dependencies": {
+    "amplify": "^0.0.11",
     "@ant-design/icons": "^4.2.1",
     "amazon-chime-sdk-js": "^1.12.0",
     "antd": "^4.4.1",

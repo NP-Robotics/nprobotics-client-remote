@@ -1,7 +1,7 @@
 # NP-Robotics Client.
 A serverless hosted website for management of deployed robots remotely built on AWS.
 
-Hosted on [AWS S3 Bucket.](http://nprobotics-client-remote.s3-website-us-east-1.amazonaws.com/)
+Hosted on [AWS S3 Bucket.](https://d288rhytyi5vkv.cloudfront.net/)
 
 ## Front-End Stacks:
 - **React Hooks**

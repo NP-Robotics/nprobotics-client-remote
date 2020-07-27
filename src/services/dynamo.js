@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import makeRequest from '../utils/request';
 // queryData = one parameter, getData = one specific robot
-// params = RobotID, MeetingRoom, organisation, endpoint, RobotName
+// params = RobotID, MeetingRoom, organisation, endpoint, robotName
 
 const makeDynamoRequest = (payload) => {
   const url = 'https://zuk89u6l8k.execute-api.us-east-1.amazonaws.com/dev/queryData';
