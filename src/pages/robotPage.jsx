@@ -76,7 +76,6 @@ const RobotPage = ({
   // cleanup when unmount
   useEffect(() => () => {
     if (meeting.joined) {
-      console.log('ending');
       dispatch({
         type: 'meeting/end',
         payload: {

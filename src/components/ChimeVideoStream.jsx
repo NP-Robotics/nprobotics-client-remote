@@ -4,9 +4,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'dva';
 
 import {
-  bindVideoElement,
-  bindAudioElement,
-  startMeetingSession,
   initMeeting,
   endMeeting,
 
@@ -48,7 +45,6 @@ const ChimeVideoStream = ({ meeting, style }) => {
 
   useEffect(() => () => {
     if (state.inProgress) {
-      console.log('ending heyhey');
       endMeeting();
       setState({
         ...state,

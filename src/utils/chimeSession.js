@@ -122,6 +122,5 @@ export const initMeeting = async (Meeting, Attendee, audioRef, videoRef) => {
 };
 
 export const endMeeting = () => {
-  console.log('end');
   meetingSession.audioVideo.stop();
 };
