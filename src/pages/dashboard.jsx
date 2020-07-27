@@ -27,7 +27,7 @@ const DashboardPage = ({ dispatch, history, user }) => {
   const columns = [
     {
       title: 'Robot',
-      dataIndex: 'RobotName',
+      dataIndex: 'robotName',
       key: 'robot',
       render: (text) => (
         <Link to={`/robot/?${queryString.stringify({ robotName: text })}`}>
