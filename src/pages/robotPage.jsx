@@ -1,12 +1,17 @@
 import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { DropdownButton, Dropdown } from 'react-bootstrap';
 
 import { connect } from 'dva';
-import { Button, message } from 'antd';
+import {
+  Button, message, Input, Tooltip,
+} from 'antd';
+import { ExportOutlined } from '@ant-design/icons';
 import { Joystick } from 'react-joystick-component';
 
 import ChimeVideoStream from '../components/ChimeVideoStream';
+
+const { TextArea } = Input;
+const text = <span>Type a message that will be said by the robot</span>;
 
 const RobotPage = ({ user, device, dispatch }) => {
   const [componentPos, setComponentPos] = useState({
@@ -123,40 +128,49 @@ const RobotPage = ({ user, device, dispatch }) => {
   const enableChatTextBox = () => {
     setState({ chatTextBox: true });
   };
+
+  function changeBackground(e) {
+    e.target.style.color = 'black';
+    e.target.style.borderColor = 'black';
+  }
+
   return (
-    <div style={{ textAlign: 'center' }}>
+    <div style={{ textAlign: 'center', margin: '2%' }}>
       <ChimeVideoStream />
       <div className="robotFunctions">
-        <DropdownButton hidden={!state.chimeConnect} id="emotes" title="Emotes">
-          <Dropdown.Item as="button" href="emote1">Wave</Dropdown.Item>
-          <Dropdown.Item as="button" href="emote2">Raise Arm</Dropdown.Item>
-          <Dropdown.Item as="button" href="emote3">Gang Sign</Dropdown.Item>
-        </DropdownButton>
-        <DropdownButton hidden={!state.chimeConnect} id="navigate" title="Navigate">
-          <Dropdown.Item as="button" href="waypoint1">Geylang</Dropdown.Item>
-          <Dropdown.Item as="button" href="waypoint2">Malaysia</Dropdown.Item>
-          <Dropdown.Item as="button" href="waypoint3">Tek Whye Lane</Dropdown.Item>
-        </DropdownButton>
-        <Button onClick={enableChatTextBox} hidden={!state.chimeConnect}>Chat</Button>
-        <input disabled={state.chatTextBox} hidden={!state.chimeConnect} />
-        <Button disabled={state.chatTextBox} hidden={!state.chimeConnect}>Submit</Button>
+        <div>
+          <Tooltip placement="bottom" title={text}>
+            <h2>Chat:</h2>
+          </Tooltip>
+        </div>
+        <div>
+          <TextArea placeholder="Type message here" autoSize={{ minRows: 3, maxRows: 10 }} style={{ width: '40%' }} />
+          <div style={{ margin: '1%' }} />
+          <Button onMouseOver={changeBackground} style={{ backgroundColor: '#4CAF50', borderRadius: '15%' }}>Send</Button>
+        </div>
       </div>
-      <h1>robot page</h1>
-      <Button onClick={connectOnClick}>connect</Button>
-      <Button onClick={lockOnClick}>{componentText.lockButton}</Button>
-      <Button onClick={chimeConnectOnClick}>chime connect</Button>
-      <Button onClick={chimeLeaveOnClick}> chime leave</Button>
+
+      <div>
+        <Button
+          icon={<ExportOutlined />}
+          type="primary"
+          style={{
+            position: 'fixed', right: '2%', top: '9%', backgroundColor: 'red', borderColor: 'red', borderRadius: '15%',
+          }}
+        >
+          Leave
+        </Button>
+      </div>
 
       <div
-        draggable={!componentPos.locked}
         onDragEnd={joystickOnDrag}
         style={{
-          position: 'absolute',
-          left: `${String(componentPos.joystick.x)}px`,
-          top: `${String(componentPos.joystick.y)}px`,
+          position: 'fixed',
+          right: '10%',
+          bottom: '15%',
         }}
       >
-        <Joystick ref={joystickRef} size={100} baseColor="red" stickColor="blue" move={joystickOnMove} stop={joystickOnStop} disabled={!componentPos.locked} />
+        <Joystick ref={joystickRef} size={100} baseColor="grey" stickColor="green" move={joystickOnMove} stop={joystickOnStop} />
       </div>
     </div>
   );
