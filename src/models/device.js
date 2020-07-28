@@ -62,6 +62,11 @@ export default {
         return state;
       }
     },
+    disconnectDevice(state) {
+      const { device } = state;
+      device.end();
+      return state;
+    },
     publishCmdVel(state, { payload }) {
       const { device } = state;
       const twistMsg = {
@@ -86,6 +91,52 @@ export default {
 
       return state;
     },
+    publishVoiceMessage(state, { payload }) {
+      const { device } = state;
+      const voiceMsg = {
+        data: payload.data,
+      };
+      if (device) {
+        try {
+          device.publish('/voice_message', JSON.stringify(voiceMsg));
+        } catch (err) {
+          console.log(err);
+        }
+      }
+      return state;
+    },
+    publishEmote(state, { payload }) {
+      const { device } = state;
+      const emoteMsg = {
+        data: payload.emote,
+      };
+      if (device) {
+        try {
+          device.publish('/emote_topic', JSON.stringify(emoteMsg));
+        } catch (err) {
+          console.log(err);
+        }
+      }
 
+      return state;
+    },
+
+    publishNavigate(state, { payload }) {
+      const { device } = state;
+      const navigateMsg = {
+        sequence: [{
+          location: payload.location,
+          task: '',
+        }],
+      };
+      if (device) {
+        try {
+          device.publish('/web_service/waypoint_sequence', JSON.stringify(navigateMsg));
+        } catch (err) {
+          console.log(err);
+        }
+      }
+      return state;
+    },
   },
 };
