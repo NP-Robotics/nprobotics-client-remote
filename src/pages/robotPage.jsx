@@ -198,6 +198,7 @@ const RobotPage = ({
         }}
       />
       {' '}
+      <Button onClick={connectOnClick}>connect IOT</Button>
 
       <div className="robotFunctions">
         <div style={{ textAlign: 'center' }}>
