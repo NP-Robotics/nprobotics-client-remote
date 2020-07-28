@@ -78,6 +78,28 @@ const RobotPage = ({
           history.push('/dashboard');
         },
       });
+
+      dispatch({
+        type: 'device/initDevice',
+        payload: {
+          host: 'a17t8rhn8oueg6-ats.iot.us-east-1.amazonaws.com',
+          clientID: user.username,
+          accessKeyId: user.accessKeyId,
+          secretKey: user.secretAccessKey,
+          sessionToken: user.sessionToken,
+        },
+        callback: (event) => {
+          message.success('Connected!');
+        },
+        error: (error) => {
+          if (error) {
+            message.error(error.message);
+            return null;
+          }
+          message.warn('Unable to connect to Robot');
+          return null;
+        },
+      });
     }
   }, [state, meeting, user, dispatch, history]);
 
@@ -92,6 +114,9 @@ const RobotPage = ({
           jwtToken: user.jwtToken,
           meetingName: state.meetingName,
         },
+      });
+      dispatch({
+        type: 'device/disconnectDevice',
       });
     }
   });
@@ -192,17 +217,46 @@ const RobotPage = ({
     e.target.style.borderColor = 'black';
   }
 
+  const emoteClick = () => {
+    dispatch({
+      type: 'device/publishEmote',
+      payload: {
+        emote: 'myemote',
+      },
+    });
+  };
+
+  const handleMenuClick = (e) => {
+    console.log('click', e);
+    if (e.key === '1') {
+      dispatch({
+        type: 'device/publishNavigate',
+        payload: {
+          location: 'location1',
+        },
+      });
+    } else if (e.key === '2') {
+      dispatch({
+        type: 'device/publishNavigate',
+        payload: {
+          location: 'location2',
+        },
+      });
+    } else if (e.key === '3') {
+      dispatch({
+        type: 'device/publishNavigate',
+        payload: {
+          location: 'location3',
+        },
+      });
+    }
+  };
+
   const menu = (
-    <Menu>
-      <Menu.Item>
-        <Button>Location1</Button>
-      </Menu.Item>
-      <Menu.Item>
-        <Button>Location2</Button>
-      </Menu.Item>
-      <Menu.Item>
-        <Button>Location3</Button>
-      </Menu.Item>
+    <Menu onClick={handleMenuClick}>
+      <Menu.Item key="1">Location1</Menu.Item>
+      <Menu.Item key="2">Location2</Menu.Item>
+      <Menu.Item key="3">Location3</Menu.Item>
     </Menu>
   );
 
@@ -218,25 +272,23 @@ const RobotPage = ({
         }}
       />
       {' '}
-      <Button onClick={connectOnClick}>connect IOT</Button>
-
       <div className="robotFunctions">
         <div style={{ textAlign: 'center' }}>
           <div
             className="Emote"
             trigger={['click']}
             style={{
-              position: 'fixed', right: '5%', top: '30%', width: '15%', height: '10%',
+              position: 'fixed', right: '5.2%', top: '30%', width: '15%', height: '10%',
             }}
           >
-            <Button icon={<SmileOutlined />}>Emote</Button>
+            <Button icon={<SmileOutlined />} onClick={emoteClick}> Emote </Button>
           </div>
 
           <div
             className="Navigation"
             trigger={['click']}
             style={{
-              position: 'fixed', right: '5%', top: '40%', width: '15%', height: '10%',
+              position: 'fixed', right: '5.2%', top: '35%', width: '15%', height: '10%',
             }}
           >
             <Dropdown overlay={menu}>
