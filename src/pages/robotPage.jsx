@@ -181,17 +181,37 @@ const RobotPage = ({
     });
   };
 
+  const handleMenuClick = (e) => {
+    console.log('click', e);
+    if (e.key === '1') {
+      dispatch({
+        type: 'device/publishNavigate',
+        payload: {
+          location: 'location1',
+        },
+      });
+    } else if (e.key === '2') {
+      dispatch({
+        type: 'device/publishNavigate',
+        payload: {
+          location: 'location2',
+        },
+      });
+    } else if (e.key === '3') {
+      dispatch({
+        type: 'device/publishNavigate',
+        payload: {
+          location: 'location3',
+        },
+      });
+    }
+  };
+
   const menu = (
-    <Menu>
-      <Menu.Item>
-        <Button>Location1</Button>
-      </Menu.Item>
-      <Menu.Item>
-        <Button>Location2</Button>
-      </Menu.Item>
-      <Menu.Item>
-        <Button>Location3</Button>
-      </Menu.Item>
+    <Menu onClick={handleMenuClick}>
+      <Menu.Item key="1">Location1</Menu.Item>
+      <Menu.Item key="2">Location2</Menu.Item>
+      <Menu.Item key="3">Location3</Menu.Item>
     </Menu>
   );
 
@@ -215,17 +235,17 @@ const RobotPage = ({
             className="Emote"
             trigger={['click']}
             style={{
-              position: 'fixed', right: '5%', top: '30%', width: '15%', height: '10%',
+              position: 'fixed', right: '5.2%', top: '30%', width: '15%', height: '10%',
             }}
           >
-            <Button icon={<SmileOutlined />} onClick={emoteClick}>Emote</Button>
+            <Button icon={<SmileOutlined />} onClick={emoteClick}> Emote </Button>
           </div>
 
           <div
             className="Navigation"
             trigger={['click']}
             style={{
-              position: 'fixed', right: '5%', top: '40%', width: '15%', height: '10%',
+              position: 'fixed', right: '5.2%', top: '35%', width: '15%', height: '10%',
             }}
           >
             <Dropdown overlay={menu}>
