@@ -86,7 +86,20 @@ export default {
 
       return state;
     },
-
+    publishVoiceMessage(state, { payload }) {
+      const { device } = state;
+      const voiceMsg = {
+        message: payload.data,
+      };
+      if (device) {
+        try {
+          device.publish('/voice_message', JSON.stringify(voiceMsg));
+        } catch (err) {
+          console.log(err);
+        }
+      }
+      return state;
+    },
     publishEmote(state, { payload }) {
       const { device } = state;
       const emoteMsg = {
@@ -118,7 +131,6 @@ export default {
           console.log(err);
         }
       }
-
       return state;
     },
   },

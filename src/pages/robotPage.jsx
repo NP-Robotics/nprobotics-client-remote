@@ -167,6 +167,25 @@ const RobotPage = ({
     setState({ chatTextBox: true });
   };
 
+  const sendText = () => {
+    const voiceMsg = msg;
+    dispatch({
+      type: 'device/publishVoiceMessage',
+      payload: {
+        data: voiceMsg,
+      },
+    });
+  };
+
+  let msg;
+  const handleChange = (event) => {
+    msg = event.target.value;
+  };
+
+  const leaveRoom = () => {
+    history.push('/dashboard');
+  };
+
   function changeBackground(e) {
     e.target.style.color = 'black';
     e.target.style.borderColor = 'black';
@@ -260,14 +279,27 @@ const RobotPage = ({
           </Tooltip>
         </div>
         <div>
-          <TextArea placeholder="Type message here" autoSize={{ minRows: 3, maxRows: 10 }} style={{ width: '40%' }} />
+          <TextArea
+            onChange={handleChange}
+            onPressEnter={sendText}
+            placeholder="Type message here"
+            autoSize={{ minRows: 3, maxRows: 10 }}
+            style={{ width: '40%' }}
+          />
           <div style={{ margin: '1%' }} />
-          <Button onMouseOver={changeBackground} style={{ backgroundColor: '#4CAF50', borderRadius: '15%' }}>Send</Button>
+          <Button
+            onMouseOver={changeBackground}
+            onClick={sendText}
+            style={{ backgroundColor: '#4CAF50', borderRadius: '15%' }}
+          >
+            Send
+          </Button>
         </div>
       </div>
 
       <div>
         <Button
+          onClick={leaveRoom}
           icon={<ExportOutlined />}
           type="primary"
           style={{
