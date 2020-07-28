@@ -2,10 +2,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { connect } from 'dva';
-import { Button, message } from 'antd';
+import {
+  Button, message, Input, Tooltip, Menu, Dropdown,
+} from 'antd';
+import { ExportOutlined, SmileOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { Joystick } from 'react-joystick-component';
 
 import ChimeVideoStream from '../components/ChimeVideoStream';
+
+const { TextArea } = Input;
+const text = <span>Type a message that will be said by the robot</span>;
 
 const RobotPage = ({
   user, meeting, dispatch, history,
@@ -14,6 +20,8 @@ const RobotPage = ({
     robotName: null,
     meetingName: null,
     attemptedJoin: false,
+    chimeConnect: false,
+    chatTextBox: false,
   });
   const [componentPos, setComponentPos] = useState({
     locked: false,
@@ -39,6 +47,7 @@ const RobotPage = ({
       const { robotName } = history.location.query;
       if (user.robots.length > 0) {
         const selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
+        console.log(selectedRobot);
         setState({
           ...state,
           ...selectedRobot,
@@ -68,6 +77,28 @@ const RobotPage = ({
           history.push('/dashboard');
         },
       });
+
+      dispatch({
+        type: 'device/initDevice',
+        payload: {
+          host: 'a17t8rhn8oueg6-ats.iot.us-east-1.amazonaws.com',
+          clientID: user.username,
+          accessKeyId: user.accessKeyId,
+          secretKey: user.secretAccessKey,
+          sessionToken: user.sessionToken,
+        },
+        callback: (event) => {
+          message.success('Connected!');
+        },
+        error: (error) => {
+          if (error) {
+            message.error(error.message);
+            return null;
+          }
+          message.warn('Unable to connect to Robot');
+          return null;
+        },
+      });
     }
   }, [state, meeting, user, dispatch, history]);
 
@@ -82,6 +113,9 @@ const RobotPage = ({
           jwtToken: user.jwtToken,
           meetingName: state.meetingName,
         },
+      });
+      dispatch({
+        type: 'device/disconnectDevice',
       });
     }
   });
@@ -153,32 +187,162 @@ const RobotPage = ({
       },
     });
   };
+
+  const enableChatTextBox = () => {
+    setState({ chatTextBox: true });
+  };
+
+  const sendText = () => {
+    const voiceMsg = msg;
+    dispatch({
+      type: 'device/publishVoiceMessage',
+      payload: {
+        data: voiceMsg,
+      },
+    });
+  };
+
+  let msg;
+  const handleChange = (event) => {
+    msg = event.target.value;
+  };
+
+  const leaveRoom = () => {
+    history.push('/dashboard');
+  };
+
+  function changeBackground(e) {
+    e.target.style.color = 'black';
+    e.target.style.borderColor = 'black';
+  }
+
+  const emoteClick = () => {
+    dispatch({
+      type: 'device/publishEmote',
+      payload: {
+        emote: 'myemote',
+      },
+    });
+  };
+
+  const handleMenuClick = (e) => {
+    console.log('click', e);
+    if (e.key === '1') {
+      dispatch({
+        type: 'device/publishNavigate',
+        payload: {
+          location: 'location1',
+        },
+      });
+    } else if (e.key === '2') {
+      dispatch({
+        type: 'device/publishNavigate',
+        payload: {
+          location: 'location2',
+        },
+      });
+    } else if (e.key === '3') {
+      dispatch({
+        type: 'device/publishNavigate',
+        payload: {
+          location: 'location3',
+        },
+      });
+    }
+  };
+
+  const menu = (
+    <Menu onClick={handleMenuClick}>
+      <Menu.Item key="1">Location1</Menu.Item>
+      <Menu.Item key="2">Location2</Menu.Item>
+      <Menu.Item key="3">Location3</Menu.Item>
+    </Menu>
+  );
+
   return (
-    <div style={{ }}>
+
+    <div style={{ textAlign: 'center', margin: '2%' }}>
       <ChimeVideoStream
-        endpoint={state.endpoint}
         style={{
+          width: '50vw',
+          height: '50vh',
+          backgroundColor: 'black',
           margin: '0 auto',
         }}
       />
-      {/* <h1>robot page</h1>
-      <Button onClick={connectOnClick}>connect</Button>
-      <Button onClick={lockOnClick}>{componentText.lockButton}</Button>
-      <Button onClick={chimeConnectOnClick}>chime connect</Button>
-      <Button onClick={chimeLeaveOnClick}> chime leave</Button>
+      {' '}
+      <div className="robotFunctions">
+        <div style={{ textAlign: 'center' }}>
+          <div
+            className="Emote"
+            trigger={['click']}
+            style={{
+              position: 'fixed', right: '5.2%', top: '30%', width: '15%', height: '10%',
+            }}
+          >
+            <Button icon={<SmileOutlined />} onClick={emoteClick}> Emote </Button>
+          </div>
+
+          <div
+            className="Navigation"
+            trigger={['click']}
+            style={{
+              position: 'fixed', right: '5.2%', top: '35%', width: '15%', height: '10%',
+            }}
+          >
+            <Dropdown overlay={menu}>
+              <Button icon={<EnvironmentOutlined />}>Navigate</Button>
+            </Dropdown>
+          </div>
+        </div>
+
+        <div>
+          <Tooltip placement="bottom" title={text}>
+            <h2>Chat:</h2>
+          </Tooltip>
+        </div>
+        <div>
+          <TextArea
+            onChange={handleChange}
+            onPressEnter={sendText}
+            placeholder="Type message here"
+            autoSize={{ minRows: 3, maxRows: 10 }}
+            style={{ width: '40%' }}
+          />
+          <div style={{ margin: '1%' }} />
+          <Button
+            onMouseOver={changeBackground}
+            onClick={sendText}
+            style={{ backgroundColor: '#4CAF50', borderRadius: '15%' }}
+          >
+            Send
+          </Button>
+        </div>
+      </div>
+
+      <div>
+        <Button
+          onClick={leaveRoom}
+          icon={<ExportOutlined />}
+          type="primary"
+          style={{
+            position: 'fixed', right: '2%', top: '9%', backgroundColor: 'red', borderColor: 'red', borderRadius: '15%',
+          }}
+        >
+          Leave
+        </Button>
+      </div>
 
       <div
-        draggable={!componentPos.locked}
         onDragEnd={joystickOnDrag}
         style={{
-          position: 'absolute',
-          left: `${String(componentPos.joystick.x)}px`,
-          top: `${String(componentPos.joystick.y)}px`,
+          position: 'fixed',
+          right: '10%',
+          bottom: '15%',
         }}
       >
-        <Joystick ref={joystickRef} size={100} baseColor="red" stickColor="blue"
-        move={joystickOnMove} stop={joystickOnStop} disabled={!componentPos.locked} />
-      </div> */}
+        <Joystick ref={joystickRef} size={100} baseColor="grey" stickColor="green" move={joystickOnMove} stop={joystickOnStop} />
+      </div>
     </div>
   );
 };
