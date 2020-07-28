@@ -87,5 +87,20 @@ export default {
       return state;
     },
 
+    publishEmote(state, { payload }) {
+      const { device } = state;
+      const twistMsg = {
+        data: payload.emote,
+      };
+      if (device) {
+        try {
+          device.publish('/emote_topic', JSON.stringify(twistMsg));
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      return state;
+    },
   },
 };

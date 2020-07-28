@@ -171,6 +171,15 @@ const RobotPage = ({
     e.target.style.borderColor = 'black';
   }
 
+  const emoteClick = () => {
+    dispatch({
+      type: 'device/publishEmote',
+      payload: {
+        emote: 'myemote',
+      },
+    });
+  };
+
   const menu = (
     <Menu>
       <Menu.Item>
@@ -207,7 +216,7 @@ const RobotPage = ({
               position: 'fixed', right: '5%', top: '30%', width: '15%', height: '10%',
             }}
           >
-            <Button icon={<SmileOutlined />}>Emote</Button>
+            <Button icon={<SmileOutlined />} onClick={emoteClick}>Emote</Button>
           </div>
 
           <div
