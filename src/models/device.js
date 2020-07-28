@@ -98,6 +98,7 @@ export default {
           console.log(err);
         }
       }
+      return state;
     },
     publishEmote(state, { payload }) {
       const { device } = state;
