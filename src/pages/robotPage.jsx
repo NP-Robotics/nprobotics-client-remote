@@ -14,7 +14,7 @@ const { TextArea } = Input;
 const text = <span>Type a message that will be said by the robot</span>;
 
 const RobotPage = ({
-  user, meeting, dispatch, history,
+  user, meeting, dispatch, history, messagebox,
 }) => {
   const [state, setState] = useState({
     robotName: null,
@@ -22,6 +22,7 @@ const RobotPage = ({
     attemptedJoin: false,
     chimeConnect: false,
     chatTextBox: false,
+    messagebox: null,
   });
   const [componentPos, setComponentPos] = useState({
     locked: false,
@@ -168,18 +169,18 @@ const RobotPage = ({
   };
 
   const sendText = () => {
-    const voiceMsg = msg;
+    const voiceMsg = state.messagebox;
     dispatch({
       type: 'device/publishVoiceMessage',
       payload: {
         data: voiceMsg,
       },
     });
+    setState({ messagebox: null });
   };
 
-  let msg;
   const handleChange = (event) => {
-    msg = event.target.value;
+    setState({ messagebox: event.target.value });
   };
 
   const leaveRoom = () => {
@@ -190,15 +191,6 @@ const RobotPage = ({
     e.target.style.color = 'black';
     e.target.style.borderColor = 'black';
   }
-
-  const emoteClick = () => {
-    dispatch({
-      type: 'device/publishEmote',
-      payload: {
-        emote: 'myemote',
-      },
-    });
-  };
 
   const menu = (
     <Menu>
@@ -237,7 +229,7 @@ const RobotPage = ({
               position: 'fixed', right: '5%', top: '30%', width: '15%', height: '10%',
             }}
           >
-            <Button icon={<SmileOutlined />} onClick={emoteClick}>Emote</Button>
+            <Button icon={<SmileOutlined />}>Emote</Button>
           </div>
 
           <div
@@ -260,8 +252,8 @@ const RobotPage = ({
         </div>
         <div>
           <TextArea
+            value={state.messagebox}
             onChange={handleChange}
-            onPressEnter={sendText}
             placeholder="Type message here"
             autoSize={{ minRows: 3, maxRows: 10 }}
             style={{ width: '40%' }}
@@ -327,6 +319,7 @@ RobotPage.propTypes = {
   meeting: PropTypes.shape({
     joined: PropTypes.bool,
   }),
+  messagebox: PropTypes.shape({}),
 };
 
 RobotPage.defaultProps = {
@@ -338,6 +331,7 @@ RobotPage.defaultProps = {
   meeting: {
     joined: false,
   },
+  messagebox: {},
 };
 
 export default connect(({ user, device, meeting }) => ({ user, device, meeting }))(RobotPage);
