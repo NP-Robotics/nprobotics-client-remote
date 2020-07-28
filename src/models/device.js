@@ -94,7 +94,7 @@ export default {
     publishVoiceMessage(state, { payload }) {
       const { device } = state;
       const voiceMsg = {
-        message: payload.data,
+        data: payload.data,
       };
       if (device) {
         try {
