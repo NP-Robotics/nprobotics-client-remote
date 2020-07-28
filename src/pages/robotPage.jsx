@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 
 import { connect } from 'dva';
 import {
-  Button, message, Input, Tooltip,
+  Button, message, Input, Tooltip, Menu, Dropdown,
 } from 'antd';
-import { ExportOutlined } from '@ant-design/icons';
+import { ExportOutlined, SmileOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { Joystick } from 'react-joystick-component';
 
 import ChimeVideoStream from '../components/ChimeVideoStream';
@@ -172,7 +172,22 @@ const RobotPage = ({
     e.target.style.borderColor = 'black';
   }
 
+  const menu = (
+    <Menu>
+      <Menu.Item>
+        <Button>Location1</Button>
+      </Menu.Item>
+      <Menu.Item>
+        <Button>Location2</Button>
+      </Menu.Item>
+      <Menu.Item>
+        <Button>Location3</Button>
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
+
     <div style={{ textAlign: 'center', margin: '2%' }}>
       <ChimeVideoStream
         style={{
@@ -183,7 +198,32 @@ const RobotPage = ({
         }}
       />
       {' '}
+
       <div className="robotFunctions">
+        <div style={{ textAlign: 'center' }}>
+          <div
+            className="Emote"
+            trigger={['click']}
+            style={{
+              position: 'fixed', right: '5%', top: '30%', width: '15%', height: '10%',
+            }}
+          >
+            <Button icon={<SmileOutlined />}>Emote</Button>
+          </div>
+
+          <div
+            className="Navigation"
+            trigger={['click']}
+            style={{
+              position: 'fixed', right: '5%', top: '40%', width: '15%', height: '10%',
+            }}
+          >
+            <Dropdown overlay={menu}>
+              <Button icon={<EnvironmentOutlined />}>Navigate</Button>
+            </Dropdown>
+          </div>
+        </div>
+
         <div>
           <Tooltip placement="bottom" title={text}>
             <h2>Chat:</h2>
