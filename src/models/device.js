@@ -62,6 +62,11 @@ export default {
         return state;
       }
     },
+    disconnectDevice(state) {
+      const { device } = state;
+      device.end();
+      return state;
+    },
     publishCmdVel(state, { payload }) {
       const { device } = state;
       const twistMsg = {
