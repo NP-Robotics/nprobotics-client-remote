@@ -14,7 +14,7 @@ const { TextArea } = Input;
 const text = <span>Type a message that will be said by the robot</span>;
 
 const RobotPage = ({
-  user, meeting, dispatch, history,
+  user, meeting, dispatch, history, messagebox,
 }) => {
   const [state, setState] = useState({
     robotName: null,
@@ -22,6 +22,7 @@ const RobotPage = ({
     attemptedJoin: false,
     chimeConnect: false,
     chatTextBox: false,
+    messagebox: null,
   });
   const [componentPos, setComponentPos] = useState({
     locked: false,
@@ -193,21 +194,33 @@ const RobotPage = ({
   };
 
   const sendText = () => {
-    const voiceMsg = msg;
+    const voiceMsg = state.messagebox;
     dispatch({
       type: 'device/publishVoiceMessage',
       payload: {
         data: voiceMsg,
       },
     });
+    setState({ messagebox: null });
   };
 
-  let msg;
   const handleChange = (event) => {
-    msg = event.target.value;
+    setState({ messagebox: event.target.value });
   };
 
   const leaveRoom = () => {
+    if (meeting.joined) {
+      dispatch({
+        type: 'meeting/end',
+        payload: {
+          jwtToken: user.jwtToken,
+          meetingName: state.meetingName,
+        },
+      });
+      dispatch({
+        type: 'device/disconnectDevice',
+      });
+    }
     history.push('/dashboard');
   };
 
@@ -231,21 +244,21 @@ const RobotPage = ({
       dispatch({
         type: 'device/publishNavigate',
         payload: {
-          location: 'location1',
+          location: 1,
         },
       });
     } else if (e.key === '2') {
       dispatch({
         type: 'device/publishNavigate',
         payload: {
-          location: 'location2',
+          location: 2,
         },
       });
     } else if (e.key === '3') {
       dispatch({
         type: 'device/publishNavigate',
         payload: {
-          location: 'location3',
+          location: 3,
         },
       });
     }
@@ -303,8 +316,8 @@ const RobotPage = ({
         </div>
         <div>
           <TextArea
+            value={state.messagebox}
             onChange={handleChange}
-            onPressEnter={sendText}
             placeholder="Type message here"
             autoSize={{ minRows: 3, maxRows: 10 }}
             style={{ width: '40%' }}
@@ -370,6 +383,7 @@ RobotPage.propTypes = {
   meeting: PropTypes.shape({
     joined: PropTypes.bool,
   }),
+  messagebox: PropTypes.shape({}),
 };
 
 RobotPage.defaultProps = {
@@ -381,6 +395,7 @@ RobotPage.defaultProps = {
   meeting: {
     joined: false,
   },
+  messagebox: {},
 };
 
 export default connect(({ user, device, meeting }) => ({ user, device, meeting }))(RobotPage);
