@@ -208,6 +208,18 @@ const RobotPage = ({
   };
 
   const leaveRoom = () => {
+    if (meeting.joined) {
+      dispatch({
+        type: 'meeting/end',
+        payload: {
+          jwtToken: user.jwtToken,
+          meetingName: state.meetingName,
+        },
+      });
+      dispatch({
+        type: 'device/disconnectDevice',
+      });
+    }
     history.push('/dashboard');
   };
 
