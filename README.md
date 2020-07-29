@@ -21,7 +21,7 @@ Go study React and React Hooks. Watch some youtube videos on it.
 
 Im sorry but documentation on UmiJS and DvaJS is entirely in chinese and there are no youtube videos to teach you how to work with that. Closest there is to working with state management packages like DvaJS is Redux Sagas. So check that out. After that, maybe google translate the DvaJS documentation and read through the [Model Docs](https://dvajs.com/api/#model) for Dva. It explains it pretty well.
 
-[UmiJS](https://umijs.org/) documentation is pretty decent even after google translating the pages. It's also pretty simple.
+[UmiJS](https://v2.umijs.org/) documentation is pretty decent even after google translating the pages. It's also pretty simple.
 
 If you can survive and actually contribute to the repo following the code structure and good practices with no prior knowledge of web development, you're a legend. I will treat you to a meal.
 
