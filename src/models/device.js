@@ -123,15 +123,85 @@ export default {
 
     publishNavigate(state, { payload }) {
       const { device } = state;
-      const navigateMsg = {
-        sequence: [{
-          location: payload.location,
-          task: '',
-        }],
-      };
+
+      let navigateMsg = null;
+
+      if (payload.location === 1) {
+        navigateMsg = {
+          header: {
+            seq: 2,
+            stamp: {
+              secs: 0,
+              nsecs: 0,
+            },
+            frame_id: 'map',
+          },
+          pose: {
+            position: {
+              x: 6.43220822289,
+              y: 4.13017857761,
+              z: 0.0,
+            },
+            orientation: {
+              x: 0.0,
+              y: 0.0,
+              z: -0.958923310547,
+              w: 0.283665444651,
+            },
+          },
+        };
+      } else if (payload.location === 2) {
+        navigateMsg = {
+          header: {
+            seq: 1,
+            stamp: {
+              secs: 0,
+              nsecs: 0,
+            },
+            frame_id: 'map',
+          },
+          pose: {
+            position: {
+              x: 2.50322243559,
+              y: 2.39157362805,
+              z: 0.0,
+            },
+            orientation: {
+              x: 0.0,
+              y: 0.0,
+              z: 0.536790828756,
+              w: 0.843715358497,
+            },
+          },
+        };
+      } else if (payload.location === 3) {
+        navigateMsg = {
+          header: {
+            seq: 3,
+            stamp: {
+              secs: 0,
+              nsecs: 0,
+            },
+            frame_id: 'map',
+          },
+          pose: {
+            position: {
+              x: 5.19174225103,
+              y: 5.28236000585,
+              z: 0.0,
+            },
+            orientation: {
+              x: 0.0,
+              y: 0.0,
+              z: -0.814106932353,
+              w: 0.580714992655,
+            },
+          },
+        };
+      }
       if (device) {
         try {
-          device.publish('/web_service/waypoint_sequence', JSON.stringify(navigateMsg));
+          device.publish('/move_base_simple/goal', JSON.stringify(navigateMsg));
         } catch (err) {
           console.log(err);
         }

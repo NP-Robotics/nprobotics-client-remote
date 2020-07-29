@@ -231,21 +231,21 @@ const RobotPage = ({
       dispatch({
         type: 'device/publishNavigate',
         payload: {
-          location: 'location1',
+          location: 1,
         },
       });
     } else if (e.key === '2') {
       dispatch({
         type: 'device/publishNavigate',
         payload: {
-          location: 'location2',
+          location: 2,
         },
       });
     } else if (e.key === '3') {
       dispatch({
         type: 'device/publishNavigate',
         payload: {
-          location: 'location3',
+          location: 3,
         },
       });
     }
