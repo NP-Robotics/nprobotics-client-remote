@@ -7,6 +7,7 @@ import {
 } from 'antd';
 import Link from 'umi/link';
 import NPLogo from '../assets/np_logo.png';
+import style from './login.css';
 
 const LoginPage = ({ dispatch, history }) => {
   const [state, setState] = useState({
@@ -38,8 +39,8 @@ const LoginPage = ({ dispatch, history }) => {
   };
 
   return (
-    <div style={{ textAlign: 'center' }}>
-      <div>
+    <div className={style.backgroundContainer}>
+      <div className={style.roundedBox}>
         <img src={NPLogo} alt="NPLogo" />
       </div>
       <h1>login</h1>
