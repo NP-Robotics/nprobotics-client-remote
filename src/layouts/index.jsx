@@ -1,9 +1,9 @@
-/* eslint-disable linebreak-style */
 import React from 'react';
 import { connect } from 'dva';
 import PropTypes from 'prop-types';
 import { Spin, Layout } from 'antd';
 import HeaderComponent from '../components/header';
+import style from './index.css';
 
 const {
   Content,
@@ -23,11 +23,6 @@ const IndexLayout = ({ children, history, user }) => {
     );
   }
   if (history.location.pathname === '/robotface') {
-    return (
-      children
-    );
-  }
-  if (history.location.pathname === '/login') {
     return (
       children
     );
