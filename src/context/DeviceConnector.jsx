@@ -1,5 +1,5 @@
 import React, {
-  useState, useRef, useEffect, useContext, createContext,
+  useState, useRef, useEffect, createContext,
 } from 'react';
 
 import awsIot from 'aws-iot-device-sdk';
@@ -8,16 +8,11 @@ import PropTypes from 'prop-types';
 export const DeviceContext = createContext(null);
 
 const DeviceProvider = ({ children }) => {
-  const [state, setState] = useState({
-    device: null,
-    initDevice,
-    disconnectDevice,
-    publishMessage,
-  });
+  const [device, setDevice] = useState(null);
 
   const initDevice = ({ payload, callback, error }) => {
     try {
-      const device = awsIot.device({
+      const _device = awsIot.device({
         host: payload.host,
         clientId: payload.clientId,
         protocol: 'wss',
@@ -27,42 +22,43 @@ const DeviceProvider = ({ children }) => {
         region: 'us-east-1',
         debug: true,
       });
-      device.on('connect', () => {
+      _device.on('connect', () => {
         console.log('connected!');
         callback();
       });
-      device.on('error', (err) => {
+      _device.on('error', (err) => {
         console.log('error', err);
         error(err);
       });
-      device
+      _device
         .on('offline', () => {
           console.log('offline');
           error();
         });
-      device
+      _device
         .on('reconnect', () => {
           console.log('reconnect');
           error();
         });
-      setState({
-        device,
-        ...state,
-      });
+      setDevice(_device);
     } catch (err) {
       error(err);
     }
   };
 
   const disconnectDevice = () => {
-    state.device.end();
-    delete state.device;
+    if (device) {
+      device.end();
+    }
+    setDevice(null);
+    console.log('ended');
+    console.log('my device', device);
   };
 
-  const publishMessage = (topic, payload) => {
-    if (state.device) {
+  const publishMessage = ({ topic, payload }) => {
+    if (device) {
       try {
-        state.device.publish(topic, JSON.stringify(payload));
+        device.publish(topic, JSON.stringify(payload));
       } catch (err) {
         console.log(err);
       }
@@ -70,7 +66,13 @@ const DeviceProvider = ({ children }) => {
   };
 
   return (
-    <DeviceContext.Provider value={state}>
+    <DeviceContext.Provider value={{
+      device,
+      initDevice,
+      disconnectDevice,
+      publishMessage,
+    }}
+    >
       {children}
     </DeviceContext.Provider>
   );
