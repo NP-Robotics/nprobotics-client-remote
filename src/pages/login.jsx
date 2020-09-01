@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
-import {
-  Form, Input, Button, Checkbox, message,
-} from 'antd';
+import { Form, Input, Button, Checkbox, message } from 'antd';
 import Link from 'umi/link';
+import style from './login.css';
+import NPLogo from '../assets/np_logo.png';
 
 const LoginPage = ({ dispatch, history }) => {
   const [state, setState] = useState({
     submitting: false,
   });
 
-  const onFinish = (values) => {
+  const onFinish = values => {
     setState({ submitting: true });
     dispatch({
       type: 'user/signIn',
@@ -19,62 +19,76 @@ const LoginPage = ({ dispatch, history }) => {
         username: values.username,
         password: values.password,
       },
-      callback: (user) => {
+      callback: user => {
         console.log('Login Success');
         console.log(user);
         history.push('/dashboard');
       },
-      error: (err) => {
+      error: err => {
         message.info(err.message);
         setState({ submitting: false });
       },
     });
   };
 
-  const onFinishFailed = (errorInfo) => {
+  const onFinishFailed = errorInfo => {
     console.log('Failed:', errorInfo);
   };
 
   return (
-    <div style={{ textAlign: 'center' }}>
-      <h1>login</h1>
-      <Form
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 8 }}
-        name="basic"
-        initialValues={{ remember: true }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-      >
-        <Form.Item
-          label="Username"
-          name="username"
-          rules={[{ required: true, message: 'Please input your username!' }]}
-        >
-          <Input />
-        </Form.Item>
+    <div>
+      <div className={style.background}>
+        <div className={style.box}>
+          <img src={NPLogo} alt="Ngee Ann Logo" className={style.image} />
+          <div className={style.header}>Sign in to your account</div>
+          <Form
+            initialValues={{ remember: true }}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+          >
+            <Form.Item
+              name="username"
+              type="text"
+              placeholder="Username"
+              rules={[{ required: true, message: 'Please input your username' }]}
+            >
+              <Input className={style.username} />
+            </Form.Item>
 
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[{ required: true, message: 'Please input your password!' }]}
-        >
-          <Input.Password />
-        </Form.Item>
+            <Form.Item
+              name="password"
+              type="text"
+              placeholder="Password"
+              rules={[{ required: true, message: 'Please input your password' }]}
+            >
+              <Input className={style.password} />
+            </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 8, span: 8 }} name="remember" valuePropName="checked">
-          <Checkbox>Remember me</Checkbox>
-        </Form.Item>
+            <div className={style.remember}>
+              <Form.Item name="remember" valuePropName="checked">
+                <Checkbox>Remember me</Checkbox>
+              </Form.Item>
+            </div>
 
-        <Form.Item wrapperCol={{ offset: 8, span: 8 }}>
-          <Button type="primary" htmlType="submit" disabled={state.submitting}>
-            Submit
-          </Button>
-        </Form.Item>
-        <Link to="/forgotpassword">
-          <p>Forgot password?</p>
-        </Link>
-      </Form>
+            <div>
+              <Form.Item>
+                <Button
+                  className={style.button}
+                  type="primary"
+                  htmlType="submit"
+                  disabled={state.submitting}
+                >
+                  Sign in
+                </Button>
+              </Form.Item>
+            </div>
+
+            <Link to="/forgotpassword">
+              <div className={style.forgotpass}>Forgot Password?</div>
+            </Link>
+          </Form>
+        </div>
+      </div>
     </div>
   );
 };

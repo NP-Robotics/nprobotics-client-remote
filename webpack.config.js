@@ -4,6 +4,14 @@
  */
 
 module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+      },
+    ],
+  },
   resolve: {
     alias: {
       '@': require('path').resolve(__dirname, 'src'),
