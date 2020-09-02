@@ -1,3 +1,14 @@
+.background{
+    background-image: url('../assets/dashboard2.jpg') ;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    z-index: 1;
+    overflow: hidden;
+    height: 100vh;
+}
+
 .table{
     margin: 64px;
 }
@@ -13,6 +24,8 @@
 
 .center{
     text-align: center;
+    color: white;
+    background-color: transparent;
 }
 
 .log{

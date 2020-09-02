@@ -279,21 +279,22 @@ const RobotPage = ({
       <div className={style.vid}>
         <ChimeVideoStream />
       </div>
-      <div className={style.yourVid}>
-        <ChimeVideoStream />
+      <div className={style.vidBox}>
+        <div className={style.yourVid}>
+          <ChimeVideoStream />
+        </div>
+        <Button
+          type="primary"
+          shape="circle"
+          className={style.sBtn}
+          onClick={connectOnClick}
+        >
+          <span>Start</span>
+        </Button>
+        <Button type="primary" shape="circle" className={style.eBtn}>
+          <span>End</span>
+        </Button>
       </div>
-
-      <Button
-        type="primary"
-        shape="circle"
-        className={style.sBtn}
-        onClick={connectOnClick}
-      >
-        <span>Start</span>
-      </Button>
-      <Button type="primary" shape="circle" className={style.eBtn}>
-        <span>End</span>
-      </Button>
 
       {' '}
       <div className={style.robotFunc}>

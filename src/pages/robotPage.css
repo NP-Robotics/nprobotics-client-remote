@@ -59,11 +59,21 @@ TextArea::placeholder{
 .naviBox{
     position: absolute;
     width: 20%;
-    height: 23%;
+    height: 23.5%;
     left: 2.5%;
     top: 11.5%;
     border-radius: 5%;
     background-color: rgba(198,212,251,1);
+}
+
+.vidBox{
+    position: fixed;
+    right: 1.5%;
+    top: 11.5%;
+    width: 22vw;
+    height: 30vh;
+    background-color: rgba(198,212,251,1);
+    border-radius: 5%;
 }
 
 .vid{
@@ -74,20 +84,18 @@ TextArea::placeholder{
 }
 
 .yourVid{
-    position: fixed;
     width: 20vw;
     height: 20vh;
     background-color: black;
-    right: 2.5%;
-    top: 11.5%;
+    margin: 4% auto;
 }
 
 .sBtn{
     float: left;
     position: fixed;
     right: 8%;
-    margin: 5%;
-    top: 25%;
+    margin: 3.5% 5%;
+    top: 27.5%;
     width: 2.5%;
     height: 5%;
 }
@@ -97,8 +105,8 @@ TextArea::placeholder{
     float: left;
     position: fixed;
     right: 4%;
-    margin: 5%;
-    top: 25%;
+    margin: 3.5% 5%;
+    top: 27.5%;
     width: 2.5%;
     height: 5%;
 }

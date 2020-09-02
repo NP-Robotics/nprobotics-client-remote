@@ -94,7 +94,7 @@ const DashboardPage = ({ dispatch, history, user }) => {
   return (
     <Layout className={style.layout}>
       <SiderComponent onCollapse={collapseOnClick} collapsed={state.collapsed} />
-      <Layout>
+      <Layout className={style.background}>
         <Content className={style.content}>
           <div className={style.table}>
             <Table columns={columns} dataSource={data} />
