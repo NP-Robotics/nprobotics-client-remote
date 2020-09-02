@@ -313,7 +313,7 @@ const RobotPage = ({
           <TextArea
             value={state.messagebox}
             onChange={handleChange}
-            placeholder="Enter a message for the robot to say"
+            placeholder="Enter a message that will be said by the robot"
             autoSize={{ minRows: 1, maxRows: 1 }}
             className={style.textBox}
           />

@@ -79,7 +79,7 @@ const DashboardPage = ({ dispatch, history, user }) => {
               Connect
             </Button>
           </Link>
-          <Link to={`/robot/?${queryString.stringify({ robotName: text })}`}>
+          <Link to={`/log/?${queryString.stringify({ robotName: text })}`}>
             <Button type="primary" shape="round" className={style.log}>
               Log
             </Button>
