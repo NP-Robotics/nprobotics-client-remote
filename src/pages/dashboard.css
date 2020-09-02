@@ -22,10 +22,14 @@
     min-height: 100vh;
 }
 
-.center{
+.footer{
     text-align: center;
     color: white;
     background-color: transparent;
+    position: fixed;
+    left: 0;
+    bottom: 1%;
+    width: 100%;
 }
 
 .log{

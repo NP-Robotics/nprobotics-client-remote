@@ -99,8 +99,10 @@ const DashboardPage = ({ dispatch, history, user }) => {
           <div className={style.table}>
             <Table columns={columns} dataSource={data} />
           </div>
+          <div className={style.footer}>
+            Powered by Ngee Ann Robotics
+          </div>
         </Content>
-        <Footer className={style.center}>Powered by Ngee Ann Robotics</Footer>
       </Layout>
     </Layout>
   ); // end return
