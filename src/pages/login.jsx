@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
-import { Form, Input, Button, Checkbox, message } from 'antd';
+import {
+  Form, Input, Button, Checkbox, message,
+} from 'antd';
 import Link from 'umi/link';
 import style from './login.css';
 import NPLogo from '../assets/np_logo.png';
@@ -11,7 +13,7 @@ const LoginPage = ({ dispatch, history }) => {
     submitting: false,
   });
 
-  const onFinish = values => {
+  const onFinish = (values) => {
     setState({ submitting: true });
     dispatch({
       type: 'user/signIn',
@@ -19,19 +21,19 @@ const LoginPage = ({ dispatch, history }) => {
         username: values.username,
         password: values.password,
       },
-      callback: user => {
+      callback: (user) => {
         console.log('Login Success');
         console.log(user);
         history.push('/dashboard');
       },
-      error: err => {
+      error: (err) => {
         message.info(err.message);
         setState({ submitting: false });
       },
     });
   };
 
-  const onFinishFailed = errorInfo => {
+  const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
 
@@ -49,19 +51,17 @@ const LoginPage = ({ dispatch, history }) => {
             <Form.Item
               name="username"
               type="text"
-              placeholder="Username"
               rules={[{ required: true, message: 'Please input your username' }]}
             >
-              <Input className={style.username} />
+              <Input className={style.username} placeholder="Username" />
             </Form.Item>
 
             <Form.Item
               name="password"
               type="text"
-              placeholder="Password"
               rules={[{ required: true, message: 'Please input your password' }]}
             >
-              <Input className={style.password} />
+              <Input className={style.password} placeholder="Password" />
             </Form.Item>
 
             <div className={style.remember}>
