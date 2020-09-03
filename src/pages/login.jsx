@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
@@ -5,6 +6,8 @@ import {
   Form, Input, Button, Checkbox, message,
 } from 'antd';
 import Link from 'umi/link';
+import NPLogo from '../assets/np_logo.png';
+import style from './login.css';
 
 const LoginPage = ({ dispatch, history }) => {
   const [state, setState] = useState({
@@ -36,7 +39,10 @@ const LoginPage = ({ dispatch, history }) => {
   };
 
   return (
-    <div style={{ textAlign: 'center' }}>
+    <div className={style.backgroundContainer}>
+      <div className={style.roundedBox}>
+        <img src={NPLogo} alt="NPLogo" />
+      </div>
       <h1>login</h1>
       <Form
         labelCol={{ span: 8 }}

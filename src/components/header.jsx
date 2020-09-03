@@ -4,10 +4,11 @@ import Link from 'umi/link';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
 import { Layout, Menu, Button } from 'antd';
-
 import {
   UserOutlined,
 } from '@ant-design/icons';
+import style from './header.css';
+
 import NPLogo from '../assets/np_logo.png';
 
 const { Header } = Layout;
@@ -26,10 +27,8 @@ const HeaderComponent = ({ user, dispatch }) => {
   const profileItems = () => {
     if (user.authenticated) {
       return ([
-        <Menu.Item key="1" onClick={() => { router.push('dashboard'); }}>Dashboard</Menu.Item>,
-        <Menu.Item key="2">My Account</Menu.Item>,
-        <Menu.Item key="3">My Organization</Menu.Item>,
-        <Menu.Item key="4" onClick={onClickSignOut}>Sign Out</Menu.Item>,
+        <Menu.Item key="1">My Account</Menu.Item>,
+        <Menu.Item key="2" onClick={onClickSignOut}>Sign Out</Menu.Item>,
       ]);
     }
 
@@ -39,19 +38,16 @@ const HeaderComponent = ({ user, dispatch }) => {
     ]);
   };
   return (
-    <Header style={{ padding: '0px' }}>
+    <Header className={style.headerBar}>
       <Link to="/">
         <img
           src={NPLogo}
-          style={{
-            maxHeight: '50px',
-            margin: '10px 10px',
-          }}
+          className={style.logo}
           alt="NPLogo"
         />
       </Link>
       <Menu theme="dark" mode="horizontal" style={{ float: 'right', marginRight: '50px' }}>
-        <SubMenu key="user" icon={<UserOutlined />} title={user.username}>
+        <SubMenu key="user" icon={<UserOutlined />} title={user.username} className={style.subMenu}>
           {profileItems()}
         </SubMenu>
       </Menu>

@@ -17,9 +17,6 @@ const SiderComponent = ({ collapsed, onCollapse }) => (
 
     <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
       <Menu.Item key="title" icon={<MenuOutlined />}>Dashboard</Menu.Item>
-      <Menu.Item key="things" icon={<ClusterOutlined />}>Things</Menu.Item>
-      <Menu.Item key="settings" icon={<SettingOutlined />}>Settings</Menu.Item>
-
     </Menu>
   </Sider>
 );

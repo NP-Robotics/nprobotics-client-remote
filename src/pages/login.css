@@ -1,0 +1,12 @@
+.backgroundContainer{
+    text-align: center;
+}
+
+.roundedBox{
+    text-align: center;
+    color: grey;
+    border-style: solid;
+    border-radius: 10%;
+    width: 60%;
+    height: 60%;
+}

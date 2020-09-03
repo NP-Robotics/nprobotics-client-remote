@@ -12,9 +12,9 @@ import { Joystick } from 'react-joystick-component';
 
 import ChimeVideoStream from '../components/ChimeVideoStream';
 import { DeviceContext } from '../context/DeviceConnector';
+import style from './robotPage.css';
 
 const { TextArea } = Input;
-const text = <span>Type a message that will be said by the robot</span>;
 
 const RobotPage = ({
   user, meeting, dispatch, history, messagebox,
@@ -60,7 +60,7 @@ const RobotPage = ({
     if (!meeting.joined && state.meetingName != null && !state.attemptedJoin) {
       setState({ ...state, attemptedJoin: true });
 
-      dispatch({
+      /* dispatch({
         type: 'meeting/join',
         payload: {
           username: `${user.username}`,
@@ -76,7 +76,7 @@ const RobotPage = ({
           deviceCtx.disconnectDevice();
           history.push('/dashboard');
         },
-      });
+      }); */
 
       deviceCtx.initDevice({
         payload: {
@@ -226,67 +226,60 @@ const RobotPage = ({
 
   const menu = (
     <Menu onClick={handleMenuClick}>
-      <Menu.Item key="1">Location1</Menu.Item>
-      <Menu.Item key="2">Location2</Menu.Item>
-      <Menu.Item key="3">Location3</Menu.Item>
+      <Menu.Item key="1">Location 1</Menu.Item>
+      <Menu.Item key="2">Location 2</Menu.Item>
+      <Menu.Item key="3">Location 3</Menu.Item>
     </Menu>
   );
 
   return (
 
-    <div style={{ textAlign: 'center', margin: '2%' }}>
-      <ChimeVideoStream
-        style={{
-          width: '50vw',
-          height: '50vh',
-          backgroundColor: 'black',
-          margin: '0 auto',
-        }}
-      />
+    <div>
+      <div className={style.vid}>
+        <ChimeVideoStream />
+      </div>
+      <div className={style.vidBox}>
+        <div className={style.yourVid}>
+          <ChimeVideoStream />
+        </div>
+        <Button
+          type="primary"
+          shape="circle"
+          className={style.sBtn}
+        >
+          <span>Start</span>
+        </Button>
+        <Button type="primary" shape="circle" className={style.eBtn}>
+          <span>End</span>
+        </Button>
+      </div>
+
       {' '}
-      <div className="robotFunctions">
-        <div style={{ textAlign: 'center' }}>
-          <div
-            className="Emote"
-            trigger={['click']}
-            style={{
-              position: 'fixed', right: '5.2%', top: '30%', width: '15%', height: '10%',
-            }}
-          >
-            <Button icon={<SmileOutlined />} onClick={emoteClick}> Emote </Button>
-          </div>
-
-          <div
-            className="Navigation"
-            trigger={['click']}
-            style={{
-              position: 'fixed', right: '5.2%', top: '35%', width: '15%', height: '10%',
-            }}
-          >
-            <Dropdown overlay={menu}>
-              <Button icon={<EnvironmentOutlined />}>Navigate</Button>
-            </Dropdown>
+      <div className={style.robotFunc}>
+        <div className={style.naviBox}>
+          <div className={style.navi}>
+            <div trigger={['click']}>
+              {menu}
+            </div>
           </div>
         </div>
 
-        <div>
-          <Tooltip placement="bottom" title={text}>
-            <h2>Chat:</h2>
-          </Tooltip>
-        </div>
-        <div>
+        <div className={style.message}>
+          <div className={style.emote} trigger={['click']}>
+            <SmileOutlined onClick={emoteClick} />
+          </div>
           <TextArea
             value={state.messagebox}
             onChange={handleChange}
-            placeholder="Type message here"
-            autoSize={{ minRows: 3, maxRows: 10 }}
-            style={{ width: '40%' }}
+            placeholder="Enter a message for the robot to say"
+            autoSize={{ minRows: 1, maxRows: 1 }}
+            className={style.textBox}
           />
-          <div style={{ margin: '1%' }} />
+          <div />
           <Button
             onMouseOver={changeBackground}
             onClick={sendText}
-            style={{ backgroundColor: '#4CAF50', borderRadius: '15%' }}
+            className={style.sendBtn}
           >
             Send
           </Button>
@@ -296,24 +289,25 @@ const RobotPage = ({
       <div>
         <Button
           onClick={leaveRoom}
-          icon={<ExportOutlined />}
           type="primary"
-          style={{
-            position: 'fixed', right: '2%', top: '9%', backgroundColor: 'red', borderColor: 'red', borderRadius: '15%',
-          }}
+          className={style.leaveBtn}
         >
-          Leave
+          Return To
+          {' '}
+          <br />
+          Dashboard
         </Button>
       </div>
 
-      <div
-        style={{
-          position: 'fixed',
-          right: '10%',
-          bottom: '15%',
-        }}
-      >
-        <Joystick ref={joystickRef} size={100} baseColor="grey" stickColor="green" move={joystickOnMove} stop={joystickOnStop} />
+      <div className={style.joystickBox}>
+        <Joystick
+          ref={joystickRef}
+          size={100}
+          baseColor="grey"
+          stickColor="blue"
+          move={joystickOnMove}
+          stop={joystickOnStop}
+        />
       </div>
     </div>
   );
