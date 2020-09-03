@@ -38,7 +38,6 @@ export const ampSignUp = async (username, password, email, name) => {
       attributes: {
         email, // optional
         name,
-        Organisation: 'NP',
         // other custom attributes
       },
     });

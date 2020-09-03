@@ -123,15 +123,85 @@ export default {
 
     publishNavigate(state, { payload }) {
       const { device } = state;
-      const navigateMsg = {
-        sequence: [{
-          location: payload.location,
-          task: '',
-        }],
-      };
+
+      let navigateMsg = null;
+
+      if (payload.location === 1) {
+        navigateMsg = {
+          header: {
+            seq: 2,
+            stamp: {
+              secs: 0,
+              nsecs: 0,
+            },
+            frame_id: 'map',
+          },
+          pose: {
+            position: {
+              x: -1.647,
+              y: -0.049,
+              z: 0.0,
+            },
+            orientation: {
+              x: 0.0,
+              y: 0.0,
+              z: 0.811,
+              w: -0.585,
+            },
+          },
+        };
+      } else if (payload.location === 2) {
+        navigateMsg = {
+          header: {
+            seq: 1,
+            stamp: {
+              secs: 0,
+              nsecs: 0,
+            },
+            frame_id: 'map',
+          },
+          pose: {
+            position: {
+              x: 0.656,
+              y: -4.677,
+              z: 0.0,
+            },
+            orientation: {
+              x: 0.0,
+              y: 0.0,
+              z: -0.165,
+              w: 0.986,
+            },
+          },
+        };
+      } else if (payload.location === 3) {
+        navigateMsg = {
+          header: {
+            seq: 3,
+            stamp: {
+              secs: 0,
+              nsecs: 0,
+            },
+            frame_id: 'map',
+          },
+          pose: {
+            position: {
+              x: -0.758,
+              y: -5.620,
+              z: 0.0,
+            },
+            orientation: {
+              x: 0.0,
+              y: 0.0,
+              z: 0.572,
+              w: 0.820,
+            },
+          },
+        };
+      }
       if (device) {
         try {
-          device.publish('/web_service/waypoint_sequence', JSON.stringify(navigateMsg));
+          device.publish('/move_base_simple/goal', JSON.stringify(navigateMsg));
         } catch (err) {
           console.log(err);
         }

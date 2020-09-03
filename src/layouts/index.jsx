@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import PropTypes from 'prop-types';
 import { Spin, Layout } from 'antd';
 import HeaderComponent from '../components/header';
+import style from './index.css';
 
 const {
   Content,

@@ -3,11 +3,14 @@ import PropTypes from 'prop-types';
 import { connect } from 'dva';
 import {
   Layout, Table,
+  Button, Radio,
 } from 'antd';
+
 import Link from 'umi/link';
 import queryString from 'query-string';
 
 import SiderComponent from '../components/sider';
+import style from './dashboard.css';
 
 const { Footer, Content } = Layout;
 
@@ -31,7 +34,7 @@ const DashboardPage = ({ dispatch, history, user }) => {
       key: 'robot',
       render: (text) => (
         <Link to={`/robot/?${queryString.stringify({ robotName: text })}`}>
-          <p>{text}</p>
+          <p className={style.robotDetails}>{text}</p>
         </Link>
       ),
     },
@@ -39,6 +42,9 @@ const DashboardPage = ({ dispatch, history, user }) => {
       title: 'Organisation',
       dataIndex: 'organisation',
       key: 'organisation',
+      render: (text) => (
+        <p>{text}</p>
+      ),
     },
     {
       title: 'Online',
@@ -62,20 +68,41 @@ const DashboardPage = ({ dispatch, history, user }) => {
         return (<p>No</p>);
       },
     },
+    {
+      title: 'Action',
+      dataIndex: 'robotName',
+      key: 'robot',
+      render: (text) => (
+        <div>
+          <Link to={`/robot/?${queryString.stringify({ robotName: text })}`}>
+            <Button type="primary" shape="round">
+              Connect
+            </Button>
+          </Link>
+          <Link to={`/robot/?${queryString.stringify({ robotName: text })}`}>
+            <Button type="primary" shape="round" className={style.log}>
+              Log
+            </Button>
+          </Link>
+        </div>
+      ),
+    },
   ];
 
   const data = user.robots.map((obj, index) => ({ key: index, ...obj }));
 
   return (
-    <Layout style={{ textAlign: 'center', minHeight: '100vh' }}>
+    <Layout className={style.layout}>
       <SiderComponent onCollapse={collapseOnClick} collapsed={state.collapsed} />
-      <Layout>
-        <Content style={{ margin: '0 50px' }}>
-          <div style={{ marginTop: '64px' }}>
+      <Layout className={style.background}>
+        <Content className={style.content}>
+          <div className={style.table}>
             <Table columns={columns} dataSource={data} />
           </div>
+          <div className={style.footer}>
+            Powered by Ngee Ann Robotics
+          </div>
         </Content>
-        <Footer style={{ textAlign: 'center' }}>Powered by Ngee Ann Robotics</Footer>
       </Layout>
     </Layout>
   ); // end return
