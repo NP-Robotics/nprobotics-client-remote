@@ -1,9 +1,11 @@
+/* eslint-disable spaced-comment */
+/* eslint-disable linebreak-style */
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { connect } from 'dva';
 import {
-  Button, message, Input, Tooltip, Menu, Dropdown,
+  Button, message, Input, Tooltip, Menu, Dropdown, Row, Col, Divider,
 } from 'antd';
 import { ExportOutlined, SmileOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { Joystick } from 'react-joystick-component';
@@ -274,8 +276,8 @@ const RobotPage = ({
   );
 
   return (
-
-    <div>
+    <div />
+    /*<div>
       <div className={style.vid}>
         <ChimeVideoStream />
       </div>
@@ -351,7 +353,7 @@ const RobotPage = ({
           stop={joystickOnStop}
         />
       </div>
-    </div>
+    </div>*/
   );
 };
 
