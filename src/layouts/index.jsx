@@ -1,3 +1,12 @@
+/* eslint-disable linebreak-style */
+/* eslint-disable react/self-closing-comp */
+/* eslint-disable jsx-quotes */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable linebreak-style */
+/* eslint-disable import/no-unresolved */
+/* eslint-disable linebreak-style */
+/* eslint-disable no-unused-vars */
+/* eslint-disable linebreak-style */
 import React from 'react';
 import { connect } from 'dva';
 import PropTypes from 'prop-types';

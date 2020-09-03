@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 import React from 'react';
 import router from 'umi/router';
 import Link from 'umi/link';

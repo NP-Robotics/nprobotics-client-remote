@@ -1,10 +1,25 @@
+/* eslint-disable linebreak-style */
+/* eslint-disable react/jsx-indent-props */
+/* eslint-disable react/jsx-closing-bracket-location */
+/* eslint-disable linebreak-style */
+/* eslint-disable react/jsx-max-props-per-line */
+/* eslint-disable react/jsx-first-prop-new-line */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable linebreak-style */
+/* eslint-disable arrow-parens */
+/* eslint-disable indent */
+/* eslint-disable linebreak-style */
+/* eslint-disable object-curly-newline */
+/* eslint-disable linebreak-style */
+/* eslint-disable no-unused-vars */
+/* eslint-disable linebreak-style */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
 
 import Link from 'umi/link';
 import queryString from 'query-string';
-import { Table, Button, Space } from 'antd';
+import { Table, Button, Space, Radio, Divider } from 'antd';
 import style from './logPage.css';
 
 const LogPage = ({ dispatch, history, user }) => {
@@ -87,6 +102,18 @@ const LogPage = ({ dispatch, history, user }) => {
     });
   };
 
+  // rowSelection object indicates the need for row selection
+const rowSelection = {
+  onChange: (selectedRowKeys, selectedRows) => {
+    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+  },
+  getCheckboxProps: record => ({
+    name: record.name,
+  }),
+};
+
+  const [selectionType, setSelectionType] = useState('checkbox');
+
   let { sortedInfo, filteredInfo } = state;
   sortedInfo = sortedInfo || {};
   filteredInfo = filteredInfo || {};
@@ -145,13 +172,18 @@ const LogPage = ({ dispatch, history, user }) => {
             Dashboard
           </Button>
         </div>
-        <div>
-          <Space style={{ marginBottom: 16 }}>
-            <Button onClick={setAgeSort}>Sort age</Button>
-            <Button onClick={clearFilters}>Clear filters</Button>
-            <Button onClick={clearAll}>Clear filters and sorters</Button>
-          </Space>
-          <Table columns={columns} dataSource={data} onChange={handleChange} />
+        <div className={style.table}>
+          <div>
+            <Space style={{ marginBottom: 16 }}>
+              <Button onClick={setAgeSort}>Sort age</Button>
+              <Button onClick={clearFilters}>Clear filters</Button>
+              <Button onClick={clearAll}>Clear filters and sorters</Button>
+            </Space>
+            <Table rowSelection={{
+            type: selectionType,
+            ...rowSelection,
+            }} columns={columns} dataSource={data} onChange={handleChange} />
+          </div>
         </div>
       </div>
     </div>
