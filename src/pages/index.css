@@ -1,0 +1,44 @@
+.header {
+  text-align: center;
+  color: steelblue;
+  z-index: 9999;
+}
+
+.branding {
+  z-index: 9999;
+}
+
+.background {
+  z-index: 1;
+}
+
+.section {
+  margin: 0 120px;
+}
+header {
+  grid-template-columns: 1 fr 1 fr;
+  display: grid;
+  padding-top: 20px;
+}
+
+header ul li {
+  display: inline-block;
+  margin: 0 30px;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.column {
+  float: left;
+  width: 33.33%;
+  padding: 5px;
+  z-index: 1;
+}
+
+.row::after {
+  content: '';
+  clear: both;
+  display: table;
+  z-index: 1;
+}

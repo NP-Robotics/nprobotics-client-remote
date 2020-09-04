@@ -4,6 +4,7 @@ import { connect } from 'dva';
 import {
   Form, Input, Button, Checkbox, message,
 } from 'antd';
+import { EyeFilled } from '@ant-design/icons';
 import Link from 'umi/link';
 import style from './login.css';
 import NPLogo from '../assets/np_logo.png';
@@ -37,6 +38,11 @@ const LoginPage = ({ dispatch, history }) => {
     console.log('Failed:', errorInfo);
   };
 
+  const [passwordShown, setPasswordShown] = useState(false);
+  const togglePasswordVisiblity = () => {
+    setPasswordShown(!passwordShown);
+  };
+
   return (
     <div>
       <div className={style.background}>
@@ -56,13 +62,16 @@ const LoginPage = ({ dispatch, history }) => {
               <Input className={style.username} placeholder="Username" />
             </Form.Item>
 
-            <Form.Item
-              name="password"
-              type="text"
-              rules={[{ required: true, message: 'Please input your password' }]}
-            >
-              <Input className={style.password} placeholder="Password" />
-            </Form.Item>
+            <div>
+              <Form.Item
+                name="password"
+                type={passwordShown ? 'text' : 'password'}
+                rules={[{ required: true, message: 'Please input your password' }]}
+              >
+                <Input className={style.password} placeholder="Password" />
+                <EyeFilled className={style.icon} onClick={togglePasswordVisiblity} />
+              </Form.Item>
+            </div>
 
             <div className={style.remember}>
               <Form.Item name="remember" valuePropName="checked">
@@ -84,7 +93,7 @@ const LoginPage = ({ dispatch, history }) => {
             </div>
 
             <Link to="/forgotpassword">
-              <div className={style.forgotpass}>Forgot Password?</div>
+              <div className={style.forgotpassword}>Forgot Password?</div>
             </Link>
           </Form>
         </div>

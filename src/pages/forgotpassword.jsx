@@ -4,7 +4,8 @@ import { connect } from 'dva';
 import {
   Form, Input, Button, message, Modal,
 } from 'antd';
-import bignoob from '../assets/bignoob.jpg';
+import style from './forgotpassword.css';
+import NPLogo from '../assets/np_logo.png';
 
 const ForgotPasswordPage = ({ dispatch, history }) => {
   const [state, setState] = useState({
@@ -45,41 +46,48 @@ const ForgotPasswordPage = ({ dispatch, history }) => {
   };
 
   return (
-    <div style={{ textAlign: 'center' }}>
-      <h2>Forgot Your Password?</h2>
-      <img src={bignoob} style={{ width: '20%', height: '20%' }} alt="bignoob" />
-      <br />
-      <p>Enter your username and we will send a verification code to your email.</p>
-      <Form
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 8 }}
-        initialValues={{ remember: true }}
-        name="basic"
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-      >
-        <Form.Item
-          label="Username"
-          name="username"
-          rules={[{ required: true, message: 'Please input your username!' }]}
-        >
-          <Input />
-        </Form.Item>
+    <div className={style.background}>
+      <div className={style.box}>
+        <img src={NPLogo} alt="Ngee Ann Logo" className={style.image} />
+        <div className={style.header}>Password Recovery</div>
+        <div className={style.secondheader}>
+          Enter your username below and a code will be sent to your email.
+        </div>
+        <div>
+          <Form
+            initialValues={{ remember: true }}
+            name="basic"
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+          >
+            <Form.Item
+              name="username"
+              rules={[{ required: true, message: 'Please input your username' }]}
+            >
+              <Input className={style.textbox} placeholder="Username" />
+            </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 8, span: 8 }}>
-          <Button type="primary" htmlType="submit" disabled={state.submitting}>
-            Submit
-          </Button>
-        </Form.Item>
-      </Form>
-      <Modal
-        title="Verification Code"
-        visible={modalState.visible}
-        onOk={handleModal}
-        onCancel={handleModal}
-      >
-        <p>Please check your email for the verification code to reset your password!</p>
-      </Modal>
+            <Form.Item>
+              <Button
+                className={style.button}
+                type="primary"
+                htmlType="submit"
+                disabled={state.submitting}
+              >
+                Email me
+              </Button>
+            </Form.Item>
+          </Form>
+          <Modal
+            title="Verification Code"
+            visible={modalState.visible}
+            onOk={handleModal}
+            onCancel={handleModal}
+          >
+            <p>Please check your email for the verification code</p>
+          </Modal>
+        </div>
+      </div>
     </div>
   );
 };
