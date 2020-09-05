@@ -98,6 +98,14 @@ const RobotPage = ({
           return null;
         },
       });
+
+      deviceCtx.thingShadow({
+        payload: {
+          host: state.endpoint,
+          clientId: user.username,
+          
+        }
+      });
     }
   }, [state, meeting, user, dispatch, history, deviceCtx]);
 
