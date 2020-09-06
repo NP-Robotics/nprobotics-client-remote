@@ -27,6 +27,11 @@ const IndexLayout = ({ children, history, user }) => {
       children
     );
   }
+  if (history.location.pathname === '/robot/') {
+    return (
+      children
+    );
+  }
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <HeaderComponent />
