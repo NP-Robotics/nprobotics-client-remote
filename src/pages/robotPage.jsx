@@ -1,3 +1,5 @@
+/* eslint-disable linebreak-style */
+/* eslint-disable no-undef */
 /* eslint-disable spaced-comment */
 /* eslint-disable linebreak-style */
 import React, { useState, useRef, useEffect } from 'react';
@@ -276,6 +278,19 @@ const RobotPage = ({
     </Menu>
   );
 
+  const [width, setWidth] = React.useState(window.innerWidth);
+  const [height, setHeight] = React.useState(window.innerHeight);
+
+  const updateWidthAndHeight = () => {
+    setWidth(window.innerWidth);
+    setHeight(window.innerHeight);
+  };
+
+  React.useEffect(() => {
+    window.addEventListener('resize', updateWidthAndHeight);
+    return () => window.removeEventListener('resize', updateWidthAndHeight);
+  });
+
   return (
     <div>
       <div className={style.vid}>
@@ -300,7 +315,10 @@ const RobotPage = ({
           <div className={style.naviBox}>
             <div className={style.navi}>
               <div trigger={['click']}>
-                {menu}
+                <div>
+                  <div>{`Window width = ${width}`}</div>
+                  <div>{`Window height = ${height}`}</div>
+                </div>
               </div>
             </div>
           </div>
@@ -336,112 +354,6 @@ const RobotPage = ({
         </div>
       </div>
     </div>
-    /*<div className={style.tele}>
-      <div className={style.vid}>
-        <ChimeVideoStream />
-      </div>
-      <div className={style.robotFunc}>
-        <Row gutter={[0, {
-          xs: 0, sm: 0, md: 0, lg: 8, xl: 16, xxl: 24,
-        }]}
-        >
-          <Col className="gutter-row" span={24} />
-        </Row>
-        <Row gutter={[0, {
-          xs: 0, sm: 0, md: 0, lg: 8, xl: 16, xxl: 24,
-        }]}
-        >
-          <Col className="gutter-row" span={8}>
-            <div>
-              <Button
-                onClick={leaveRoom}
-                type="primary"
-                className={style.leaveBtn}
-              >
-                <span className={style.leaveIcon}>
-                  <ImportOutlined />
-                </span>
-              </Button>
-            </div>
-          </Col>
-          <Col className="gutter-row" span={8} />
-          <Col className="gutter-row" span={8}>
-            <div className={style.yourVid}>
-              <ChimeVideoStream />
-            </div>
-          </Col>
-        </Row>
-        <Row gutter={[0, {
-          xs: 264, sm: 320, md: 376, lg: 432, xl: 488, xxl: 576,
-        }]}
-        >
-          <Col className="gutter-row" span={24} />
-        </Row>
-        <Row gutter={[0, {
-          xs: 0, sm: 24, md: 48, lg: 72, xl: 96, xxl: 120,
-        }]}
-        >
-          <Col className="gutter-row" span={6}>
-            <div className={style.naviBox}>
-              <div className={style.navi}>
-                <div trigger={['click']}>
-                  {menu}
-                </div>
-              </div>
-            </div>
-          </Col>
-          <Col className="gutter-row" span={18} />
-        </Row>
-        <Row gutter={[0, {
-          xs: 0, sm: 8, md: 16, lg: 40, xl: 64, xxl: 88,
-        }]}
-        >
-          <Col className="gutter-row" span={24} />
-        </Row>
-        <Row
-          gutter={[0, {
-            xs: 0, sm: 0, md: 0, lg: 8, xl: 16, xxl: 24,
-          }]}
-          justify="space-around"
-          align="middle"
-        >
-          <Col className="gutter-row" span={6} />
-          <Col className="gutter-row" span={12}>
-            <div className={style.message}>
-              <div className={style.emote} trigger={['click']}>
-                <SmileOutlined onClick={emoteClick} />
-              </div>
-              <TextArea
-                value={state.messagebox}
-                onChange={handleChange}
-                placeholder="Enter a message for the robot to say"
-                autoSize={{ minRows: 1, maxRows: 1 }}
-                className={style.textBox}
-              />
-              <Button
-                onMouseOver={changeBackground}
-                onClick={sendText}
-                className={style.sendBtn}
-              >
-                Send
-              </Button>
-            </div>
-          </Col>
-          <Col className="gutter-row" span={6}>
-            <div onDragEnd={joystickOnDrag} className={style.joystickBox}>
-              <Joystick
-                ref={joystickRef}
-                size={100}
-                baseColor="grey"
-                stickColor="blue"
-                move={joystickOnMove}
-                stop={joystickOnStop}
-              />
-            </div>
-          </Col>
-        </Row>
-      </div>
-    </div>*/
   );
 };
 
