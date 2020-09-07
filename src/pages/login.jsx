@@ -39,6 +39,7 @@ const LoginPage = ({ dispatch, history }) => {
   };
 
   const [passwordShown, setPasswordShown] = useState(false);
+
   const togglePasswordVisiblity = () => {
     setPasswordShown(!passwordShown);
   };
@@ -50,25 +51,28 @@ const LoginPage = ({ dispatch, history }) => {
           <img src={NPLogo} alt="Ngee Ann Logo" className={style.image} />
           <div className={style.header}>Sign in to your account</div>
           <Form
+            name="basic"
             initialValues={{ remember: true }}
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
           >
             <Form.Item
               name="username"
-              type="text"
               rules={[{ required: true, message: 'Please input your username' }]}
             >
-              <Input className={style.username} placeholder="Username" />
+              <Input className={style.username} placeholder="Username" type="text" />
             </Form.Item>
 
             <div>
               <Form.Item
                 name="password"
-                type={passwordShown ? 'text' : 'password'}
                 rules={[{ required: true, message: 'Please input your password' }]}
               >
-                <Input className={style.password} placeholder="Password" />
+                <Input
+                  className={style.password}
+                  placeholder="Password"
+                  type={passwordShown ? 'text' : 'password'}
+                />
                 <EyeFilled className={style.icon} onClick={togglePasswordVisiblity} />
               </Form.Item>
             </div>

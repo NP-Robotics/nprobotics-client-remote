@@ -93,10 +93,10 @@
 
 .icon {
   position: absolute;
-  top: 35%;
-  right: 16%;
+  margin-top: 15px;
+  margin-left: 2px;
 }
 .icon :hover {
-  color: #68686d;
+  color: #aeaeb8;
   cursor: pointer;
 }
