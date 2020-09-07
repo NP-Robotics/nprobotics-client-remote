@@ -73,8 +73,8 @@ const LoginPage = ({ dispatch, history }) => {
                   placeholder="Password"
                   type={passwordShown ? 'text' : 'password'}
                 />
-                <EyeFilled className={style.icon} onClick={togglePasswordVisiblity} />
               </Form.Item>
+              <EyeFilled className={style.icon} onClick={togglePasswordVisiblity} />
             </div>
 
             <div className={style.remember}>

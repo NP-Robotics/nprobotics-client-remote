@@ -31,6 +31,9 @@ const IndexLayout = ({ children, history, user }) => {
   if (history.location.pathname === '/forgotpassword') {
     return children;
   }
+  if (history.location.pathname === '/resetpassword') {
+    return children;
+  }
 
   return (
     <Layout style={{ minHeight: '100vh' }}>

@@ -4,6 +4,7 @@ import { connect } from 'dva';
 import {
   Form, Input, Button, message,
 } from 'antd';
+import style from './resetpassword.css';
 
 const ResetPasswordPage = ({ dispatch, history }) => {
   const [state, setState] = useState({
@@ -35,8 +36,8 @@ const ResetPasswordPage = ({ dispatch, history }) => {
   };
 
   return (
-    <div style={{ textAlign: 'center' }}>
-      <h1>Reset Password</h1>
+    <div className={style.background}>
+      <h1 className={style.header}>Password Reset</h1>
       <Form
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 8 }}
