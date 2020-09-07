@@ -275,6 +275,8 @@ const RobotPage = ({
       <Menu.Item key="1">Location 1</Menu.Item>
       <Menu.Item key="2">Location 2</Menu.Item>
       <Menu.Item key="3">Location 3</Menu.Item>
+      <Menu.Item key="2">Location 2</Menu.Item>
+      <Menu.Item key="3">Location 3</Menu.Item>
     </Menu>
   );
 
@@ -303,7 +305,7 @@ const RobotPage = ({
             type="primary"
             className={style.leaveBtn}
           >
-            <span className={style.leaveIcon}>
+            <span>
               <ImportOutlined />
             </span>
           </Button>
@@ -311,14 +313,11 @@ const RobotPage = ({
         <div className={style.yourVid}>
           <ChimeVideoStream />
         </div>
-        <div className={style.robotFunc}>
+        <div>
           <div className={style.naviBox}>
             <div className={style.navi}>
               <div trigger={['click']}>
-                <div>
-                  <div>{`Window width = ${width}`}</div>
-                  <div>{`Window height = ${height}`}</div>
-                </div>
+                {menu}
               </div>
             </div>
           </div>
@@ -340,6 +339,10 @@ const RobotPage = ({
             >
               Send
             </Button>
+          </div>
+          <div style={{ color: 'white' }}>
+            <div>{`Window width = ${width}`}</div>
+            <div>{`Window height = ${height}`}</div>
           </div>
           <div onDragEnd={joystickOnDrag} className={style.joystickBox}>
             <Joystick
