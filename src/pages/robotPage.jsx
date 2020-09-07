@@ -277,19 +277,78 @@ const RobotPage = ({
   );
 
   return (
-    <div className={style.tele}>
+    <div>
+      <div className={style.vid}>
+        <ChimeVideoStream />
+      </div>
+      <div>
+        <div>
+          <Button
+            onClick={leaveRoom}
+            type="primary"
+            className={style.leaveBtn}
+          >
+            <span className={style.leaveIcon}>
+              <ImportOutlined />
+            </span>
+          </Button>
+        </div>
+        <div className={style.yourVid}>
+          <ChimeVideoStream />
+        </div>
+        <div className={style.robotFunc}>
+          <div className={style.naviBox}>
+            <div className={style.navi}>
+              <div trigger={['click']}>
+                {menu}
+              </div>
+            </div>
+          </div>
+          <div className={style.message}>
+            <div className={style.emote} trigger={['click']}>
+              <SmileOutlined onClick={emoteClick} />
+            </div>
+            <TextArea
+              value={state.messagebox}
+              onChange={handleChange}
+              placeholder="Enter a message for the robot to say"
+              autoSize={{ minRows: 1, maxRows: 1 }}
+              className={style.textBox}
+            />
+            <Button
+              onMouseOver={changeBackground}
+              onClick={sendText}
+              className={style.sendBtn}
+            >
+              Send
+            </Button>
+          </div>
+          <div onDragEnd={joystickOnDrag} className={style.joystickBox}>
+            <Joystick
+              ref={joystickRef}
+              size={100}
+              baseColor="grey"
+              stickColor="blue"
+              move={joystickOnMove}
+              stop={joystickOnStop}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    /*<div className={style.tele}>
       <div className={style.vid}>
         <ChimeVideoStream />
       </div>
       <div className={style.robotFunc}>
         <Row gutter={[0, {
-          xs: 0, sm: 0, md: 8, lg: 16, xl: 24, xxl: 24,
+          xs: 0, sm: 0, md: 0, lg: 8, xl: 16, xxl: 24,
         }]}
         >
           <Col className="gutter-row" span={24} />
         </Row>
         <Row gutter={[0, {
-          xs: 0, sm: 0, md: 8, lg: 16, xl: 24, xxl: 24,
+          xs: 0, sm: 0, md: 0, lg: 8, xl: 16, xxl: 24,
         }]}
         >
           <Col className="gutter-row" span={8}>
@@ -313,13 +372,13 @@ const RobotPage = ({
           </Col>
         </Row>
         <Row gutter={[0, {
-          xs: 664, sm: 672, md: 680, lg: 688, xl: 712, xxl: 736,
+          xs: 264, sm: 320, md: 376, lg: 432, xl: 488, xxl: 576,
         }]}
         >
           <Col className="gutter-row" span={24} />
         </Row>
         <Row gutter={[0, {
-          xs: 64, sm: 72, md: 80, lg: 88, xl: 96, xxl: 104,
+          xs: 0, sm: 24, md: 48, lg: 72, xl: 96, xxl: 120,
         }]}
         >
           <Col className="gutter-row" span={6}>
@@ -334,14 +393,14 @@ const RobotPage = ({
           <Col className="gutter-row" span={18} />
         </Row>
         <Row gutter={[0, {
-          xs: 0, sm: 16, md: 32, lg: 48, xl: 64, xxl: 80,
+          xs: 0, sm: 8, md: 16, lg: 40, xl: 64, xxl: 88,
         }]}
         >
           <Col className="gutter-row" span={24} />
         </Row>
         <Row
           gutter={[0, {
-            xs: 0, sm: 0, md: 8, lg: 16, xl: 24, xxl: 24,
+            xs: 0, sm: 0, md: 0, lg: 8, xl: 16, xxl: 24,
           }]}
           justify="space-around"
           align="middle"
@@ -382,7 +441,7 @@ const RobotPage = ({
           </Col>
         </Row>
       </div>
-    </div>
+    </div>*/
   );
 };
 

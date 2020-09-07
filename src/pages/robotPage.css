@@ -9,18 +9,19 @@
     margin: 0 30%;
     background-color: rgba(198,212,251,1);
     border-radius: 15%;
-    margin: 0 5%;
+    bottom: 4%;
+    margin: 0 30%;
 }
 
 .emote{
-    margin: 3.5% 2%;
+    margin: 3% 1%;
     float: left;
 }
 
 .textBox{
     width: 80%;
     float: left;
-    margin: 3% 1%;
+    margin: 2.1% 1%;
 }
 
 TextArea::placeholder{
@@ -31,7 +32,7 @@ TextArea::placeholder{
     background-color: #4CAF50;
     border-radius: 15%;
     float: right;
-    margin: 3% 2%;
+    margin: 2% 1%;
 }
 
 .sendBtn:hover{
@@ -40,12 +41,13 @@ TextArea::placeholder{
 
 .leaveBtn{
     position: fixed;
-    width: 2.5%;
-    height: 3%;
+    width: 3%;
+    height: 4%;
     background-color: red;
     border-color: red;
     border-radius: 30%;
-    left: 1%;
+    left: 2%;
+    top: 2%;
     overflow: hidden;
     z-index: 999;
 }
@@ -68,7 +70,7 @@ TextArea::placeholder{
 .navi{
     position: fixed;
     width: 15%;
-    height: 15%;
+    height: 17%;
     margin: 2.5%;
     overflow-y: auto;
     z-index: 999;
@@ -77,10 +79,11 @@ TextArea::placeholder{
 .naviBox{
     position: fixed;
     width: 20%;
-    height: 23.5%;
+    height: 27%;
     border-radius: 5%;
     background-color: rgba(198,212,251,1);
     left: 2%;
+    bottom: 4%;
     z-index: 999;
 }
 
@@ -97,6 +100,7 @@ TextArea::placeholder{
     height: 20vh;
     background-color: grey;
     right: 2%;
+    top: 3%;
 }
 
 .joystickBox{
