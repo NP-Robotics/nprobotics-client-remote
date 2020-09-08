@@ -76,6 +76,12 @@ TextArea::placeholder{
     height: 100%;
     z-index: -1;
     background-color: black;
+    color: black;
+    margin: auto;
+    background-size: cover;
+    background-position: center;
+    text-align: center;
+    z-index: -2;
 }
 
 .yourVid{
