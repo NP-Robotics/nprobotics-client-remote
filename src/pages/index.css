@@ -1,26 +1,14 @@
-.header {
-}
-
-.branding {
+.main {
 }
 
 .background {
 }
 
-.section {
-  margin: 0 120px;
+.options {
 }
 
-.column {
-  float: left;
-  width: 33.33%;
-  padding: 5px;
-  z-index: 1;
+.header {
 }
 
-.row::after {
-  content: '';
-  clear: both;
-  display: table;
-  z-index: 1;
+.branding {
 }
