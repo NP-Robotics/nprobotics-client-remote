@@ -1,0 +1,535 @@
+.message{
+    position: fixed;
+    bottom: 3%;
+    margin: 0 30%;
+    background-color: rgba(198,212,251,1);
+    height: 8%;
+    width: 40%;
+    border-radius: 15%;
+}
+
+.emote{
+    margin-top: 4%;
+    margin-left: 3%;
+    float: left;
+}
+
+.textBox{
+    width: 80%;
+    margin-left: 3%;
+    margin-top: 3.5%;
+    float: left;
+}
+
+TextArea::placeholder{
+    text-align: center;
+}
+
+.sendBtn{
+    float: left;
+    margin: 3.25% 2%;
+    background-color: #4CAF50;
+    border-radius: 20%;
+}
+
+.sendBtn:hover{
+    background-color: #4CAF50;
+}
+
+.sendBtn:focus {
+    background-color: #4CAF50;
+  }
+
+.leaveBtn{
+    background-color: red;
+    border-color: red;
+    border-radius: 20%;
+    margin: 1%;
+}
+
+.leaveBtn:hover{
+    background-color: red;
+    border-color: red;
+}
+
+.navi{
+    width: 80%;
+    height: 60%;
+    margin: 10%;
+    overflow-y: auto;
+}
+
+.naviBox{
+    position: fixed;
+    background-color: rgba(198,212,251,1);
+    width: 20%;
+    height: 20%;
+    text-align: center;
+    bottom: 3%;
+    margin-left: 2%;
+    border-radius: 5%;
+}
+
+.vid{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background-color: black;
+    color: black;
+    margin: auto;
+    background-size: cover;
+    background-position: center;
+    text-align: center;
+    z-index: -2;
+}
+
+.yourVid{
+    position: fixed;
+    width: 20%;
+    height: 20%;
+    background-color: grey;
+    margin-left: 79%;
+    top: 2.5%;
+}
+
+.joystickBox{
+    position: fixed;
+    bottom: 5%;
+    right: 10%;
+}
+
+@media screen and (max-width: 1927px) {
+    .message{
+        position: fixed;
+        bottom: 3%;
+        margin: 0 35%;
+        background-color: rgba(198,212,251,1);
+        height: 11%;
+        width: 30%;
+        border-radius: 15%;
+    }
+    
+    .emote{
+        margin-top: 4%;
+        margin-left: 3%;
+        float: left;
+    }
+    
+    .textBox{
+        width: 80%;
+        margin-left: 5%;
+        margin-top: 3.5%;
+        float: left;
+    }
+    
+    TextArea::placeholder{
+        text-align: center;
+    }
+    
+    .sendBtn{
+        margin: 3.25% 45%;
+        background-color: #4CAF50;
+        border-radius: 20%;
+    }
+    
+    .sendBtn:hover{
+        background-color: #4CAF50;
+    }
+    
+    .sendBtn:focus {
+        background-color: #4CAF50;
+      }
+
+    .navi{
+        width: 80%;
+        height: 62%;
+        margin: 10%;
+        overflow-y: auto;
+    }
+    
+    .naviBox{
+        position: fixed;
+        background-color: rgba(198,212,251,1);
+        width: 20%;
+        height: 20%;
+        text-align: center;
+        bottom: 3%;
+        margin-left: 2%;
+        border-radius: 5%;
+    }
+  }
+
+  @media screen and (max-width: 1680px){
+    .navi{
+        width: 80%;
+        height: 67%;
+        margin: 10%;
+        overflow-y: auto;
+    }
+    
+    .naviBox{
+        position: fixed;
+        background-color: rgba(198,212,251,1);
+        width: 20%;
+        height: 20%;
+        text-align: center;
+        bottom: 3%;
+        margin-left: 2%;
+        border-radius: 5%;
+    }
+  }
+
+  @media screen and (max-width: 1490px){
+    .message{
+        position: fixed;
+        bottom: 3%;
+        margin: 0 35%;
+        background-color: rgba(198,212,251,1);
+        height: 11%;
+        width: 30%;
+        border-radius: 15%;
+    }
+    
+    .emote{
+        margin-top: 6%;
+        margin-left: 3%;
+        float: left;
+    }
+    
+    .textBox{
+        width: 80%;
+        margin-left: 5%;
+        margin-top: 5%;
+        float: left;
+    }
+    
+    TextArea::placeholder{
+        text-align: center;
+    }
+    
+    .sendBtn{
+        margin: 3.25% 45%;
+        background-color: #4CAF50;
+        border-radius: 20%;
+    }
+    
+    .sendBtn:hover{
+        background-color: #4CAF50;
+    }
+    
+    .sendBtn:focus {
+        background-color: #4CAF50;
+      }
+
+    .navi{
+        width: 80%;
+        height: 70%;
+        margin: 10%;
+        overflow-y: auto;
+    }
+    
+    .naviBox{
+        position: fixed;
+        background-color: rgba(198,212,251,1);
+        width: 20%;
+        height: 20%;
+        text-align: center;
+        bottom: 3%;
+        margin-left: 2%;
+        border-radius: 5%;
+    }
+  }
+
+  @media screen and (max-width: 1290px){
+    .navi{
+        width: 80%;
+        height: 75%;
+        margin: 10%;
+        overflow-y: auto;
+    }
+    
+    .naviBox{
+        position: fixed;
+        background-color: rgba(198,212,251,1);
+        width: 20%;
+        height: 20%;
+        text-align: center;
+        bottom: 3%;
+        margin-left: 2%;
+        border-radius: 5%;
+    }
+  }
+
+  @media screen and (max-width: 1200px) {
+    .message{
+        position: fixed;
+        bottom: 3%;
+        margin: 0 35%;
+        background-color: rgba(198,212,251,1);
+        height: 11%;
+        width: 30%;
+        border-radius: 15%;
+    }
+    
+    .emote{
+        margin-top: 7%;
+        margin-left: 3%;
+        float: left;
+    }
+    
+    .textBox{
+        width: 80%;
+        margin-left: 5%;
+        margin-top: 6%;
+        float: left;
+    }
+    
+    TextArea::placeholder{
+        text-align: center;
+    }
+
+    .sendBtn{
+        margin: 3.25% 40%;
+        background-color: #4CAF50;
+        border-radius: 20%;
+    }
+    
+    .sendBtn:hover{
+        background-color: #4CAF50;
+    }
+    
+    .sendBtn:focus {
+        background-color: #4CAF50;
+      }
+  }
+
+  @media screen and (max-width: 1080px) {
+    .message{
+        position: fixed;
+        bottom: 3%;
+        margin: 0 35%;
+        background-color: rgba(198,212,251,1);
+        height: 11%;
+        width: 30%;
+        border-radius: 15%;
+    }
+    
+    .emote{
+        margin-top: 8%;
+        margin-left: 3%;
+        float: left;
+    }
+    
+    .textBox{
+        width: 80%;
+        margin-left: 5%;
+        margin-top: 7%;
+        float: left;
+    }
+    
+    TextArea::placeholder{
+        text-align: center;
+    }
+    
+    .sendBtn{
+        margin: 3.25% 40%;
+        background-color: #4CAF50;
+        border-radius: 20%;
+    }
+    
+    .sendBtn:hover{
+        background-color: #4CAF50;
+    }
+    
+    .sendBtn:focus {
+        background-color: #4CAF50;
+      }
+  }
+
+  @media screen and (max-width: 1060px){
+    .navi{
+        width: 80%;
+        height: 79%;
+        margin: 10%;
+        overflow-y: auto;
+    }
+    
+    .naviBox{
+        position: fixed;
+        background-color: rgba(198,212,251,1);
+        width: 20%;
+        height: 20%;
+        text-align: center;
+        bottom: 3%;
+        margin-left: 2%;
+        border-radius: 5%;
+    }
+  }
+
+  @media screen and (max-width: 1000px) {
+    .message{
+        position: fixed;
+        bottom: 3%;
+        margin: 0 35%;
+        background-color: rgba(198,212,251,1);
+        height: 11%;
+        width: 30%;
+        border-radius: 15%;
+    }
+    
+    .emote{
+        margin-top: 9%;
+        margin-left: 3%;
+        float: left;
+    }
+    
+    .textBox{
+        width: 80%;
+        margin-left: 5%;
+        margin-top: 8%;
+        float: left;
+    }
+    
+    TextArea::placeholder{
+        text-align: center;
+    }
+    
+    .sendBtn{
+        margin: 3.25% 40%;
+        background-color: #4CAF50;
+        border-radius: 20%;
+    }
+    
+    .sendBtn:hover{
+        background-color: #4CAF50;
+    }
+    
+    .sendBtn:focus {
+        background-color: #4CAF50;
+      }
+  }
+
+  @media screen and (max-width: 800px) {
+    .message{
+        position: fixed;
+        bottom: 3%;
+        margin: 0 35%;
+        background-color: rgba(198,212,251,1);
+        height: 11%;
+        width: 30%;
+        border-radius: 15%;
+    }
+    
+    .emote{
+        margin-top: 11%;
+        margin-left: 3%;
+        float: left;
+    }
+    
+    .textBox{
+        width: 80%;
+        margin-left: 5%;
+        margin-top: 10%;
+        float: left;
+    }
+    
+    TextArea::placeholder{
+        text-align: center;
+    }
+    
+    .sendBtn{
+        margin: 3.25% 37%;
+        background-color: #4CAF50;
+        border-radius: 20%;
+    }
+    
+    .sendBtn:hover{
+        background-color: #4CAF50;
+    }
+    
+    .sendBtn:focus {
+        background-color: #4CAF50;
+      }
+
+      .navi{
+        width: 80%;
+        height: 84%;
+        margin: 10%;
+        overflow-y: auto;
+    }
+    
+    .naviBox{
+        position: fixed;
+        background-color: rgba(198,212,251,1);
+        width: 20%;
+        height: 20%;
+        text-align: center;
+        bottom: 3%;
+        margin-left: 2%;
+        border-radius: 5%;
+    }
+  }
+
+  @media screen and (max-width: 680px) {
+    .message{
+        position: fixed;
+        bottom: 3%;
+        margin: 0 35%;
+        background-color: rgba(198,212,251,1);
+        height: 11%;
+        width: 30%;
+        border-radius: 15%;
+    }
+    
+    .emote{
+        margin-top: 15%;
+        margin-left: 3%;
+        float: left;
+    }
+    
+    .textBox{
+        width: 80%;
+        margin-left: 5%;
+        margin-top: 13%;
+        float: left;
+    }
+    
+    TextArea::placeholder{
+        text-align: center;
+    }
+    
+    .sendBtn{
+        margin: 3.25% 35%;
+        background-color: #4CAF50;
+        border-radius: 20%;
+    }
+    
+    .sendBtn:hover{
+        background-color: #4CAF50;
+    }
+    
+    .sendBtn:focus {
+        background-color: #4CAF50;
+      }
+  }
+
+  @media screen and (max-width: 600px){
+    .navi{
+        width: 80%;
+        height: 88%;
+        margin: 10%;
+        overflow-y: auto;
+    }
+    
+    .naviBox{
+        position: fixed;
+        background-color: rgba(198,212,251,1);
+        width: 20%;
+        height: 20%;
+        text-align: center;
+        bottom: 3%;
+        margin-left: 2%;
+        border-radius: 5%;
+    }
+  }

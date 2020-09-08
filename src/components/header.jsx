@@ -61,19 +61,12 @@ const HeaderComponent = ({ user, dispatch }) => {
     ];
   };
   return (
-    <Header style={{ padding: '0px' }}>
+    <Header className={style.headerBar}>
       <Link to="/">
-        <img
-          src={NPLogo}
-          style={{
-            maxHeight: '50px',
-            margin: '10px 10px',
-          }}
-          alt="NPLogo"
-        />
+        <img src={NPLogo} className={style.logo} alt="NPLogo" />
       </Link>
       <Menu theme="dark" mode="horizontal" style={{ float: 'right', marginRight: '50px' }}>
-        <SubMenu key="user" icon={<UserOutlined />} title={user.username}>
+        <SubMenu key="user" icon={<UserOutlined />} title={user.username} className={style.subMenu}>
           {profileItems()}
         </SubMenu>
       </Menu>

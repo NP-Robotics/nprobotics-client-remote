@@ -1,0 +1,47 @@
+.table{
+    margin: 64px;
+}
+
+.content{
+    margin: 0px 50px;
+}
+
+.layout{
+    text-align: center;
+    min-height: 100vh;
+}
+
+.footer{
+    text-align: center;
+    color: black;
+    background-color: transparent;
+    position: fixed;
+    left: 0;
+    bottom: 1%;
+    width: 100%;
+}
+
+.log{
+    background-color: green;
+    margin-left: 10px;
+}
+
+.robotDetails{
+    color: black;
+}
+
+.robotDetails:hover{
+    color: black;
+}
+
+.robotDetails:active{
+    color: black;
+}
+
+.robotDetails:visited{
+    color: black;
+}
+
+.tblContent{
+    padding: 0px;
+}
