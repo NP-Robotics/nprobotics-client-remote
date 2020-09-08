@@ -29,20 +29,25 @@ const IndexLayout = ({ children, history, user }) => {
       children
     );
   }
+  if (history.location.pathname === '/robot/') {
+    return (
+      <DeviceProvider>
+        {children}
+      </DeviceProvider>
+
+    );
+  }
   return (
-    <DeviceProvider>
-      <Layout style={{ minHeight: '100vh' }}>
-        <HeaderComponent />
+    <Layout style={{ minHeight: '100vh' }}>
+      <HeaderComponent />
 
-        <Layout style={{ textAlign: 'center' }}>
-          <Content>
-            {children}
+      <Layout style={{ textAlign: 'center' }}>
+        <Content>
+          {children}
 
-          </Content>
-        </Layout>
+        </Content>
       </Layout>
-    </DeviceProvider>
-
+    </Layout>
   );
 };
 
