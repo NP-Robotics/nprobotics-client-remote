@@ -4,6 +4,7 @@ import { connect } from 'dva';
 import {
   Form, Input, Button, message,
 } from 'antd';
+import { EyeFilled } from '@ant-design/icons';
 import NPLogo from '../assets/np_logo.png';
 import style from './signup.css';
 
@@ -38,6 +39,18 @@ const SignUpPage = ({ history, dispatch }) => {
     });
   };
 
+  const [passwordShown, setPasswordShown] = useState(false);
+
+  const [confirmPasswordShown, setConfirmPasswordShown] = useState(false);
+
+  const togglePasswordVisiblity = () => {
+    setPasswordShown(!passwordShown);
+  };
+
+  const toggleConfirmPasswordVisiblity = () => {
+    setConfirmPasswordShown(!confirmPasswordShown);
+  };
+
   return (
     <div className={style.main}>
       <div>
@@ -51,7 +64,7 @@ const SignUpPage = ({ history, dispatch }) => {
           <div className={style.text}>Username</div>
           <Form.Item
             name="username"
-            rules={[{ required: true, message: 'Please input your username!' }]}
+            rules={[{ required: true, message: 'Please input your username' }]}
           >
             <Input className={style.textbox} />
           </Form.Item>
@@ -59,41 +72,47 @@ const SignUpPage = ({ history, dispatch }) => {
           <div className={style.text}>Full name</div>
           <Form.Item
             name="name"
-            rules={[{ required: true, message: 'Please input your full name!' }]}
+            rules={[{ required: true, message: 'Please input your full name' }]}
           >
             <Input className={style.textbox} />
           </Form.Item>
 
           <div className={style.text}>Password</div>
-          <Form.Item
-            name="password"
-            rules={[{ required: true, message: 'Please input your password!' }]}
-          >
-            <Input.Password className={style.textbox} />
-          </Form.Item>
+          <div>
+            <Form.Item
+              name="password"
+              rules={[{ required: true, message: 'Please input your password' }]}
+            >
+              <Input className={style.textbox} type={passwordShown ? 'text' : 'password'} />
+            </Form.Item>
+            <EyeFilled className={style.icon} onClick={togglePasswordVisiblity} />
+          </div>
 
           <div className={style.text}>Confirm Password</div>
-          <Form.Item
-            name="confirmPassword"
-            dependencies={['password']}
-            rules={[
-              { required: true, message: 'Please input your password again!' },
+          <div>
+            <Form.Item
+              name="confirmPassword"
+              dependencies={['password']}
+              rules={[
+                { required: true, message: 'Please input your password again' },
 
-              ({ getFieldValue }) => ({
-                validator(rule, value) {
-                  if (!value || getFieldValue('password') === value) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(Error('The two passwords do not match!'));
-                },
-              }),
-            ]}
-          >
-            <Input.Password className={style.textbox} />
-          </Form.Item>
+                ({ getFieldValue }) => ({
+                  validator(rule, value) {
+                    if (!value || getFieldValue('password') === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(Error('The two passwords do not match'));
+                  },
+                }),
+              ]}
+            >
+              <Input className={style.textbox} type={confirmPasswordShown ? 'text' : 'password'} />
+            </Form.Item>
+            <EyeFilled className={style.icon} onClick={toggleConfirmPasswordVisiblity} />
+          </div>
 
           <div className={style.text}>Email</div>
-          <Form.Item name="email" rules={[{ required: true, message: 'Please input your email!' }]}>
+          <Form.Item name="email" rules={[{ required: true, message: 'Please input your email' }]}>
             <Input className={style.textbox} />
           </Form.Item>
 

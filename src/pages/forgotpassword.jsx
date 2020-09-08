@@ -47,8 +47,8 @@ const ForgotPasswordPage = ({ dispatch, history }) => {
 
   return (
     <div className={style.background}>
+      <img src={NPLogo} alt="Ngee Ann Logo" className={style.image} />
       <div className={style.box}>
-        <img src={NPLogo} alt="Ngee Ann Logo" className={style.image} />
         <div className={style.header}>Password Recovery</div>
         <div className={style.secondheader}>
           Enter your username below and a code will be sent to your email.
