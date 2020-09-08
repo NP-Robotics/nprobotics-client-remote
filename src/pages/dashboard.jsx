@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
-import {
-  Layout, Table,
-} from 'antd';
+import { Layout, Table } from 'antd';
 import Link from 'umi/link';
 import queryString from 'query-string';
+import style from './dashboard.css';
 
 import SiderComponent from '../components/sider';
 
@@ -46,9 +45,9 @@ const DashboardPage = ({ dispatch, history, user }) => {
       key: 'online',
       render: (val) => {
         if (val) {
-          return (<p>Yes</p>);
+          return <p>Yes</p>;
         }
-        return (<p>No</p>);
+        return <p>No</p>;
       },
     },
     {
@@ -57,9 +56,9 @@ const DashboardPage = ({ dispatch, history, user }) => {
       key: 'inUse',
       render: (val) => {
         if (val) {
-          return (<p>Yes</p>);
+          return <p>Yes</p>;
         }
-        return (<p>No</p>);
+        return <p>No</p>;
       },
     },
   ];
@@ -67,17 +66,19 @@ const DashboardPage = ({ dispatch, history, user }) => {
   const data = user.robots.map((obj, index) => ({ key: index, ...obj }));
 
   return (
-    <Layout style={{ textAlign: 'center', minHeight: '100vh' }}>
-      <SiderComponent onCollapse={collapseOnClick} collapsed={state.collapsed} />
-      <Layout>
-        <Content style={{ margin: '0 50px' }}>
-          <div style={{ marginTop: '64px' }}>
-            <Table columns={columns} dataSource={data} />
-          </div>
-        </Content>
-        <Footer style={{ textAlign: 'center' }}>Powered by Ngee Ann Robotics</Footer>
+    <div>
+      <Layout className={style.background}>
+        <SiderComponent onCollapse={collapseOnClick} collapsed={state.collapsed} />
+        <Layout>
+          <Content className={style.table}>
+            <div style={{ marginTop: '64px' }}>
+              <Table columns={columns} dataSource={data} />
+            </div>
+          </Content>
+          <Footer className={style.footer}>Powered by Ngee Ann Robotics</Footer>
+        </Layout>
       </Layout>
-    </Layout>
+    </div>
   ); // end return
 }; // end DashboardPage
 
@@ -93,8 +94,7 @@ DashboardPage.propTypes = {
 };
 
 DashboardPage.defaultProps = {
-  user: {
-  },
+  user: {},
   history: {},
   dispatch: undefined,
 };

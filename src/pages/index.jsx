@@ -8,21 +8,9 @@ import vader from '../assets/vader.jpg';
 import stormtrooper from '../assets/stormtrooper.jpg';
 
 const IndexPage = ({ user, history }) => (
-  <div>
-    <section>
-      <header>
-        <ul>
-          <li>Fleet</li>
-          <li>Technology</li>
-          <li>Calling</li>
-          <li>Team</li>
-        </ul>
-      </header>
-      <h1 className={style.header}>Welcome to Ngee Ann Service Robots</h1>
-      <div className={style.branding}>
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Deleniti, quas.
-      </div>
-    </section>
+  <div style={{ textAlign: 'center' }}>
+    <h1>welcome to NP Robotics</h1>
+    <img src={vader} style={{ width: '20%', height: '20%' }} alt="jeremy" />
   </div>
 );
 

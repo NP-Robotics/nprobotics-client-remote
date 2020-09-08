@@ -1,0 +1,78 @@
+.main {
+  background-image: url('../assets/stairs.jpg');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  overflow: hidden;
+  text-align: center;
+  margin: auto;
+  padding: auto;
+}
+
+.box {
+  background-color: #ffffff;
+  width: 450px;
+  height: 550px;
+  margin: 4em auto;
+  margin-top: 0px;
+  border-radius: 1em;
+  box-shadow: 0px 12px 39px 2px rgba(0, 0, 0, 0.14);
+  text-align: center;
+  position: relative;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.image {
+  text-align: center;
+  display: block;
+  margin-top: 40px;
+  margin-left: auto;
+  margin-right: auto;
+  max-height: 60px;
+}
+
+.header {
+  color: #4c4c4c;
+  padding-top: 1em;
+  font-size: 23px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.text {
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: bold;
+  font-size: 15px;
+  color: #383838;
+  text-align: left;
+  margin-left: 3em;
+}
+
+.textbox {
+  width: 80%;
+  font-weight: 400;
+  letter-spacing: 1px;
+  color: #000000;
+  text-align: center;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 2px solid rgba(5, 5, 5, 0.363);
+}
+
+.button {
+  border-radius: 4px;
+  background: linear-gradient(to right, #527ccc, #40c6fb);
+  border: none;
+  color: #ffffff;
+  text-align: center;
+  font-size: 15px;
+  width: 150px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: auto;
+  margin-top: 10px;
+  vertical-align: middle;
+  font-family: 'Ubuntu', sans-serif;
+}

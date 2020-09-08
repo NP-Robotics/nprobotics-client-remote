@@ -4,6 +4,8 @@ import { connect } from 'dva';
 import {
   Form, Input, Button, message,
 } from 'antd';
+import NPLogo from '../assets/np_logo.png';
+import style from './signup.css';
 
 const tailLayout = {
   wrapperCol: { offset: 8, span: 8 },
@@ -37,72 +39,76 @@ const SignUpPage = ({ history, dispatch }) => {
   };
 
   return (
-    <div style={{ textAlign: 'center' }}>
-      <h1>Sign Up Form</h1>
-      <Form
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 8 }}
-        name="basic"
-        initialValues={{ remember: true }}
-        onFinish={onFinish}
-      >
-        <Form.Item
-          label="Username"
-          name="username"
-          rules={[{ required: true, message: 'Please input your username!' }]}
-        >
-          <Input />
-        </Form.Item>
+    <div className={style.main}>
+      <div>
+        <img src={NPLogo} alt="Ngee Ann Logo" className={style.image} />
+      </div>
 
-        <Form.Item
-          label="Fullname"
-          name="name"
-          rules={[{ required: true, message: 'Please input your full name!' }]}
-        >
-          <Input />
-        </Form.Item>
+      <div className={style.box}>
+        <h1 className={style.header}>Sign Up </h1>
 
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[{ required: true, message: 'Please input your password!' }]}
-        >
-          <Input.Password />
-        </Form.Item>
+        <Form name="basic" initialValues={{ remember: true }} onFinish={onFinish}>
+          <div className={style.text}>Username</div>
+          <Form.Item
+            name="username"
+            rules={[{ required: true, message: 'Please input your username!' }]}
+          >
+            <Input className={style.textbox} />
+          </Form.Item>
 
-        <Form.Item
-          label="Confirm Password"
-          name="confirmPassword"
-          dependencies={['password']}
-          rules={[{ required: true, message: 'Please input your password again!' },
+          <div className={style.text}>Full name</div>
+          <Form.Item
+            name="name"
+            rules={[{ required: true, message: 'Please input your full name!' }]}
+          >
+            <Input className={style.textbox} />
+          </Form.Item>
 
-            ({ getFieldValue }) => ({
-              validator(rule, value) {
-                if (!value || getFieldValue('password') === value) { return Promise.resolve(); }
-                return Promise.reject(Error('The two passwords do not match!'));
-              },
-            }),
-          ]}
-        >
-          <Input.Password />
-        </Form.Item>
+          <div className={style.text}>Password</div>
+          <Form.Item
+            name="password"
+            rules={[{ required: true, message: 'Please input your password!' }]}
+          >
+            <Input.Password className={style.textbox} />
+          </Form.Item>
 
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[{ required: true, message: 'Please input your email!' }]}
-        >
-          <Input />
-        </Form.Item>
+          <div className={style.text}>Confirm Password</div>
+          <Form.Item
+            name="confirmPassword"
+            dependencies={['password']}
+            rules={[
+              { required: true, message: 'Please input your password again!' },
 
-        <Form.Item
-          wrapperCol={{ offset: 8, span: 8 }}
-        >
-          <Button type="primary" htmlType="submit" disabled={state.submitting}>
-            Sign Up
-          </Button>
-        </Form.Item>
-      </Form>
+              ({ getFieldValue }) => ({
+                validator(rule, value) {
+                  if (!value || getFieldValue('password') === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(Error('The two passwords do not match!'));
+                },
+              }),
+            ]}
+          >
+            <Input.Password className={style.textbox} />
+          </Form.Item>
+
+          <div className={style.text}>Email</div>
+          <Form.Item name="email" rules={[{ required: true, message: 'Please input your email!' }]}>
+            <Input className={style.textbox} />
+          </Form.Item>
+
+          <Form.Item wrapperCol={{ offset: 8, span: 8 }}>
+            <Button
+              className={style.button}
+              type="primary"
+              htmlType="submit"
+              disabled={state.submitting}
+            >
+              Create an account
+            </Button>
+          </Form.Item>
+        </Form>
+      </div>
     </div>
   );
 };
