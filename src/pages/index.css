@@ -1,6 +1,4 @@
 .header {
-  text-align: center;
-  color: steelblue;
 }
 
 .branding {
@@ -11,19 +9,6 @@
 
 .section {
   margin: 0 120px;
-}
-header {
-  grid-template-columns: 1 fr 1 fr;
-  display: grid;
-  padding-top: 20px;
-}
-
-header ul li {
-  display: inline-block;
-  margin: 0 30px;
-  font-family: 'Ubuntu', sans-serif;
-  font-size: 25px;
-  font-weight: bold;
 }
 
 .column {
