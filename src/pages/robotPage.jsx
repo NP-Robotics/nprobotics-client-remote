@@ -1,7 +1,3 @@
-/* eslint-disable linebreak-style */
-/* eslint-disable no-undef */
-/* eslint-disable spaced-comment */
-/* eslint-disable linebreak-style */
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
@@ -275,12 +271,10 @@ const RobotPage = ({
       <Menu.Item key="1">Location 1</Menu.Item>
       <Menu.Item key="2">Location 2</Menu.Item>
       <Menu.Item key="3">Location 3</Menu.Item>
-      <Menu.Item key="2">Location 2</Menu.Item>
-      <Menu.Item key="3">Location 3</Menu.Item>
     </Menu>
   );
 
-  const [width, setWidth] = React.useState(window.innerWidth);
+  /* const [width, setWidth] = React.useState(window.innerWidth);
   const [height, setHeight] = React.useState(window.innerHeight);
 
   const updateWidthAndHeight = () => {
@@ -291,7 +285,7 @@ const RobotPage = ({
   React.useEffect(() => {
     window.addEventListener('resize', updateWidthAndHeight);
     return () => window.removeEventListener('resize', updateWidthAndHeight);
-  });
+  }); */
 
   return (
     <div>
@@ -309,9 +303,6 @@ const RobotPage = ({
               <ImportOutlined />
             </span>
           </Button>
-        </div>
-        <div className={style.yourVid}>
-          <ChimeVideoStream />
         </div>
         <div>
           <div className={style.naviBox}>
@@ -339,10 +330,6 @@ const RobotPage = ({
             >
               Send
             </Button>
-          </div>
-          <div style={{ color: 'white' }}>
-            <div>{`Window width = ${width}`}</div>
-            <div>{`Window height = ${height}`}</div>
           </div>
           <div onDragEnd={joystickOnDrag} className={style.joystickBox}>
             <Joystick

@@ -27,8 +27,7 @@ const HeaderComponent = ({ user, dispatch }) => {
   const profileItems = () => {
     if (user.authenticated) {
       return ([
-        <Menu.Item key="1">My Account</Menu.Item>,
-        <Menu.Item key="2" onClick={onClickSignOut}>Sign Out</Menu.Item>,
+        <Menu.Item key="1" onClick={onClickSignOut}>Sign Out</Menu.Item>,
       ]);
     }
 

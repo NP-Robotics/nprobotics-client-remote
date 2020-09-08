@@ -33,9 +33,10 @@ const DashboardPage = ({ dispatch, history, user }) => {
       dataIndex: 'robotName',
       key: 'robot',
       render: (text) => (
-        <Link to={`/robot/?${queryString.stringify({ robotName: text })}`}>
+        /* <Link to={`/robot/?${queryString.stringify({ robotName: text })}`}>
           <p className={style.robotDetails}>{text}</p>
-        </Link>
+        </Link> */
+        <p className={style.robotDetails}>{text}</p>
       ),
     },
     {
@@ -73,7 +74,7 @@ const DashboardPage = ({ dispatch, history, user }) => {
       dataIndex: 'robotName',
       key: 'robot',
       render: (text) => (
-        <div>
+        /* <div>
           <Link to={`/robot/?${queryString.stringify({ robotName: text })}`}>
             <Button type="primary" shape="round">
               Connect
@@ -84,7 +85,12 @@ const DashboardPage = ({ dispatch, history, user }) => {
               Log
             </Button>
           </Link>
-        </div>
+        </div> */
+        <Link to={`/robot/?${queryString.stringify({ robotName: text })}`}>
+          <Button type="primary" shape="round">
+            Connect
+          </Button>
+        </Link>
       ),
     },
   ];
