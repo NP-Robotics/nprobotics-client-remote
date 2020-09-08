@@ -1,15 +1,12 @@
 .header {
   text-align: center;
   color: steelblue;
-  z-index: 9999;
 }
 
 .branding {
-  z-index: 9999;
 }
 
 .background {
-  z-index: 1;
 }
 
 .section {

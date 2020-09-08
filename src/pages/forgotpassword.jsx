@@ -4,6 +4,7 @@ import { connect } from 'dva';
 import {
   Form, Input, Button, message, Modal,
 } from 'antd';
+import Link from 'umi/link';
 import style from './forgotpassword.css';
 import NPLogo from '../assets/np_logo.png';
 
@@ -47,7 +48,9 @@ const ForgotPasswordPage = ({ dispatch, history }) => {
 
   return (
     <div className={style.background}>
-      <img src={NPLogo} alt="Ngee Ann Logo" className={style.image} />
+      <Link to="/">
+        <img src={NPLogo} alt="Ngee Ann Logo" className={style.image} />
+      </Link>
       <div className={style.box}>
         <div className={style.header}>Password Recovery</div>
         <div className={style.secondheader}>

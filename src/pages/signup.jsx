@@ -5,6 +5,7 @@ import {
   Form, Input, Button, message,
 } from 'antd';
 import { EyeFilled } from '@ant-design/icons';
+import Link from 'umi/link';
 import NPLogo from '../assets/np_logo.png';
 import style from './signup.css';
 
@@ -54,7 +55,9 @@ const SignUpPage = ({ history, dispatch }) => {
   return (
     <div className={style.main}>
       <div>
-        <img src={NPLogo} alt="Ngee Ann Logo" className={style.image} />
+        <Link to="/">
+          <img src={NPLogo} alt="Ngee Ann Logo" className={style.image} />
+        </Link>
       </div>
 
       <div className={style.box}>
