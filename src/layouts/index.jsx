@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import PropTypes from 'prop-types';
 import { Spin, Layout } from 'antd';
 import HeaderComponent from '../components/header';
+import DeviceProvider from '../context/DeviceConnector';
 import style from './index.css';
 
 const {
@@ -10,6 +11,7 @@ const {
 } = Layout;
 
 const IndexLayout = ({ children, history, user }) => {
+  // loading screen
   if (user.authenticated === null
     || (user.authenticated === true && user.secretAccessKey === null)) {
     return (
@@ -27,6 +29,14 @@ const IndexLayout = ({ children, history, user }) => {
       children
     );
   }
+  if (history.location.pathname === '/robot/') {
+    return (
+      <DeviceProvider>
+        {children}
+      </DeviceProvider>
+
+    );
+  }
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <HeaderComponent />
@@ -38,7 +48,6 @@ const IndexLayout = ({ children, history, user }) => {
         </Content>
       </Layout>
     </Layout>
-
   );
 };
 

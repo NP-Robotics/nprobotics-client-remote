@@ -1,18 +1,20 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, {
+  useState, useRef, useEffect, useContext,
+} from 'react';
 import PropTypes from 'prop-types';
 
 import { connect } from 'dva';
 import {
-  Button, message, Input, Tooltip, Menu, Dropdown,
+  Button, message, Input, Menu,
 } from 'antd';
-import { ExportOutlined, SmileOutlined, EnvironmentOutlined } from '@ant-design/icons';
+import { SmileOutlined, ImportOutlined } from '@ant-design/icons';
 import { Joystick } from 'react-joystick-component';
 
 import ChimeVideoStream from '../components/ChimeVideoStream';
+import { DeviceContext } from '../context/DeviceConnector';
 import style from './robotPage.css';
 
 const { TextArea } = Input;
-const text = <span>Type a message that will be said by the robot</span>;
 
 const RobotPage = ({
   user, meeting, dispatch, history, messagebox,
@@ -24,17 +26,12 @@ const RobotPage = ({
     chimeConnect: false,
     chatTextBox: false,
     messagebox: null,
+    endpoint: null,
   });
-  const [componentPos, setComponentPos] = useState({
-    locked: false,
-    joystick: {
-      x: 500,
-      y: 500,
-    },
-  });
-  const [componentText, setComponentText] = useState({
-    lockButton: 'lock',
-  });
+
+  const joystickRef = useRef(null);
+
+  const deviceCtx = useContext(DeviceContext);
 
   // prevent access if query string is missing
   useEffect(() => {
@@ -60,7 +57,7 @@ const RobotPage = ({
 
   // join meeting if all parameters are present
   useEffect(() => {
-    /* if (!meeting.joined && state.meetingName != null && !state.attemptedJoin) {
+    if (!meeting.joined && state.meetingName != null && !state.attemptedJoin) {
       setState({ ...state, attemptedJoin: true });
 
       dispatch({
@@ -76,14 +73,15 @@ const RobotPage = ({
         },
         error: () => {
           message.error('Robot is offline');
+          deviceCtx.disconnectDevice();
           history.push('/dashboard');
         },
-      }); */
+      });
+      console.log(deviceCtx);
 
-    /* dispatch({
-        type: 'device/initDevice',
+      deviceCtx.initDevice({
         payload: {
-          host: 'a17t8rhn8oueg6-ats.iot.us-east-1.amazonaws.com',
+          host: state.endpoint,
           clientID: user.username,
           accessKeyId: user.accessKeyId,
           secretKey: user.secretAccessKey,
@@ -101,10 +99,8 @@ const RobotPage = ({
           return null;
         },
       });
-    } */
-  }, [state, meeting, user, dispatch, history]);
-
-  const joystickRef = useRef(null);
+    }
+  }, [state, meeting, user, dispatch, history, deviceCtx]);
 
   // cleanup when unmount
   useEffect(() => () => {
@@ -116,88 +112,51 @@ const RobotPage = ({
           meetingName: state.meetingName,
         },
       });
-      dispatch({
-        type: 'device/disconnectDevice',
-      });
     }
   });
 
-  const chimeLeaveOnClick = () => {
-
-  };
-
-  const connectOnClick = () => {
-    dispatch({
-      type: 'device/initDevice',
-      payload: {
-        host: 'a17t8rhn8oueg6-ats.iot.us-east-1.amazonaws.com',
-        clientID: user.username,
-        accessKeyId: user.accessKeyId,
-        secretKey: user.secretAccessKey,
-        sessionToken: user.sessionToken,
-      },
-      callback: (event) => {
-        message.success('Connected!');
-      },
-      error: (error) => {
-        if (error) {
-          message.error(error.message);
-          return null;
-        }
-        message.warn('Unable to connect to Robot');
-        return null;
-      },
-    });
-  };
   const joystickOnMove = ({ x, y }) => {
-    const _vel = y / 200;
-    const _angle = -x / 250;
-    dispatch({
-      type: 'device/publishCmdVel',
+    const vel = y / 20;
+    const angle = -x / 25;
+    deviceCtx.publishMessage({
+      topic: '/cmd_vel',
       payload: {
-        vel: _vel,
-        angle: _angle,
+        linear: {
+          x: vel,
+          y: 0,
+          z: 0,
+        },
+        angular: {
+          x: 0,
+          y: 0,
+          z: angle,
+        },
       },
     });
   };
+
   const joystickOnStop = () => {
-    dispatch({
-      type: 'device/publishCmdVel',
+    deviceCtx.publishMessage({
+      topic: '/cmd_vel',
       payload: {
-        vel: 0,
-        angle: 0,
+        linear: {
+          x: 0,
+          y: 0,
+          z: 0,
+        },
+        angular: {
+          x: 0,
+          y: 0,
+          z: 0,
+        },
       },
     });
-  };
-
-  const lockOnClick = () => {
-    setComponentPos({ ...componentPos, locked: !componentPos.locked });
-    if (componentPos.locked) {
-      setComponentText({ ...componentText, lockButton: 'lock' });
-    } else {
-      setComponentText({ ...componentText, lockButton: 'unlock' });
-    }
-  };
-
-  const joystickOnDrag = (event) => {
-    const halfSize = joystickRef.current.props.size / 2;
-    setComponentPos({
-      ...componentPos,
-      joystick: {
-        x: event.clientX - halfSize,
-        y: event.clientY - halfSize,
-      },
-    });
-  };
-
-  const enableChatTextBox = () => {
-    setState({ chatTextBox: true });
   };
 
   const sendText = () => {
     const voiceMsg = state.messagebox;
-    dispatch({
-      type: 'device/publishVoiceMessage',
+    deviceCtx.publishMessage({
+      topic: '/voice_message',
       payload: {
         data: voiceMsg,
       },
@@ -218,9 +177,6 @@ const RobotPage = ({
           meetingName: state.meetingName,
         },
       });
-      dispatch({
-        type: 'device/disconnectDevice',
-      });
     }
     history.push('/dashboard');
   };
@@ -231,10 +187,10 @@ const RobotPage = ({
   }
 
   const emoteClick = () => {
-    dispatch({
-      type: 'device/publishEmote',
+    deviceCtx.publishMessage({
+      topic: '/emote',
       payload: {
-        emote: 'myemote',
+        data: 'myemote',
       },
     });
   };
@@ -270,86 +226,75 @@ const RobotPage = ({
       <Menu.Item key="1">Location 1</Menu.Item>
       <Menu.Item key="2">Location 2</Menu.Item>
       <Menu.Item key="3">Location 3</Menu.Item>
+      <Menu.Item key="4">Location 2</Menu.Item>
+      <Menu.Item key="5">Location 3</Menu.Item>
     </Menu>
   );
 
   return (
-
     <div>
-      <div className={style.vid}>
-        <ChimeVideoStream />
-      </div>
-      <div className={style.vidBox}>
-        <div className={style.yourVid}>
-          <ChimeVideoStream />
-        </div>
-        <Button
-          type="primary"
-          shape="circle"
-          className={style.sBtn}
-          onClick={connectOnClick}
-        >
-          <span>Start</span>
-        </Button>
-        <Button type="primary" shape="circle" className={style.eBtn}>
-          <span>End</span>
-        </Button>
-      </div>
-
-      {' '}
-      <div className={style.robotFunc}>
-        <div className={style.naviBox}>
-          <div className={style.navi}>
-            <div trigger={['click']}>
-              {menu}
-            </div>
-          </div>
-        </div>
-
-        <div className={style.message}>
-          <div className={style.emote} trigger={['click']}>
-            <SmileOutlined onClick={emoteClick} />
-          </div>
-          <TextArea
-            value={state.messagebox}
-            onChange={handleChange}
-            placeholder="Enter a message for the robot to say"
-            autoSize={{ minRows: 1, maxRows: 1 }}
-            className={style.textBox}
-          />
-          <div />
+      <ChimeVideoStream style={{
+        position: 'fixed',
+        margin: 'auto auto',
+        width: '100vw',
+        height: '100vh',
+        background: 'black',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        textAlign: 'center',
+        zIndex: '-2',
+      }}
+      />
+      <div>
+        <div>
           <Button
-            onMouseOver={changeBackground}
-            onClick={sendText}
-            className={style.sendBtn}
+            onClick={leaveRoom}
+            type="primary"
+            className={style.leaveBtn}
           >
-            Send
+            <span>
+              <ImportOutlined />
+            </span>
           </Button>
         </div>
-      </div>
-
-      <div>
-        <Button
-          onClick={leaveRoom}
-          type="primary"
-          className={style.leaveBtn}
-        >
-          Return To
-          {' '}
-          <br />
-          Dashboard
-        </Button>
-      </div>
-
-      <div onDragEnd={joystickOnDrag} className={style.joystickBox}>
-        <Joystick
-          ref={joystickRef}
-          size={100}
-          baseColor="grey"
-          stickColor="blue"
-          move={joystickOnMove}
-          stop={joystickOnStop}
-        />
+        <div>
+          <div className={style.naviBox}>
+            <div className={style.navi}>
+              <div trigger={['click']}>
+                {menu}
+              </div>
+            </div>
+          </div>
+          <div className={style.message}>
+            <div className={style.emote} trigger={['click']}>
+              <SmileOutlined onClick={emoteClick} />
+            </div>
+            <TextArea
+              value={state.messagebox}
+              onChange={handleChange}
+              placeholder="Enter a message for the robot to say"
+              autoSize={{ minRows: 1, maxRows: 1 }}
+              className={style.textBox}
+            />
+            <Button
+              onMouseOver={changeBackground}
+              onClick={sendText}
+              className={style.sendBtn}
+            >
+              Send
+            </Button>
+          </div>
+          <div className={style.joystickBox}>
+            <Joystick
+              ref={joystickRef}
+              size={100}
+              baseColor="grey"
+              stickColor="blue"
+              move={joystickOnMove}
+              stop={joystickOnStop}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
