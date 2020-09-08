@@ -7,18 +7,15 @@ import PropTypes from 'prop-types';
 
 import { connect } from 'dva';
 import {
-  Button, message, Input, Tooltip, Menu, Dropdown, Row, Col, Divider,
+  Button, message, Input, Menu,
 } from 'antd';
-import {
-  ExportOutlined, SmileOutlined, EnvironmentOutlined, ImportOutlined,
-} from '@ant-design/icons';
+import { SmileOutlined, ImportOutlined } from '@ant-design/icons';
 import { Joystick } from 'react-joystick-component';
 
 import ChimeVideoStream from '../components/ChimeVideoStream';
 import style from './robotPage.css';
 
 const { TextArea } = Input;
-const text = <span>Type a message that will be said by the robot</span>;
 
 const RobotPage = ({
   user, meeting, dispatch, history, messagebox,
@@ -30,16 +27,6 @@ const RobotPage = ({
     chimeConnect: false,
     chatTextBox: false,
     messagebox: null,
-  });
-  const [componentPos, setComponentPos] = useState({
-    locked: false,
-    joystick: {
-      x: 500,
-      y: 500,
-    },
-  });
-  const [componentText, setComponentText] = useState({
-    lockButton: 'lock',
   });
 
   // prevent access if query string is missing
@@ -66,7 +53,7 @@ const RobotPage = ({
 
   // join meeting if all parameters are present
   useEffect(() => {
-    /* if (!meeting.joined && state.meetingName != null && !state.attemptedJoin) {
+    if (!meeting.joined && state.meetingName != null && !state.attemptedJoin) {
       setState({ ...state, attemptedJoin: true });
 
       dispatch({
@@ -84,9 +71,9 @@ const RobotPage = ({
           message.error('Robot is offline');
           history.push('/dashboard');
         },
-      }); */
+      });
 
-    /* dispatch({
+      dispatch({
         type: 'device/initDevice',
         payload: {
           host: 'a17t8rhn8oueg6-ats.iot.us-east-1.amazonaws.com',
@@ -107,7 +94,7 @@ const RobotPage = ({
           return null;
         },
       });
-    } */
+    }
   }, [state, meeting, user, dispatch, history]);
 
   const joystickRef = useRef(null);
@@ -128,35 +115,9 @@ const RobotPage = ({
     }
   });
 
-  const chimeLeaveOnClick = () => {
-  };
-
-  const connectOnClick = () => {
-    dispatch({
-      type: 'device/initDevice',
-      payload: {
-        host: 'a17t8rhn8oueg6-ats.iot.us-east-1.amazonaws.com',
-        clientID: user.username,
-        accessKeyId: user.accessKeyId,
-        secretKey: user.secretAccessKey,
-        sessionToken: user.sessionToken,
-      },
-      callback: (event) => {
-        message.success('Connected!');
-      },
-      error: (error) => {
-        if (error) {
-          message.error(error.message);
-          return null;
-        }
-        message.warn('Unable to connect to Robot');
-        return null;
-      },
-    });
-  };
   const joystickOnMove = ({ x, y }) => {
-    const _vel = y / 200;
-    const _angle = -x / 250;
+    const _vel = y / 20;
+    const _angle = -x / 25;
     dispatch({
       type: 'device/publishCmdVel',
       payload: {
@@ -171,26 +132,6 @@ const RobotPage = ({
       payload: {
         vel: 0,
         angle: 0,
-      },
-    });
-  };
-
-  const lockOnClick = () => {
-    setComponentPos({ ...componentPos, locked: !componentPos.locked });
-    if (componentPos.locked) {
-      setComponentText({ ...componentText, lockButton: 'lock' });
-    } else {
-      setComponentText({ ...componentText, lockButton: 'unlock' });
-    }
-  };
-
-  const joystickOnDrag = (event) => {
-    const halfSize = joystickRef.current.props.size / 2;
-    setComponentPos({
-      ...componentPos,
-      joystick: {
-        x: event.clientX - halfSize,
-        y: event.clientY - halfSize,
       },
     });
   };
@@ -280,24 +221,20 @@ const RobotPage = ({
     </Menu>
   );
 
-  const [width, setWidth] = React.useState(window.innerWidth);
-  const [height, setHeight] = React.useState(window.innerHeight);
-
-  const updateWidthAndHeight = () => {
-    setWidth(window.innerWidth);
-    setHeight(window.innerHeight);
-  };
-
-  React.useEffect(() => {
-    window.addEventListener('resize', updateWidthAndHeight);
-    return () => window.removeEventListener('resize', updateWidthAndHeight);
-  });
-
   return (
     <div>
-      <div className={style.vid}>
-        <ChimeVideoStream />
-      </div>
+      <ChimeVideoStream style={{
+        position: 'fixed',
+        margin: 'auto auto',
+        width: '100vw',
+        height: '100vh',
+        background: 'black',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        textAlign: 'center',
+        zIndex: '-2',
+      }}
+      />
       <div>
         <div>
           <Button
@@ -309,9 +246,6 @@ const RobotPage = ({
               <ImportOutlined />
             </span>
           </Button>
-        </div>
-        <div className={style.yourVid}>
-          <ChimeVideoStream />
         </div>
         <div>
           <div className={style.naviBox}>
@@ -340,11 +274,7 @@ const RobotPage = ({
               Send
             </Button>
           </div>
-          <div style={{ color: 'white' }}>
-            <div>{`Window width = ${width}`}</div>
-            <div>{`Window height = ${height}`}</div>
-          </div>
-          <div onDragEnd={joystickOnDrag} className={style.joystickBox}>
+          <div className={style.joystickBox}>
             <Joystick
               ref={joystickRef}
               size={100}
