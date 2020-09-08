@@ -226,8 +226,8 @@ const RobotPage = ({
       <Menu.Item key="1">Location 1</Menu.Item>
       <Menu.Item key="2">Location 2</Menu.Item>
       <Menu.Item key="3">Location 3</Menu.Item>
-      <Menu.Item key="2">Location 2</Menu.Item>
-      <Menu.Item key="3">Location 3</Menu.Item>
+      <Menu.Item key="4">Location 2</Menu.Item>
+      <Menu.Item key="5">Location 3</Menu.Item>
     </Menu>
   );
 
