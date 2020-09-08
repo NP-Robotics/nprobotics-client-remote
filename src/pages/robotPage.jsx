@@ -1,8 +1,6 @@
-/* eslint-disable linebreak-style */
-/* eslint-disable no-undef */
-/* eslint-disable spaced-comment */
-/* eslint-disable linebreak-style */
-import React, { useState, useRef, useEffect } from 'react';
+import React, {
+  useState, useRef, useEffect, useContext,
+} from 'react';
 import PropTypes from 'prop-types';
 
 import { connect } from 'dva';
@@ -13,6 +11,7 @@ import { SmileOutlined, ImportOutlined } from '@ant-design/icons';
 import { Joystick } from 'react-joystick-component';
 
 import ChimeVideoStream from '../components/ChimeVideoStream';
+import { DeviceContext } from '../context/DeviceConnector';
 import style from './robotPage.css';
 
 const { TextArea } = Input;
@@ -27,7 +26,12 @@ const RobotPage = ({
     chimeConnect: false,
     chatTextBox: false,
     messagebox: null,
+    endpoint: null,
   });
+
+  const joystickRef = useRef(null);
+
+  const deviceCtx = useContext(DeviceContext);
 
   // prevent access if query string is missing
   useEffect(() => {
@@ -69,14 +73,15 @@ const RobotPage = ({
         },
         error: () => {
           message.error('Robot is offline');
+          deviceCtx.disconnectDevice();
           history.push('/dashboard');
         },
       });
+      console.log(deviceCtx);
 
-      dispatch({
-        type: 'device/initDevice',
+      deviceCtx.initDevice({
         payload: {
-          host: 'a17t8rhn8oueg6-ats.iot.us-east-1.amazonaws.com',
+          host: state.endpoint,
           clientID: user.username,
           accessKeyId: user.accessKeyId,
           secretKey: user.secretAccessKey,
@@ -95,9 +100,7 @@ const RobotPage = ({
         },
       });
     }
-  }, [state, meeting, user, dispatch, history]);
-
-  const joystickRef = useRef(null);
+  }, [state, meeting, user, dispatch, history, deviceCtx]);
 
   // cleanup when unmount
   useEffect(() => () => {
@@ -109,41 +112,51 @@ const RobotPage = ({
           meetingName: state.meetingName,
         },
       });
-      dispatch({
-        type: 'device/disconnectDevice',
-      });
     }
   });
 
   const joystickOnMove = ({ x, y }) => {
-    const _vel = y / 20;
-    const _angle = -x / 25;
-    dispatch({
-      type: 'device/publishCmdVel',
+    const vel = y / 20;
+    const angle = -x / 25;
+    deviceCtx.publishMessage({
+      topic: '/cmd_vel',
       payload: {
-        vel: _vel,
-        angle: _angle,
-      },
-    });
-  };
-  const joystickOnStop = () => {
-    dispatch({
-      type: 'device/publishCmdVel',
-      payload: {
-        vel: 0,
-        angle: 0,
+        linear: {
+          x: vel,
+          y: 0,
+          z: 0,
+        },
+        angular: {
+          x: 0,
+          y: 0,
+          z: angle,
+        },
       },
     });
   };
 
-  const enableChatTextBox = () => {
-    setState({ chatTextBox: true });
+  const joystickOnStop = () => {
+    deviceCtx.publishMessage({
+      topic: '/cmd_vel',
+      payload: {
+        linear: {
+          x: 0,
+          y: 0,
+          z: 0,
+        },
+        angular: {
+          x: 0,
+          y: 0,
+          z: 0,
+        },
+      },
+    });
   };
 
   const sendText = () => {
     const voiceMsg = state.messagebox;
-    dispatch({
-      type: 'device/publishVoiceMessage',
+    deviceCtx.publishMessage({
+      topic: '/voice_message',
       payload: {
         data: voiceMsg,
       },
@@ -164,9 +177,6 @@ const RobotPage = ({
           meetingName: state.meetingName,
         },
       });
-      dispatch({
-        type: 'device/disconnectDevice',
-      });
     }
     history.push('/dashboard');
   };
@@ -177,10 +187,10 @@ const RobotPage = ({
   }
 
   const emoteClick = () => {
-    dispatch({
-      type: 'device/publishEmote',
+    deviceCtx.publishMessage({
+      topic: '/emote',
       payload: {
-        emote: 'myemote',
+        data: 'myemote',
       },
     });
   };
