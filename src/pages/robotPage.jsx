@@ -99,7 +99,7 @@ const RobotPage = ({
           return null;
         },
       });
-    } 
+    }
   }, [state, meeting, user, dispatch, history, deviceCtx]);
 
   // cleanup when unmount
@@ -116,6 +116,7 @@ const RobotPage = ({
   });
 
   const joystickOnMove = ({ x, y }) => {
+    console.log('move');
     const vel = y / 20;
     const angle = -x / 25;
     deviceCtx.publishMessage({
@@ -292,6 +293,7 @@ const RobotPage = ({
               stickColor="blue"
               move={joystickOnMove}
               stop={joystickOnStop}
+              throttle={100}
             />
           </div>
         </div>
