@@ -99,12 +99,25 @@ const RobotPage = ({
         },
       });
 
-      deviceCtx.thingShadow({
+      deviceCtx.initThingShadow({
         payload: {
           host: state.endpoint,
-          clientId: user.username,
-          
-        }
+          clientID: user.username,
+          accessKeyId: user.accessKeyId,
+          secretKey: user.secretAccessKey,
+          sessionToken: user.sessionToken,
+        },
+        callback: (event) => {
+          message.success('Connected!');
+        },
+        error: (error) => {
+          if (error) {
+            message.error(error.message);
+            return null;
+          }
+          message.warn('Unable to connect to Robot');
+          return null;
+        },
       });
     }
   }, [state, meeting, user, dispatch, history, deviceCtx]);
