@@ -60,11 +60,20 @@ const RobotFace = ({
     }
   });
   return (
-    <div className={style.background}>
+    <div>
       <ChimeVideoStream
         endpoint={state.endpoint}
+        style={{
+          position: 'fixed',
+          margin: 'auto auto',
+          width: '100vw',
+          height: '100vh',
+          backgroundImage: `url(${Face})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          textAlign: 'center',
+        }}
       />
-      <image />
     </div>
   );
 };
