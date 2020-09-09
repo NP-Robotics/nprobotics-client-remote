@@ -1,25 +1,13 @@
-/* eslint-disable linebreak-style */
-/* eslint-disable react/jsx-indent-props */
-/* eslint-disable react/jsx-closing-bracket-location */
-/* eslint-disable linebreak-style */
-/* eslint-disable react/jsx-max-props-per-line */
-/* eslint-disable react/jsx-first-prop-new-line */
-/* eslint-disable react/jsx-indent */
-/* eslint-disable linebreak-style */
-/* eslint-disable arrow-parens */
-/* eslint-disable indent */
-/* eslint-disable linebreak-style */
-/* eslint-disable object-curly-newline */
-/* eslint-disable linebreak-style */
-/* eslint-disable no-unused-vars */
-/* eslint-disable linebreak-style */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
 
 import Link from 'umi/link';
 import queryString from 'query-string';
-import { Table, Button, Space, Radio, Divider } from 'antd';
+import {
+  Table, Button, Space, Radio, Divider, Input, Modal,
+} from 'antd';
+import { ImportOutlined } from '@ant-design/icons';
 import style from './logPage.css';
 
 const LogPage = ({ dispatch, history, user }) => {
@@ -27,6 +15,7 @@ const LogPage = ({ dispatch, history, user }) => {
     robotName: null,
     filteredInfo: null,
     sortedInfo: null,
+    visible: false,
   });
 
   const leaveRoom = () => {
@@ -103,14 +92,14 @@ const LogPage = ({ dispatch, history, user }) => {
   };
 
   // rowSelection object indicates the need for row selection
-const rowSelection = {
-  onChange: (selectedRowKeys, selectedRows) => {
-    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-  },
-  getCheckboxProps: record => ({
-    name: record.name,
-  }),
-};
+  const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+    },
+    getCheckboxProps: (record) => ({
+      name: record.name,
+    }),
+  };
 
   const [selectionType, setSelectionType] = useState('checkbox');
 
@@ -155,36 +144,83 @@ const rowSelection = {
       sortOrder: sortedInfo.columnKey === 'address' && sortedInfo.order,
       ellipsis: true,
     },
+    {
+      title: 'Action',
+      dataIndex: 'name',
+      key: 'name',
+      render: (text) => (
+        <div>
+          <Button type="primary" shape="round" onClick={showModal}>
+            Details
+          </Button>
+          <Link to={`/log/?${queryString.stringify({ robotName: text })}`}>
+            <Button type="primary" shape="round" className={style.delete}>
+              Delete
+            </Button>
+          </Link>
+        </div>
+      ),
+    },
   ];
+
+  const showModal = () => {
+    setState({
+      visible: true,
+    });
+  };
+
+  const handleOk = (e) => {
+    console.log(e);
+    setState({
+      visible: false,
+    });
+  };
+
+  const handleCancel = (e) => {
+    console.log(e);
+    setState({
+      visible: false,
+    });
+  };
 
   return (
     <div>
+      <Modal
+        title="Basic Modal"
+        visible={state.visible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+      </Modal>
       <div>
-        <div>
-          <Button
-            onClick={leaveRoom}
-            type="primary"
-            className={style.return}
-          >
-            Return To
-            {' '}
-            <br />
-            Dashboard
-          </Button>
-        </div>
-        <div className={style.table}>
-          <div>
-            <Space style={{ marginBottom: 16 }}>
-              <Button onClick={setAgeSort}>Sort age</Button>
-              <Button onClick={clearFilters}>Clear filters</Button>
-              <Button onClick={clearAll}>Clear filters and sorters</Button>
-            </Space>
-            <Table rowSelection={{
+        <Button
+          onClick={leaveRoom}
+          type="primary"
+          className={style.return}
+        >
+          <span>
+            <ImportOutlined />
+          </span>
+        </Button>
+      </div>
+      <div className={style.table}>
+        <Space style={{ marginBottom: 16 }}>
+          <Button onClick={setAgeSort}>Sort age</Button>
+          <Button onClick={clearFilters}>Clear filters</Button>
+          <Button onClick={clearAll}>Clear filters and sorters</Button>
+        </Space>
+        <Table
+          rowSelection={{
             type: selectionType,
             ...rowSelection,
-            }} columns={columns} dataSource={data} onChange={handleChange} />
-          </div>
-        </div>
+          }}
+          columns={columns}
+          dataSource={data}
+          onChange={handleChange}
+        />
       </div>
     </div>
   );

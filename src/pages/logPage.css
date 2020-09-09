@@ -1,15 +1,22 @@
 .return{
-    position: fixed;
-    width: 6%;
-    height: 6%;
-    left: 3%;
-    top: 10%;
     background-color: red;
     border-color: red;
-    border-radius: 30%;
+    border-radius: 20%;
+    margin-top: 0.3%;
+    margin-right: 97%;
+}
+
+.return:hover{
+    background-color: red;
+    border-color: red;
 }
 
 .table{
     width: 80%;
-    margin: 5% 10%;
+    margin: 0% 10%;
+}
+
+.delete{
+    background-color: red;
+    border-color: red;
 }
