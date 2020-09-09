@@ -57,7 +57,7 @@ const RobotPage = ({
 
   // join meeting if all parameters are present
   useEffect(() => {
-    /* if (!meeting.joined && state.meetingName != null && !state.attemptedJoin) {
+    if (!meeting.joined && state.meetingName != null && !state.attemptedJoin) {
       setState({ ...state, attemptedJoin: true });
 
       dispatch({
@@ -99,7 +99,7 @@ const RobotPage = ({
           return null;
         },
       });
-    } */
+    } 
   }, [state, meeting, user, dispatch, history, deviceCtx]);
 
   // cleanup when unmount
