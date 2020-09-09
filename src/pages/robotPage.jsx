@@ -17,7 +17,7 @@ import style from './robotPage.css';
 const { TextArea } = Input;
 
 const RobotPage = ({
-  user, meeting, dispatch, history, messagebox,
+  user, meeting, dispatch, history,
 }) => {
   const [state, setState] = useState({
     robotName: null,

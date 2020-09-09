@@ -16,7 +16,6 @@ export const setupAudioVideo = async () => {
   // selecting devices from list of devices
   console.log(audioInput.length);
   if (audioInput.length > 0) {
-    console.log('run');
     const audioInputDeviceInfo = audioInput[0];
     await meetingSession.audioVideo.chooseAudioInputDevice(audioInputDeviceInfo.deviceId);
   }
@@ -107,7 +106,6 @@ export const startMeetingSession = () => {
 };
 
 export const initMeeting = async (Meeting, Attendee, audioRef, videoRef) => {
-  console.log('init');
   const configuration = new MeetingSessionConfiguration(Meeting, Attendee);
 
   const logger = new ConsoleLogger('MyLogger', LogLevel.ERROR);
