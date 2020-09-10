@@ -7,6 +7,8 @@ import { Joystick } from 'react-joystick-component';
 
 import ChimeVideoStream from '../components/ChimeVideoStream';
 
+import { face } from '../assets/face.jpg';
+
 import style from './robotFace.css';
 
 const RobotFace = ({
@@ -60,7 +62,21 @@ const RobotFace = ({
   });
   return (
     <div>
-      <ChimeVideoStream endpoint={state.endpoint} className={style.background} />
+      <ChimeVideoStream
+        endpoint={state.endpoint}
+        style={{
+          margin: 'auto auto',
+          width: '100vw',
+          height: '100vh',
+          background: 'black',
+          backgroundImage: `url(${face})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          textAlign: 'center',
+          overflow: 'hidden',
+          objectFit: 'fill',
+        }}
+      />
     </div>
   );
 };

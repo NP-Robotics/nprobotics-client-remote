@@ -226,32 +226,27 @@ const RobotPage = ({
       <Menu.Item key="1">Location 1</Menu.Item>
       <Menu.Item key="2">Location 2</Menu.Item>
       <Menu.Item key="3">Location 3</Menu.Item>
-      <Menu.Item key="4">Location 2</Menu.Item>
-      <Menu.Item key="5">Location 3</Menu.Item>
+      <Menu.Item key="4">Location 4</Menu.Item>
+      <Menu.Item key="5">Location 5</Menu.Item>
     </Menu>
   );
 
   return (
-    <div>
-      <ChimeVideoStream style={{
-        position: 'fixed',
-        margin: 'auto auto',
-        width: '100vw',
-        height: '100vh',
-        background: 'black',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        textAlign: 'center',
-        zIndex: '-2',
-      }}
+    <div className={style.background}>
+      <ChimeVideoStream
+        style={{
+          position: 'fixed',
+          margin: 'auto auto',
+          width: '100vw',
+          height: '100vh',
+          zIndex: '-2',
+          overflow: 'hidden',
+          objectFit: 'fill',
+        }}
       />
       <div>
         <div>
-          <Button
-            onClick={leaveRoom}
-            type="primary"
-            className={style.leaveBtn}
-          >
+          <Button onClick={leaveRoom} type="primary" className={style.leaveBtn}>
             <span>
               <ImportOutlined />
             </span>
@@ -260,9 +255,7 @@ const RobotPage = ({
         <div>
           <div className={style.naviBox}>
             <div className={style.navi}>
-              <div trigger={['click']}>
-                {menu}
-              </div>
+              <div trigger={['click']}>{menu}</div>
             </div>
           </div>
           <div className={style.message}>
@@ -276,11 +269,7 @@ const RobotPage = ({
               autoSize={{ minRows: 1, maxRows: 1 }}
               className={style.textBox}
             />
-            <Button
-              onMouseOver={changeBackground}
-              onClick={sendText}
-              className={style.sendBtn}
-            >
+            <Button onMouseOver={changeBackground} onClick={sendText} className={style.sendBtn}>
               Send
             </Button>
           </div>
