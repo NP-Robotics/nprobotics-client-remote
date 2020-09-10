@@ -1,0 +1,11 @@
+.background {
+    background-image: url('../assets/face.jpg');
+    background-color: black;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
