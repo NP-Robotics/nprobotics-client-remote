@@ -3,8 +3,6 @@ import { connect } from 'dva';
 import PropTypes from 'prop-types';
 import { Spin, Layout } from 'antd';
 import HeaderComponent from '../components/header';
-import DeviceProvider from '../context/DeviceConnector';
-import style from './index.css';
 
 const {
   Content,
@@ -12,8 +10,7 @@ const {
 
 const IndexLayout = ({ children, history, user }) => {
   // loading screen
-  if (user.authenticated === null
-    || (user.authenticated === true && user.secretAccessKey === null)) {
+  if (!user.identityLoaded || !user.robotsLoaded) {
     return (
       <div style={{
         textAlign: 'center',
@@ -30,26 +27,23 @@ const IndexLayout = ({ children, history, user }) => {
     );
   }
   return (
-    <DeviceProvider>
-      <Layout style={{ minHeight: '100vh' }}>
-        <HeaderComponent />
+    <Layout style={{ minHeight: '100vh' }}>
+      <HeaderComponent />
 
-        <Layout style={{ textAlign: 'center' }}>
-          <Content>
-            {children}
+      <Layout style={{ textAlign: 'center' }}>
+        <Content>
+          {children}
 
-          </Content>
-        </Layout>
+        </Content>
       </Layout>
-    </DeviceProvider>
-
+    </Layout>
   );
 };
 
 IndexLayout.propTypes = {
   user: PropTypes.shape({
-    authenticated: PropTypes.bool,
-    secretAccessKey: PropTypes.string,
+    identityLoaded: PropTypes.bool,
+    robotsLoaded: PropTypes.bool,
 
   }),
   history: PropTypes.shape({
@@ -62,8 +56,8 @@ IndexLayout.propTypes = {
 
 IndexLayout.defaultProps = {
   user: {
-    authenticated: null,
-    secretAccessKey: null,
+    identityLoaded: false,
+    robotsLoaded: false,
   },
   history: {},
   children: {},

@@ -10,14 +10,15 @@ import {
 import { ExportOutlined, SmileOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { Joystick } from 'react-joystick-component';
 
-import ChimeVideoStream from '../components/ChimeVideoStream';
-import { DeviceContext } from '../context/DeviceConnector';
+import IOTDevice from '../utils/IOTDevice';
+import ChimeSession from '../utils/ChimeSession';
+
 import style from './robotPage.css';
 
 const { TextArea } = Input;
 
 const RobotPage = ({
-  user, meeting, dispatch, history, messagebox,
+  user, dispatch, history,
 }) => {
   const [state, setState] = useState({
     robotName: null,
@@ -29,116 +30,112 @@ const RobotPage = ({
     endpoint: null,
   });
 
+  const [device, setDevice] = useState(new IOTDevice());
+  const [chime, setChime] = useState(new ChimeSession());
+
   const joystickRef = useRef(null);
 
-  const deviceCtx = useContext(DeviceContext);
+  const audioRef = useRef(null);
+  const videoRef = useRef(null);
 
-  // prevent access if query string is missing
   useEffect(() => {
+    /*
+    - variable to check if page is mounted. If page is unmounted variable
+    - is set to false.
+    -
+    - This is to prevent memory leaks
+    */
+    let isMounted = true;
+
+    // prevent access if query string is missing
     if (!history.location.query.robotName) {
       history.push('/dashboard');
     }
-  });
 
-  // load selected robot into local state
-  useEffect(() => {
-    if (state.robotName === null) {
-      const { robotName } = history.location.query;
-      if (user.robots.length > 0) {
-        const selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
-        console.log(selectedRobot);
-        setState({
-          ...state,
-          ...selectedRobot,
-        });
+    // load selected robot into local state
+    let endpoint = null;
+
+    // meeting name
+    let meetingName = null;
+
+    const { robotName } = history.location.query;
+    if (user.robots.length > 0) {
+      // store selected robot information in local state
+      const selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
+      endpoint = selectedRobot.endpoint;
+      meetingName = selectedRobot.meetingName;
+
+      setState({
+        ...state,
+        ...selectedRobot,
+      });
+    }
+
+    // connect to IOT device
+    device.init({
+      host: endpoint,
+      clientID: user.username,
+      accessKeyId: user.accessKeyId,
+      secretKey: user.secretAccessKey,
+      sessionToken: user.sessionToken,
+      region: 'us-east-1',
+      callback: (event) => {
+        if (!isMounted) {
+          device.disconnectDevice();
+        } else {
+          message.success('Controls Connected.');
+        }
+      },
+      error: (error) => {
+        if (error) {
+          message.error(error.message);
+          return null;
+        }
+        message.warn('Unable to connect to Robot');
+        return null;
+      },
+    });
+
+    // join chime meeting
+    dispatch({
+      type: 'user/joinMeeting',
+      payload: {
+        username: `${user.username}`,
+        meetingName: `${meetingName}`,
+        region: 'ap-southeast-1',
+        jwtToken: user.jwtToken,
+      },
+      callback: async ({ Meeting, Attendee }) => {
+        if (isMounted) {
+          await chime.init({ Meeting, Attendee });
+          chime.bindVideoElement(videoRef.current);
+          chime.bindAudioElement(audioRef.current);
+          message.success('Video Connected.');
+        }
+      },
+      error: () => {
+        message.error('Robot is offline');
+        history.push('/dashboard');
+      },
+    });
+
+    // cleanup when unmount
+    return () => {
+      isMounted = false;
+
+      if (chime.meetingSession) {
+        chime.endMeeting();
       }
-    }
-  }, [state, user.robots, history.location.query]);
-
-  // join meeting if all parameters are present
-  useEffect(() => {
-    if (!meeting.joined && state.meetingName != null && !state.attemptedJoin) {
-      setState({ ...state, attemptedJoin: true });
-
-      /* dispatch({
-        type: 'meeting/join',
-        payload: {
-          username: `${user.username}`,
-          meetingName: `${state.meetingName}`,
-          region: 'ap-southeast-1',
-          jwtToken: user.jwtToken,
-        },
-        callback: () => {
-          message.success('Joined meeting!');
-        },
-        error: () => {
-          message.error('Robot is offline');
-          deviceCtx.disconnectDevice();
-          history.push('/dashboard');
-        },
-      }); */
-
-      deviceCtx.initDevice({
-        payload: {
-          host: state.endpoint,
-          clientID: user.username,
-          accessKeyId: user.accessKeyId,
-          secretKey: user.secretAccessKey,
-          sessionToken: user.sessionToken,
-        },
-        callback: (event) => {
-          message.success('Connected!');
-        },
-        error: (error) => {
-          if (error) {
-            message.error(error.message);
-            return null;
-          }
-          message.warn('Unable to connect to Robot');
-          return null;
-        },
-      });
-
-      deviceCtx.initThingShadow({
-        payload: {
-          host: state.endpoint,
-          clientID: user.username,
-          accessKeyId: user.accessKeyId,
-          secretKey: user.secretAccessKey,
-          sessionToken: user.sessionToken,
-        },
-        callback: (event) => {
-          message.success('Connected!');
-        },
-        error: (error) => {
-          if (error) {
-            message.error(error.message);
-            return null;
-          }
-          message.warn('Unable to connect to Robot');
-          return null;
-        },
-      });
-    }
-  }, [state, meeting, user, dispatch, history, deviceCtx]);
-
-  // cleanup when unmount
-  useEffect(() => () => {
-    if (meeting.joined) {
-      dispatch({
-        type: 'meeting/end',
-        payload: {
-          jwtToken: user.jwtToken,
-          meetingName: state.meetingName,
-        },
-      });
-    }
-  });
+      if (device.device) {
+        device.disconnectDevice();
+      }
+    };
+  }, []);
 
   const joystickOnMove = ({ x, y }) => {
     const vel = y / 200;
     const angle = -x / 250;
-    deviceCtx.publishMessage({
+    device.publishMessage({
       topic: '/cmd_vel',
       payload: {
         linear: {
@@ -156,7 +153,7 @@ const RobotPage = ({
   };
 
   const joystickOnStop = () => {
-    deviceCtx.publishMessage({
+    device.publishMessage({
       topic: '/cmd_vel',
       payload: {
         linear: {
@@ -179,7 +176,7 @@ const RobotPage = ({
 
   const sendText = () => {
     const voiceMsg = state.messagebox;
-    deviceCtx.publishMessage({
+    device.publishMessage({
       topic: '/voice_message',
       payload: {
         data: voiceMsg,
@@ -193,15 +190,6 @@ const RobotPage = ({
   };
 
   const leaveRoom = () => {
-    if (meeting.joined) {
-      dispatch({
-        type: 'meeting/end',
-        payload: {
-          jwtToken: user.jwtToken,
-          meetingName: state.meetingName,
-        },
-      });
-    }
     history.push('/dashboard');
   };
 
@@ -211,7 +199,7 @@ const RobotPage = ({
   }
 
   const emoteClick = () => {
-    deviceCtx.publishMessage({
+    device.publishMessage({
       topic: '/emote',
       payload: {
         data: 'myemote',
@@ -256,12 +244,10 @@ const RobotPage = ({
   return (
 
     <div>
-      <div className={style.vid}>
-        <ChimeVideoStream />
-      </div>
+      <audio ref={audioRef} />
       <div className={style.vidBox}>
         <div className={style.yourVid}>
-          <ChimeVideoStream />
+          <video ref={videoRef} />
         </div>
         <Button
           type="primary"
@@ -274,6 +260,7 @@ const RobotPage = ({
           <span>End</span>
         </Button>
       </div>
+      <video ref={videoRef} />
 
       {' '}
       <div className={style.robotFunc}>
@@ -353,23 +340,13 @@ RobotPage.propTypes = {
     jwtToken: PropTypes.string,
     robots: PropTypes.arrayOf(PropTypes.shape({})),
   }),
-  device: PropTypes.shape({}),
-  meeting: PropTypes.shape({
-    joined: PropTypes.bool,
-  }),
-  messagebox: PropTypes.shape({}),
 };
 
 RobotPage.defaultProps = {
   // state: {},
   history: {},
   dispatch: undefined,
-  device: {},
   user: {},
-  meeting: {
-    joined: false,
-  },
-  messagebox: {},
 };
 
-export default connect(({ user, device, meeting }) => ({ user, device, meeting }))(RobotPage);
+export default connect(({ user, meeting }) => ({ user, meeting }))(RobotPage);
