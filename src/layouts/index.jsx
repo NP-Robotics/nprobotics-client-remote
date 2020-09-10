@@ -8,7 +8,19 @@ const { Content } = Layout;
 
 const IndexLayout = ({ children, history, user }) => {
   // loading screen
-  if ((!user.identityLoaded || !user.robotsLoaded) && user.authenticated === null) {
+  if (user.authenticated === null) {
+    return (
+      <div
+        style={{
+          textAlign: 'center',
+          margin: '50vh',
+        }}
+      >
+        <Spin size="large" />
+      </div>
+    );
+  }
+  if (!user.identityLoaded || !user.robotsLoaded) {
     return (
       <div
         style={{
