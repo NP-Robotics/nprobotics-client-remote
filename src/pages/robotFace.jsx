@@ -6,6 +6,7 @@ import { message } from 'antd';
 
 import Face from '../assets/face.jpg';
 import ChimeSession from '../utils/ChimeSession';
+import style from './robotFace.css';
 
 const RobotFace = ({
   user, dispatch, history,
@@ -85,7 +86,19 @@ const RobotFace = ({
   return (
     <div>
       <audio ref={audioRef} />
-      <video ref={videoRef} />
+      <video
+        style={{
+          position: 'fixed',
+          margin: 'auto auto',
+          width: '100vw',
+          height: '100vh',
+          backgroundImage: `url(${Face})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          textAlign: 'center',
+        }}
+        ref={videoRef}
+      />
     </div>
   );
 };

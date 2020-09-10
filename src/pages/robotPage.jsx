@@ -1,13 +1,13 @@
 import React, {
-  useState, useRef, useEffect, useContext,
+  useState, useRef, useEffect,
 } from 'react';
 import PropTypes from 'prop-types';
 
 import { connect } from 'dva';
 import {
-  Button, message, Input, Tooltip, Menu, Dropdown,
+  Button, message, Input, Menu,
 } from 'antd';
-import { ExportOutlined, SmileOutlined, EnvironmentOutlined } from '@ant-design/icons';
+import { SmileOutlined, ImportOutlined } from '@ant-design/icons';
 import { Joystick } from 'react-joystick-component';
 
 import IOTDevice from '../utils/IOTDevice';
@@ -133,8 +133,9 @@ const RobotPage = ({
   }, []);
 
   const joystickOnMove = ({ x, y }) => {
-    const vel = y / 200;
-    const angle = -x / 250;
+    console.log('move');
+    const vel = y / 20;
+    const angle = -x / 25;
     device.publishMessage({
       topic: '/cmd_vel',
       payload: {
@@ -168,10 +169,6 @@ const RobotPage = ({
         },
       },
     });
-  };
-
-  const enableChatTextBox = () => {
-    setState({ chatTextBox: true });
   };
 
   const sendText = () => {
@@ -238,84 +235,79 @@ const RobotPage = ({
       <Menu.Item key="1">Location 1</Menu.Item>
       <Menu.Item key="2">Location 2</Menu.Item>
       <Menu.Item key="3">Location 3</Menu.Item>
+      <Menu.Item key="4">Location 2</Menu.Item>
+      <Menu.Item key="5">Location 3</Menu.Item>
     </Menu>
   );
 
   return (
-
     <div>
       <audio ref={audioRef} />
-      <div className={style.vidBox}>
-        <div className={style.yourVid}>
-          <video ref={videoRef} />
-        </div>
-        <Button
-          type="primary"
-          shape="circle"
-          className={style.sBtn}
-        >
-          <span>Start</span>
-        </Button>
-        <Button type="primary" shape="circle" className={style.eBtn}>
-          <span>End</span>
-        </Button>
-      </div>
-      <video ref={videoRef} />
-
-      {' '}
-      <div className={style.robotFunc}>
-        <div className={style.naviBox}>
-          <div className={style.navi}>
-            <div trigger={['click']}>
-              {menu}
-            </div>
-          </div>
-        </div>
-
-        <div className={style.message}>
-          <div className={style.emote} trigger={['click']}>
-            <SmileOutlined onClick={emoteClick} />
-          </div>
-          <TextArea
-            value={state.messagebox}
-            onChange={handleChange}
-            placeholder="Enter a message for the robot to say"
-            autoSize={{ minRows: 1, maxRows: 1 }}
-            className={style.textBox}
-          />
-          <div />
+      <video
+        style={{
+          position: 'fixed',
+          margin: 'auto auto',
+          width: '100vw',
+          height: '100vh',
+          background: 'black',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          textAlign: 'center',
+          zIndex: '-2',
+        }}
+        ref={videoRef}
+      />
+      <div>
+        <div>
           <Button
-            onMouseOver={changeBackground}
-            onClick={sendText}
-            className={style.sendBtn}
+            onClick={leaveRoom}
+            type="primary"
+            className={style.leaveBtn}
           >
-            Send
+            <span>
+              <ImportOutlined />
+            </span>
           </Button>
         </div>
-      </div>
-
-      <div>
-        <Button
-          onClick={leaveRoom}
-          type="primary"
-          className={style.leaveBtn}
-        >
-          Return To
-          {' '}
-          <br />
-          Dashboard
-        </Button>
-      </div>
-
-      <div className={style.joystickBox}>
-        <Joystick
-          ref={joystickRef}
-          size={100}
-          baseColor="grey"
-          stickColor="blue"
-          move={joystickOnMove}
-          stop={joystickOnStop}
-        />
+        <div>
+          <div className={style.naviBox}>
+            <div className={style.navi}>
+              <div trigger={['click']}>
+                {menu}
+              </div>
+            </div>
+          </div>
+          <div className={style.message}>
+            <div className={style.emote} trigger={['click']}>
+              <SmileOutlined onClick={emoteClick} />
+            </div>
+            <TextArea
+              value={state.messagebox}
+              onChange={handleChange}
+              placeholder="Enter a message for the robot to say"
+              autoSize={{ minRows: 1, maxRows: 1 }}
+              className={style.textBox}
+            />
+            <Button
+              onMouseOver={changeBackground}
+              onClick={sendText}
+              className={style.sendBtn}
+            >
+              Send
+            </Button>
+          </div>
+          <div className={style.joystickBox}>
+            <Joystick
+              ref={joystickRef}
+              size={100}
+              baseColor="grey"
+              stickColor="blue"
+              move={joystickOnMove}
+              stop={joystickOnStop}
+              throttle={100}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

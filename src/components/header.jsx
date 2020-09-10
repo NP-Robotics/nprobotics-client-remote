@@ -4,9 +4,7 @@ import Link from 'umi/link';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
 import { Layout, Menu, Button } from 'antd';
-import {
-  UserOutlined,
-} from '@ant-design/icons';
+import { UserOutlined } from '@ant-design/icons';
 import style from './header.css';
 
 import NPLogo from '../assets/np_logo.png';
@@ -26,25 +24,46 @@ const HeaderComponent = ({ user, dispatch }) => {
 
   const profileItems = () => {
     if (user.authenticated) {
-      return ([
-        <Menu.Item key="1">My Account</Menu.Item>,
-        <Menu.Item key="2" onClick={onClickSignOut}>Sign Out</Menu.Item>,
-      ]);
+      return [
+        <Menu.Item
+          key="1"
+          onClick={() => {
+            router.push('dashboard');
+          }}
+        >
+          Dashboard
+        </Menu.Item>,
+        <Menu.Item key="2">My Account</Menu.Item>,
+        <Menu.Item key="3">My Organization</Menu.Item>,
+        <Menu.Item key="4" onClick={onClickSignOut}>
+          Sign Out
+        </Menu.Item>,
+      ];
     }
 
-    return ([
-      <Menu.Item key="1" onClick={() => { router.push('/login'); }}>Sign In</Menu.Item>,
-      <Menu.Item key="2" onClick={() => { router.push('/signup'); }}>Create Account</Menu.Item>,
-    ]);
+    return [
+      <Menu.Item
+        key="1"
+        onClick={() => {
+          router.push('/login');
+        }}
+      >
+        Sign In
+      </Menu.Item>,
+      <Menu.Item
+        key="2"
+        onClick={() => {
+          router.push('/signup');
+        }}
+      >
+        Create Account
+      </Menu.Item>,
+    ];
   };
   return (
     <Header className={style.headerBar}>
       <Link to="/">
-        <img
-          src={NPLogo}
-          className={style.logo}
-          alt="NPLogo"
-        />
+        <img src={NPLogo} className={style.logo} alt="NPLogo" />
       </Link>
       <Menu theme="dark" mode="horizontal" style={{ float: 'right', marginRight: '50px' }}>
         <SubMenu key="user" icon={<UserOutlined />} title={user.username} className={style.subMenu}>

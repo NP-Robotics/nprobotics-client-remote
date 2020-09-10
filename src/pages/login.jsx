@@ -5,9 +5,10 @@ import { connect } from 'dva';
 import {
   Form, Input, Button, Checkbox, message,
 } from 'antd';
+import { EyeFilled } from '@ant-design/icons';
 import Link from 'umi/link';
-import NPLogo from '../assets/np_logo.png';
 import style from './login.css';
+import NPLogo from '../assets/np_logo.png';
 
 const LoginPage = ({ dispatch, history }) => {
   const [state, setState] = useState({
@@ -38,49 +39,72 @@ const LoginPage = ({ dispatch, history }) => {
     console.log('Failed:', errorInfo);
   };
 
+  const [passwordShown, setPasswordShown] = useState(false);
+
+  const togglePasswordVisiblity = () => {
+    setPasswordShown(!passwordShown);
+  };
+
   return (
-    <div className={style.backgroundContainer}>
-      <div className={style.roundedBox}>
-        <img src={NPLogo} alt="NPLogo" />
-      </div>
-      <h1>login</h1>
-      <Form
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 8 }}
-        name="basic"
-        initialValues={{ remember: true }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-      >
-        <Form.Item
-          label="Username"
-          name="username"
-          rules={[{ required: true, message: 'Please input your username!' }]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[{ required: true, message: 'Please input your password!' }]}
-        >
-          <Input.Password />
-        </Form.Item>
-
-        <Form.Item wrapperCol={{ offset: 8, span: 8 }} name="remember" valuePropName="checked">
-          <Checkbox>Remember me</Checkbox>
-        </Form.Item>
-
-        <Form.Item wrapperCol={{ offset: 8, span: 8 }}>
-          <Button type="primary" htmlType="submit" disabled={state.submitting}>
-            Submit
-          </Button>
-        </Form.Item>
-        <Link to="/forgotpassword">
-          <p>Forgot password?</p>
+    <div>
+      <div className={style.background}>
+        <Link to="/">
+          <img src={NPLogo} alt="Ngee Ann Logo" className={style.image} />
         </Link>
-      </Form>
+        <div className={style.box}>
+          <div className={style.header}>Sign in to your account</div>
+          <Form
+            name="basic"
+            initialValues={{ remember: true }}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+          >
+            <Form.Item
+              name="username"
+              rules={[{ required: true, message: 'Please input your username' }]}
+            >
+              <Input className={style.username} placeholder="Username" type="text" />
+            </Form.Item>
+
+            <div>
+              <Form.Item
+                name="password"
+                rules={[{ required: true, message: 'Please input your password' }]}
+              >
+                <Input
+                  className={style.password}
+                  placeholder="Password"
+                  type={passwordShown ? 'text' : 'password'}
+                />
+              </Form.Item>
+              <EyeFilled className={style.icon} onClick={togglePasswordVisiblity} />
+            </div>
+
+            <div className={style.remember}>
+              <Form.Item name="remember" valuePropName="checked">
+                <Checkbox>Remember me</Checkbox>
+              </Form.Item>
+            </div>
+
+            <div>
+              <Form.Item>
+                <Button
+                  className={style.button}
+                  type="primary"
+                  htmlType="submit"
+                  disabled={state.submitting}
+                >
+                  Sign in
+                </Button>
+              </Form.Item>
+            </div>
+
+            <Link to="/forgotpassword">
+              <div className={style.forgotpassword}>Forgot Password?</div>
+            </Link>
+          </Form>
+        </div>
+      </div>
     </div>
   );
 };

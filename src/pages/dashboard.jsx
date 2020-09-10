@@ -2,15 +2,13 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
 import {
-  Layout, Table,
-  Button, Radio,
+  Layout, Table, Button, Radio,
 } from 'antd';
 
 import Link from 'umi/link';
 import queryString from 'query-string';
-
-import SiderComponent from '../components/sider';
 import style from './dashboard.css';
+import SiderComponent from '../components/sider';
 
 const { Footer, Content } = Layout;
 
@@ -33,18 +31,17 @@ const DashboardPage = ({ dispatch, history, user }) => {
       dataIndex: 'robotName',
       key: 'robot',
       render: (text) => (
-        <Link to={`/robot/?${queryString.stringify({ robotName: text })}`}>
+        /* <Link to={`/robot/?${queryString.stringify({ robotName: text })}`}>
           <p className={style.robotDetails}>{text}</p>
-        </Link>
+        </Link> */
+        <p className={style.robotDetails}>{text}</p>
       ),
     },
     {
       title: 'Organisation',
       dataIndex: 'organisation',
       key: 'organisation',
-      render: (text) => (
-        <p>{text}</p>
-      ),
+      render: (text) => <p>{text}</p>,
     },
     {
       title: 'Online',
@@ -52,9 +49,9 @@ const DashboardPage = ({ dispatch, history, user }) => {
       key: 'online',
       render: (val) => {
         if (val) {
-          return (<p>Yes</p>);
+          return <p>Yes</p>;
         }
-        return (<p>No</p>);
+        return <p>No</p>;
       },
     },
     {
@@ -63,9 +60,9 @@ const DashboardPage = ({ dispatch, history, user }) => {
       key: 'inUse',
       render: (val) => {
         if (val) {
-          return (<p>Yes</p>);
+          return <p>Yes</p>;
         }
-        return (<p>No</p>);
+        return <p>No</p>;
       },
     },
     {
@@ -73,7 +70,7 @@ const DashboardPage = ({ dispatch, history, user }) => {
       dataIndex: 'robotName',
       key: 'robot',
       render: (text) => (
-        <div>
+        /* <div>
           <Link to={`/robot/?${queryString.stringify({ robotName: text })}`}>
             <Button type="primary" shape="round">
               Connect
@@ -84,7 +81,12 @@ const DashboardPage = ({ dispatch, history, user }) => {
               Log
             </Button>
           </Link>
-        </div>
+        </div> */
+        <Link to={`/robot/?${queryString.stringify({ robotName: text })}`}>
+          <Button type="primary" shape="round">
+            Connect
+          </Button>
+        </Link>
       ),
     },
   ];
@@ -94,14 +96,12 @@ const DashboardPage = ({ dispatch, history, user }) => {
   return (
     <Layout className={style.layout}>
       <SiderComponent onCollapse={collapseOnClick} collapsed={state.collapsed} />
-      <Layout className={style.background}>
+      <Layout>
         <Content className={style.content}>
           <div className={style.table}>
             <Table columns={columns} dataSource={data} />
           </div>
-          <div className={style.footer}>
-            Powered by Ngee Ann Robotics
-          </div>
+          <div className={style.footer}>Powered by Ngee Ann Robotics</div>
         </Content>
       </Layout>
     </Layout>
@@ -120,8 +120,7 @@ DashboardPage.propTypes = {
 };
 
 DashboardPage.defaultProps = {
-  user: {
-  },
+  user: {},
   history: {},
   dispatch: undefined,
 };
