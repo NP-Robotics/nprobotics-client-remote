@@ -50,75 +50,74 @@ const RobotPage = ({
     // prevent access if query string is missing
     if (!history.location.query.robotName) {
       history.push('/dashboard');
-    }
-
+    } else {
     // load selected robot into local state
-    let endpoint = null;
+      let endpoint = null;
 
-    // meeting name
-    let meetingName = null;
+      // meeting name
+      let meetingName = null;
 
-    const { robotName } = history.location.query;
-    if (user.robots.length > 0) {
+      const { robotName } = history.location.query;
+      if (user.robots.length > 0) {
       // store selected robot information in local state
-      const selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
-      endpoint = selectedRobot.endpoint;
-      meetingName = selectedRobot.meetingName;
+        const selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
+        endpoint = selectedRobot.endpoint;
+        meetingName = selectedRobot.meetingName;
 
-      setState({
-        ...state,
-        ...selectedRobot,
+        setState({
+          ...state,
+          ...selectedRobot,
+        });
+      }
+
+      // connect to IOT device
+      device.init({
+        host: endpoint,
+        clientID: user.username,
+        accessKeyId: user.accessKeyId,
+        secretKey: user.secretAccessKey,
+        sessionToken: user.sessionToken,
+        region: 'us-east-1',
+        callback: (event) => {
+          if (!isMounted) {
+            device.disconnectDevice();
+          } else {
+            message.success('Controls Connected.');
+          }
+        },
+        error: (error) => {
+          if (error) {
+            message.error(error.message);
+            return null;
+          }
+          message.warn('Unable to connect to Robot');
+          return null;
+        },
+      });
+
+      // join chime meeting
+      dispatch({
+        type: 'user/joinMeeting',
+        payload: {
+          username: `${user.username}`,
+          meetingName: `${meetingName}`,
+          region: 'ap-southeast-1',
+          jwtToken: user.jwtToken,
+        },
+        callback: async ({ Meeting, Attendee }) => {
+          if (isMounted) {
+            await chime.init({ Meeting, Attendee });
+            chime.bindVideoElement(videoRef.current);
+            chime.bindAudioElement(audioRef.current);
+            message.success('Video Connected.');
+          }
+        },
+        error: () => {
+          message.error('Robot is offline');
+          history.push('/dashboard');
+        },
       });
     }
-
-    // connect to IOT device
-    device.init({
-      host: endpoint,
-      clientID: user.username,
-      accessKeyId: user.accessKeyId,
-      secretKey: user.secretAccessKey,
-      sessionToken: user.sessionToken,
-      region: 'us-east-1',
-      callback: (event) => {
-        if (!isMounted) {
-          device.disconnectDevice();
-        } else {
-          message.success('Controls Connected.');
-        }
-      },
-      error: (error) => {
-        if (error) {
-          message.error(error.message);
-          return null;
-        }
-        message.warn('Unable to connect to Robot');
-        return null;
-      },
-    });
-
-    // join chime meeting
-    dispatch({
-      type: 'user/joinMeeting',
-      payload: {
-        username: `${user.username}`,
-        meetingName: `${meetingName}`,
-        region: 'ap-southeast-1',
-        jwtToken: user.jwtToken,
-      },
-      callback: async ({ Meeting, Attendee }) => {
-        if (isMounted) {
-          await chime.init({ Meeting, Attendee });
-          chime.bindVideoElement(videoRef.current);
-          chime.bindAudioElement(audioRef.current);
-          message.success('Video Connected.');
-        }
-      },
-      error: () => {
-        message.error('Robot is offline');
-        history.push('/dashboard');
-      },
-    });
-
     // cleanup when unmount
     return () => {
       isMounted = false;
