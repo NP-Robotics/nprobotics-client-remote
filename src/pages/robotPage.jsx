@@ -24,10 +24,10 @@ const RobotPage = ({
     robotName: null,
     meetingName: null,
     attemptedJoin: false,
-    chimeConnect: false,
-    chatTextBox: false,
     messagebox: null,
     endpoint: null,
+    chimeConnected: false,
+    IOTConnected: false,
   });
 
   const [device, setDevice] = useState(new IOTDevice());
@@ -83,6 +83,7 @@ const RobotPage = ({
             device.disconnectDevice();
           } else {
             message.success('Controls Connected.');
+            setState({ ...state, IOTConnected: true });
           }
         },
         error: (error) => {
@@ -107,13 +108,14 @@ const RobotPage = ({
         callback: async ({ Meeting, Attendee }) => {
           if (isMounted) {
             await chime.init({ Meeting, Attendee });
+            setState({ ...state, chimeConnected: true });
             chime.bindVideoElement(videoRef.current);
             chime.bindAudioElement(audioRef.current);
             message.success('Video Connected.');
           }
         },
         error: () => {
-          message.error('Robot is offline');
+          message.error('Meeting room has expired');
           history.push('/dashboard');
         },
       });
