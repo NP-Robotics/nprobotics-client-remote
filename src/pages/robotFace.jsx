@@ -2,77 +2,102 @@ import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { connect } from 'dva';
-import { Button, message } from 'antd';
-import { Joystick } from 'react-joystick-component';
-
-import ChimeVideoStream from '../components/ChimeVideoStream';
+import { message } from 'antd';
 
 import Face from '../assets/face.jpg';
+import ChimeSession from '../utils/ChimeSession';
+import style from './robotFace.css';
 
 const RobotFace = ({
-  user, meeting, dispatch, history,
+  user, dispatch, history,
 }) => {
   const [state, setState] = useState({
-    endpoint: 'a17t8rhn8oueg6-ats.iot.us-east-1.amazonaws.com',
-    inUse: false,
-    meetingName: 'meetingaaa',
-    online: false,
-    organisation: 'NP',
-    robotID: '222',
-    robotName: 'Coddie',
+    robotName: null,
+    meetingName: null,
+    attemptedJoin: false,
+    chimeConnect: false,
+    chatTextBox: false,
+    messagebox: null,
+    endpoint: null,
   });
 
-  // join meeting if all parameters are present
+  const [chime, setChime] = useState(new ChimeSession());
+
+  const audioRef = useRef(null);
+  const videoRef = useRef(null);
+
   useEffect(() => {
-    if (!meeting.joined && state.meetingName != null && !state.attemptedJoin) {
-      setState({ ...state, attemptedJoin: true });
+    /*
+    - variable to check if page is mounted. If page is unmounted variable
+    - is set to false.
+    -
+    - This is to prevent memory leaks
+    */
+    let isMounted = true;
 
-      dispatch({
-        type: 'meeting/join',
-        payload: {
-          username: `${user.username}`,
-          meetingName: `${state.meetingName}`,
-          region: 'ap-southeast-1',
-          jwtToken: user.jwtToken,
-        },
-        callback: () => {
+    // meeting name
+    let meetingName = null;
+
+    const robotName = 'Coddie';
+    if (user.robots.length > 0) {
+      // store selected robot information in local state
+      const selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
+      meetingName = selectedRobot.meetingName;
+      console.log(meetingName);
+      setState({
+        ...state,
+        ...selectedRobot,
+      });
+    }
+
+    // join chime meeting
+    dispatch({
+      type: 'user/joinMeeting',
+      payload: {
+        username: `${user.username}`,
+        meetingName: `${meetingName}`,
+        region: 'ap-southeast-1',
+        jwtToken: user.jwtToken,
+      },
+      callback: async ({ Meeting, Attendee }) => {
+        if (isMounted) {
+          await chime.init({ Meeting, Attendee });
+          chime.bindVideoElement(videoRef.current);
+          chime.bindAudioElement(audioRef.current);
           message.success('Joined meeting!');
-        },
-        error: () => {
-          message.error('Robot is offline');
-          history.push('/dashboard');
-        },
-      });
-    }
-  }, [state, meeting, user, dispatch, history]);
+        }
+      },
+      error: () => {
+        message.error('Robot is offline');
+        history.push('/dashboard');
+      },
+    });
 
-  // cleanup when unmount
-  useEffect(() => () => {
-    if (meeting.joined) {
-      dispatch({
-        type: 'meeting/end',
-        payload: {
-          jwtToken: user.jwtToken,
-          meetingName: state.meetingName,
-        },
-      });
-    }
-  });
+    // cleanup when unmount
+    return () => {
+      isMounted = false;
+
+      if (chime.meetingSession) {
+        chime.endMeeting();
+      }
+    };
+  }, []);
+
   return (
-    <div style={{ }}>
-      <ChimeVideoStream
-        endpoint={state.endpoint}
+    <div>
+      <audio ref={audioRef} />
+      <video
         style={{
+          position: 'fixed',
           margin: 'auto auto',
           width: '100vw',
           height: '100vh',
-          background: 'black',
           backgroundImage: `url(${Face})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           textAlign: 'center',
-
         }}
+        ref={videoRef}
       />
     </div>
   );
@@ -97,21 +122,13 @@ RobotFace.propTypes = {
     jwtToken: PropTypes.string,
     robots: PropTypes.arrayOf(PropTypes.shape({})),
   }),
-  device: PropTypes.shape({}),
-  meeting: PropTypes.shape({
-    joined: PropTypes.bool,
-  }),
 };
 
 RobotFace.defaultProps = {
   // state: {},
   history: {},
   dispatch: undefined,
-  device: {},
   user: {},
-  meeting: {
-    joined: false,
-  },
 };
 
-export default connect(({ user, device, meeting }) => ({ user, device, meeting }))(RobotFace);
+export default connect(({ user }) => ({ user }))(RobotFace);

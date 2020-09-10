@@ -533,3 +533,46 @@ TextArea::placeholder{
         border-radius: 5%;
     }
   }
+
+  @media screen and (max-height: 756px) {
+    .message{
+        position: fixed;
+        bottom: 3%;
+        margin: 0 35%;
+        background-color: rgba(198,212,251,1);
+        height: 13%;
+        width: 30%;
+        border-radius: 15%;
+    }
+    
+    .emote{
+        margin-top: 4%;
+        margin-left: 3%;
+        float: left;
+    }
+    
+    .textBox{
+        width: 80%;
+        margin-left: 5%;
+        margin-top: 3%;
+        float: left;
+    }
+    
+    TextArea::placeholder{
+        text-align: center;
+    }
+    
+    .sendBtn{
+        margin: 2% 44%;
+        background-color: #4CAF50;
+        border-radius: 20%;
+    }
+    
+    .sendBtn:hover{
+        background-color: #4CAF50;
+    }
+    
+    .sendBtn:focus {
+        background-color: #4CAF50;
+      }
+  }
