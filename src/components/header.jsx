@@ -40,7 +40,7 @@ const HeaderComponent = ({ user, dispatch }) => {
         </Menu.Item>,
       ];
     }
-
+    // if user is not authenticated
     return [
       <Menu.Item
         key="1"
