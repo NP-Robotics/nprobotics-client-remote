@@ -8,7 +8,7 @@ const { Content } = Layout;
 
 const IndexLayout = ({ children, history, user }) => {
   // loading screen
-  if (!user.identityLoaded || !user.robotsLoaded) {
+  if ((!user.identityLoaded || !user.robotsLoaded) && user.authenticated === null) {
     return (
       <div
         style={{
@@ -53,7 +53,7 @@ IndexLayout.propTypes = {
   user: PropTypes.shape({
     identityLoaded: PropTypes.bool,
     robotsLoaded: PropTypes.bool,
-
+    authenticated: PropTypes.bool,
   }),
   history: PropTypes.shape({
     location: PropTypes.shape({
@@ -67,6 +67,7 @@ IndexLayout.defaultProps = {
   user: {
     identityLoaded: false,
     robotsLoaded: false,
+    authenticated: null,
   },
   history: {},
   children: {},
