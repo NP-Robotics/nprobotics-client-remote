@@ -38,6 +38,7 @@ const RobotPage = ({
   const audioRef = useRef(null);
   const videoRef = useRef(null);
 
+  // component onMount
   useEffect(() => {
     /*
     - variable to check if page is mounted. If page is unmounted variable

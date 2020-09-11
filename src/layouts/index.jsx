@@ -6,8 +6,16 @@ import HeaderComponent from '../components/header';
 
 const { Content } = Layout;
 
+const headerless = new Set([
+  '/robotface',
+  '/login',
+  '/forgotpassword',
+  '/resetpassword',
+  '/robot/',
+]);
+
 const IndexLayout = ({ children, history, user }) => {
-  // loading screen
+  // loading screen to ensure authentication is loaded
   if (user.authenticated === null) {
     return (
       <div
@@ -20,6 +28,7 @@ const IndexLayout = ({ children, history, user }) => {
       </div>
     );
   }
+  // loading screen to ensure other user data is loaded
   if (!user.identityLoaded || !user.robotsLoaded) {
     return (
       <div
@@ -32,19 +41,8 @@ const IndexLayout = ({ children, history, user }) => {
       </div>
     );
   }
-  if (history.location.pathname === '/robotface') {
-    return children;
-  }
-  if (history.location.pathname === '/login') {
-    return children;
-  }
-  if (history.location.pathname === '/forgotpassword') {
-    return children;
-  }
-  if (history.location.pathname === '/resetpassword') {
-    return children;
-  }
-  if (history.location.pathname === '/robot/') {
+  // paths that do not require header
+  if (headerless.has(history.location.pathname)) {
     return children;
   }
   return (
