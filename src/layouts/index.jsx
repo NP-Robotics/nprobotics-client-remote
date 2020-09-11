@@ -29,7 +29,7 @@ const IndexLayout = ({ children, history, user }) => {
     );
   }
   // loading screen to ensure other user data is loaded
-  if ((!user.identityLoaded || !user.robotsLoaded) && user.authenticated === true) {
+  if (!user.identityLoaded || !user.robotsLoaded) {
     return (
       <div
         style={{
@@ -50,10 +50,7 @@ const IndexLayout = ({ children, history, user }) => {
       <HeaderComponent />
 
       <Layout style={{ textAlign: 'center' }}>
-        <Content>
-          {children}
-
-        </Content>
+        <Content>{children}</Content>
       </Layout>
     </Layout>
   );

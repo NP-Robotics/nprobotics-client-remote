@@ -1,16 +1,22 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, Component } from 'react';
+
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
 import { connect } from 'dva';
-import {
-  Button, message, Input, Menu,
-} from 'antd';
+
+import { Button, message, Input, Menu, Row, Col } from 'antd';
 import {
   SmileOutlined,
   ImportOutlined,
   AudioOutlined,
   VideoCameraOutlined,
+  UpCircleFilled,
+  DownCircleFilled,
+  LeftCircleFilled,
+  RightCircleFilled,
 } from '@ant-design/icons';
+
 import { Joystick } from 'react-joystick-component';
 
 import IOTDevice from '../utils/IOTDevice';
@@ -27,11 +33,6 @@ const RobotPage = ({ user, dispatch, history }) => {
     attemptedJoin: false,
     messagebox: null,
     endpoint: null,
-
-    locations: [],
-  });
-
-  const [connectionState, setConnectionState] = useState({
     chimeConnected: false,
     IOTConnected: false,
   });
@@ -67,7 +68,7 @@ const RobotPage = ({ user, dispatch, history }) => {
       const { robotName } = history.location.query;
       if (user.robots.length > 0) {
         // store selected robot information in local state
-        const selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
+        const selectedRobot = user.robots.find(robot => robot.robotName === robotName);
         endpoint = selectedRobot.endpoint;
         meetingName = selectedRobot.meetingName;
 
@@ -85,26 +86,15 @@ const RobotPage = ({ user, dispatch, history }) => {
         secretKey: user.secretAccessKey,
         sessionToken: user.sessionToken,
         region: 'us-east-1',
-        callback: (event) => {
+        callback: event => {
           if (!isMounted) {
             device.disconnectDevice();
           } else {
             message.success('Controls Connected.');
-            setConnectionState({ ...state, IOTConnected: true });
-
-            // get locations
-            device.callService({
-              topic: '/web_service/retrieve_all_location',
-              payload: {
-                data: false,
-              },
-              callback: (response) => {
-                setState({ ...state, locations: response.ID });
-              },
-            });
+            setState({ ...state, IOTConnected: true });
           }
         },
-        error: (error) => {
+        error: error => {
           if (error) {
             message.error(error.message);
             return null;
@@ -126,7 +116,7 @@ const RobotPage = ({ user, dispatch, history }) => {
         callback: async ({ Meeting, Attendee }) => {
           if (isMounted) {
             await chime.init({ Meeting, Attendee });
-            setConnectionState({ ...state, chimeConnected: true });
+            setState({ ...state, chimeConnected: true });
             chime.bindVideoElement(videoRef.current);
             chime.bindAudioElement(audioRef.current);
             message.success('Video Connected.');
@@ -150,6 +140,82 @@ const RobotPage = ({ user, dispatch, history }) => {
       }
     };
   }, []);
+
+  const handleUp = () => {
+    console.log('Straight');
+    device.publishMessage({
+      topic: '/cmd_vel',
+      payload: {
+        linear: {
+          x: 1.5,
+          y: 0,
+          z: 0,
+        },
+        angular: {
+          x: 0,
+          y: 0,
+          z: 0,
+        },
+      },
+    });
+  };
+
+  const handleDown = () => {
+    console.log('Backwards');
+    device.publishMessage({
+      topic: '/cmd_vel',
+      payload: {
+        linear: {
+          x: -1.5,
+          y: 0,
+          z: 0,
+        },
+        angular: {
+          x: 0,
+          y: 0,
+          z: 0,
+        },
+      },
+    });
+  };
+
+  const handleLeft = () => {
+    console.log('Turn left');
+    device.publishMessage({
+      topic: '/cmd_vel',
+      payload: {
+        linear: {
+          x: 0,
+          y: 0,
+          z: 0,
+        },
+        angular: {
+          x: 0,
+          y: 0,
+          z: 1.5,
+        },
+      },
+    });
+  };
+
+  const handleRight = () => {
+    console.log('Turn right');
+    device.publishMessage({
+      topic: '/cmd_vel',
+      payload: {
+        linear: {
+          x: 0,
+          y: 0,
+          z: 0,
+        },
+        angular: {
+          x: 0,
+          y: 0,
+          z: -1.5,
+        },
+      },
+    });
+  };
 
   const joystickOnMove = ({ x, y }) => {
     console.log('move');
@@ -201,8 +267,8 @@ const RobotPage = ({ user, dispatch, history }) => {
     setState({ ...state, messagebox: null });
   };
 
-  const handleChange = (event) => {
-    setState({ ...state, messagebox: event.target.value });
+  const handleChange = event => {
+    setState({ messagebox: event.target.value });
   };
 
   const leaveRoom = () => {
@@ -224,7 +290,7 @@ const RobotPage = ({ user, dispatch, history }) => {
   };
 
   const MenuComponent = () => {
-    const handleMenuClick = (e) => {
+    const handleMenuClick = e => {
       const location = state.locations[e.key];
       device.callService({
         topic: '/web_service/waypoint_sequence',
@@ -236,7 +302,7 @@ const RobotPage = ({ user, dispatch, history }) => {
             },
           ],
         },
-        callback: (response) => {
+        callback: response => {
           console.log(response);
         },
       });
@@ -269,22 +335,28 @@ const RobotPage = ({ user, dispatch, history }) => {
       />
       <div>
         <div className={style.box}>
-          <videoRef
+          <audio ref={audioRef} />
+          <video
             style={{
+              float: 'center',
               position: 'fixed',
-              width: '100vw',
-              height: '100vh',
+              padding: 'auto',
+              width: '80%',
+              height: '80%',
+              background: 'black',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              textAlign: 'center',
               zIndex: '-2',
-              overflow: 'hidden',
-              objectFit: 'fill',
             }}
+            ref={videoRef}
           />
         </div>
         <div>
           <div className={style.naviBox}>
             <div className={style.navi}>
               <div trigger={['click']}>
-                <MenuComponent locations={state.locations} />
+                <Menu locations={state.locations} />
               </div>
             </div>
           </div>
@@ -331,6 +403,33 @@ const RobotPage = ({ user, dispatch, history }) => {
         <Button onMouseOver={changeBackground} onClick={sendText} className={style.sendBtn}>
           Send
         </Button>
+      </div>
+
+      <div className={style.dpadBox}>
+        <Row>
+          <Col span={8}>
+            <Button onClick={handleUp} className={style.upKey}>
+              <UpCircleFilled className={style.arrowButton} />
+            </Button>
+          </Col>
+        </Row>
+        <Row>
+          <div style={{ marginLeft: '45px' }}>
+            <Button onClick={handleLeft} className={style.leftKey}>
+              <LeftCircleFilled className={style.arrowButton} />
+            </Button>
+            <Button onClick={handleRight} className={style.rightKey}>
+              <RightCircleFilled className={style.arrowButton} />
+            </Button>
+          </div>
+        </Row>
+        <Row>
+          <Col span={8}>
+            <Button onClick={handleDown} className={style.downKey}>
+              <DownCircleFilled className={style.arrowButton} />
+            </Button>
+          </Col>
+        </Row>
       </div>
 
       <div className={style.joystickBox}>
