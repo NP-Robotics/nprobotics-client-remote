@@ -1,25 +1,13 @@
-/* eslint-disable linebreak-style */
-/* eslint-disable react/jsx-indent-props */
-/* eslint-disable react/jsx-closing-bracket-location */
-/* eslint-disable linebreak-style */
-/* eslint-disable react/jsx-max-props-per-line */
-/* eslint-disable react/jsx-first-prop-new-line */
-/* eslint-disable react/jsx-indent */
-/* eslint-disable linebreak-style */
-/* eslint-disable arrow-parens */
-/* eslint-disable indent */
-/* eslint-disable linebreak-style */
-/* eslint-disable object-curly-newline */
-/* eslint-disable linebreak-style */
-/* eslint-disable no-unused-vars */
-/* eslint-disable linebreak-style */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
 
 import Link from 'umi/link';
 import queryString from 'query-string';
-import { Table, Button, Space, Radio, Divider } from 'antd';
+import {
+  Table, Button, Space, Radio, Divider, Input, Modal,
+} from 'antd';
+import { ImportOutlined } from '@ant-design/icons';
 import style from './logPage.css';
 
 const LogPage = ({ dispatch, history, user }) => {
@@ -27,6 +15,7 @@ const LogPage = ({ dispatch, history, user }) => {
     robotName: null,
     filteredInfo: null,
     sortedInfo: null,
+    visible: false,
   });
 
   const leaveRoom = () => {
@@ -50,27 +39,27 @@ const LogPage = ({ dispatch, history, user }) => {
   const data = [
     {
       key: '1',
-      name: 'John Brown',
-      age: 32,
-      address: 'New York No. 1 Lake Park',
+      date: 'John Brown',
+      time: 32,
+      desc: 'New York No. 1 Lake Park',
     },
     {
       key: '2',
-      name: 'Jim Green',
-      age: 42,
-      address: 'London No. 1 Lake Park',
+      date: 'Jim Green',
+      time: 42,
+      desc: 'London No. 1 Lake Park',
     },
     {
       key: '3',
-      name: 'Joe Black',
-      age: 32,
-      address: 'Sidney No. 1 Lake Park',
+      date: 'Joe Black',
+      time: 32,
+      desc: 'Sidney No. 1 Lake Park',
     },
     {
       key: '4',
-      name: 'Jim Red',
-      age: 32,
-      address: 'London No. 2 Lake Park',
+      date: 'Jim Red',
+      time: 32,
+      desc: 'London No. 2 Lake Park',
     },
   ];
 
@@ -97,22 +86,22 @@ const LogPage = ({ dispatch, history, user }) => {
     setState({
       sortedInfo: {
         order: 'descend',
-        columnKey: 'age',
+        columnKey: 'date',
       },
     });
   };
 
   // rowSelection object indicates the need for row selection
-const rowSelection = {
-  onChange: (selectedRowKeys, selectedRows) => {
-    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-  },
-  getCheckboxProps: record => ({
-    name: record.name,
-  }),
-};
+  const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+    },
+    getCheckboxProps: (record) => ({
+      date: record.date,
+    }),
+  };
 
-  const [selectionType, setSelectionType] = useState('checkbox');
+  const [selectionType] = useState('checkbox');
 
   let { sortedInfo, filteredInfo } = state;
   sortedInfo = sortedInfo || {};
@@ -120,71 +109,112 @@ const rowSelection = {
 
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      filters: [
-        { text: 'Joe', value: 'Joe' },
-        { text: 'Jim', value: 'Jim' },
-      ],
-      filteredValue: filteredInfo.name || null,
-      onFilter: (value, record) => record.name.includes(value),
-      sorter: (a, b) => a.name.length - b.name.length,
-      sortOrder: sortedInfo.columnKey === 'name' && sortedInfo.order,
+      title: 'Date',
+      dataIndex: 'date',
+      key: 'date',
+      sorter: (a, b) => a.date - b.date,
+      sortOrder: sortedInfo.columnKey === 'date' && sortedInfo.order,
       ellipsis: true,
     },
     {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
-      sorter: (a, b) => a.age - b.age,
-      sortOrder: sortedInfo.columnKey === 'age' && sortedInfo.order,
+      title: 'Time',
+      dataIndex: 'time',
+      key: 'time',
+      sorter: (a, b) => a.time - b.time,
+      sortOrder: sortedInfo.columnKey === 'time' && sortedInfo.order,
       ellipsis: true,
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
+      title: 'Description',
+      dataIndex: 'desc',
+      key: 'desc',
       filters: [
-        { text: 'London', value: 'London' },
-        { text: 'New York', value: 'New York' },
+        { text: 'Safe Distance Violation', value: 'Safe Distance Violation' },
+        { text: 'Face Mask Violation', value: 'Face Mask Violation' },
       ],
-      filteredValue: filteredInfo.address || null,
-      onFilter: (value, record) => record.address.includes(value),
-      sorter: (a, b) => a.address.length - b.address.length,
-      sortOrder: sortedInfo.columnKey === 'address' && sortedInfo.order,
+      filteredValue: filteredInfo.desc || null,
+      onFilter: (value, record) => record.desc.includes(value),
+      sorter: (a, b) => a.desc.length - b.desc.length,
+      sortOrder: sortedInfo.columnKey === 'desc' && sortedInfo.order,
       ellipsis: true,
+    },
+    {
+      title: 'Action',
+      dataIndex: 'robotname',
+      key: 'robot',
+      render: (text) => (
+        <div>
+          <Button type="primary" shape="round" onClick={showModal}>
+            Details
+          </Button>
+          <Link to={`/log/?${queryString.stringify({ robotName: text })}`}>
+            <Button type="primary" shape="round" className={style.delete}>
+              Delete
+            </Button>
+          </Link>
+        </div>
+      ),
     },
   ];
 
+  const showModal = () => {
+    setState({
+      visible: true,
+    });
+  };
+
+  const handleOk = (e) => {
+    console.log(e);
+    setState({
+      visible: false,
+    });
+  };
+
+  const handleCancel = (e) => {
+    console.log(e);
+    setState({
+      visible: false,
+    });
+  };
+
   return (
     <div>
+      <Modal
+        title="Basic Modal"
+        visible={state.visible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+      </Modal>
       <div>
-        <div>
-          <Button
-            onClick={leaveRoom}
-            type="primary"
-            className={style.return}
-          >
-            Return To
-            {' '}
-            <br />
-            Dashboard
-          </Button>
-        </div>
-        <div className={style.table}>
-          <div>
-            <Space style={{ marginBottom: 16 }}>
-              <Button onClick={setAgeSort}>Sort age</Button>
-              <Button onClick={clearFilters}>Clear filters</Button>
-              <Button onClick={clearAll}>Clear filters and sorters</Button>
-            </Space>
-            <Table rowSelection={{
+        <Button
+          onClick={leaveRoom}
+          type="primary"
+          className={style.return}
+        >
+          <span>
+            <ImportOutlined />
+          </span>
+        </Button>
+      </div>
+      <div className={style.table}>
+        <Space style={{ marginBottom: 16 }}>
+          <Button onClick={setAgeSort}>Sort age</Button>
+          <Button onClick={clearFilters}>Clear filters</Button>
+          <Button onClick={clearAll}>Clear filters and sorters</Button>
+        </Space>
+        <Table
+          rowSelection={{
             type: selectionType,
             ...rowSelection,
-            }} columns={columns} dataSource={data} onChange={handleChange} />
-          </div>
-        </div>
+          }}
+          columns={columns}
+          dataSource={data}
+          onChange={handleChange}
+        />
       </div>
     </div>
   );
