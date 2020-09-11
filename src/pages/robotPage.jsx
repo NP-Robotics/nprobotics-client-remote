@@ -28,7 +28,7 @@ const RobotPage = ({
     endpoint: null,
     chimeConnected: false,
     IOTConnected: false,
-    locations: [{ name: 'hey' }],
+    locations: [],
   });
 
   const [device, setDevice] = useState(new IOTDevice());
