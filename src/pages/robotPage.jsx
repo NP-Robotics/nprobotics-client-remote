@@ -7,7 +7,12 @@ import { connect } from 'dva';
 import {
   Button, message, Input, Menu,
 } from 'antd';
-import { SmileOutlined, ImportOutlined } from '@ant-design/icons';
+import {
+  SmileOutlined,
+  ImportOutlined,
+  AudioOutlined,
+  VideoCameraOutlined,
+} from '@ant-design/icons';
 import { Joystick } from 'react-joystick-component';
 
 import ChimeVideoStream from '../components/ChimeVideoStream';
@@ -17,7 +22,7 @@ import style from './robotPage.css';
 const { TextArea } = Input;
 
 const RobotPage = ({
-  user, meeting, dispatch, history, messagebox,
+  user, meeting, dispatch, history,
 }) => {
   const [state, setState] = useState({
     robotName: null,
@@ -116,6 +121,7 @@ const RobotPage = ({
   });
 
   const joystickOnMove = ({ x, y }) => {
+    console.log('move');
     const vel = y / 20;
     const angle = -x / 25;
     deviceCtx.publishMessage({
@@ -233,57 +239,65 @@ const RobotPage = ({
 
   return (
     <div className={style.background}>
-      <ChimeVideoStream
-        style={{
-          position: 'fixed',
-          margin: 'auto auto',
-          width: '100vw',
-          height: '100vh',
-          zIndex: '-2',
-          overflow: 'hidden',
-          objectFit: 'fill',
-        }}
-      />
       <div>
-        <div>
-          <Button onClick={leaveRoom} type="primary" className={style.leaveBtn}>
-            <span>
-              <ImportOutlined />
-            </span>
-          </Button>
+        <div className={style.box}>
+          <ChimeVideoStream
+            style={{
+              position: 'fixed',
+              width: '100vw',
+              height: '100vh',
+              zIndex: '-2',
+              overflow: 'hidden',
+              objectFit: 'fill',
+            }}
+          />
         </div>
-        <div>
-          <div className={style.naviBox}>
-            <div className={style.navi}>
-              <div trigger={['click']}>{menu}</div>
-            </div>
-          </div>
-          <div className={style.message}>
-            <div className={style.emote} trigger={['click']}>
-              <SmileOutlined onClick={emoteClick} />
-            </div>
-            <TextArea
-              value={state.messagebox}
-              onChange={handleChange}
-              placeholder="Enter a message for the robot to say"
-              autoSize={{ minRows: 1, maxRows: 1 }}
-              className={style.textBox}
-            />
-            <Button onMouseOver={changeBackground} onClick={sendText} className={style.sendBtn}>
-              Send
-            </Button>
-          </div>
-          <div className={style.joystickBox}>
-            <Joystick
-              ref={joystickRef}
-              size={100}
-              baseColor="grey"
-              stickColor="blue"
-              move={joystickOnMove}
-              stop={joystickOnStop}
-            />
-          </div>
+
+        <Button onClick={leaveRoom} type="primary" className={style.leaveBtn}>
+          <span>
+            <ImportOutlined />
+          </span>
+        </Button>
+        <Button type="primary" className={style.audioBtn}>
+          <AudioOutlined />
+        </Button>
+        <Button type="primary" className={style.screenBtn}>
+          <VideoCameraOutlined />
+        </Button>
+      </div>
+
+      <div className={style.NaviBox}>
+        <div className={style.navi}>
+          <div trigger={['click']}>{menu}</div>
         </div>
+      </div>
+
+      <div className={style.message}>
+        <div className={style.emote} trigger={['click']}>
+          <SmileOutlined onClick={emoteClick} />
+        </div>
+        <TextArea
+          value={state.messagebox}
+          onChange={handleChange}
+          placeholder="Enter a message for the robot to say"
+          autoSize={{ minRows: 1, maxRows: 1 }}
+          className={style.textBox}
+        />
+        <Button onMouseOver={changeBackground} onClick={sendText} className={style.sendBtn}>
+          Send
+        </Button>
+      </div>
+
+      <div className={style.joystickBox}>
+        <Joystick
+          ref={joystickRef}
+          size={100}
+          baseColor="grey"
+          stickColor="blue"
+          move={joystickOnMove}
+          stop={joystickOnStop}
+          throttle={100}
+        />
       </div>
     </div>
   );
