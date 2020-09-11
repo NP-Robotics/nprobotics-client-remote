@@ -43,7 +43,6 @@ class IOTDevice {
       error();
     });
     this.device.on('message', (topic, payload) => {
-      console.log('Receive');
       this.subscriptionCallbacks[topic](payload);
     });
   }
@@ -72,7 +71,9 @@ class IOTDevice {
     this.subscribeTopic({
       topic: responseTopic,
       callback: (response) => {
-        callback(response);
+        if (callback) {
+          callback(response);
+        }
         this.unsubscribeTopic(responseTopic);
       },
     });

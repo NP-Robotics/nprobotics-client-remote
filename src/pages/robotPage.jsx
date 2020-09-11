@@ -26,9 +26,13 @@ const RobotPage = ({
     attemptedJoin: false,
     messagebox: null,
     endpoint: null,
+
+    locations: [],
+  });
+
+  const [connectionState, setConnectionState] = useState({
     chimeConnected: false,
     IOTConnected: false,
-    locations: [],
   });
 
   const [device, setDevice] = useState(new IOTDevice());
@@ -85,8 +89,7 @@ const RobotPage = ({
             device.disconnectDevice();
           } else {
             message.success('Controls Connected.');
-            setState({ ...state, IOTConnected: true });
-            console.log('service');
+            setConnectionState({ ...state, IOTConnected: true });
 
             // get locations
             device.callService({
@@ -95,8 +98,6 @@ const RobotPage = ({
                 data: false,
               },
               callback: (response) => {
-                console.log('service callback');
-                console.log(response.ID);
                 setState({ ...state, locations: response.ID });
               },
             });
@@ -124,7 +125,7 @@ const RobotPage = ({
         callback: async ({ Meeting, Attendee }) => {
           if (isMounted) {
             await chime.init({ Meeting, Attendee });
-            setState({ ...state, chimeConnected: true });
+            setConnectionState({ ...state, chimeConnected: true });
             chime.bindVideoElement(videoRef.current);
             chime.bindAudioElement(audioRef.current);
             message.success('Video Connected.');
@@ -226,10 +227,15 @@ const RobotPage = ({
       const location = state.locations[e.key];
       device.callService({
         topic: '/web_service/waypoint_sequence',
-        payload: [{
-          location: location.name,
-          task: '',
-        }],
+        payload: {
+          sequence: [{
+            location: location.name,
+            task: '',
+          }],
+        },
+        callback: (response) => {
+          console.log(response);
+        },
       });
     };
     return (
