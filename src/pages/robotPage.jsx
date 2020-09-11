@@ -309,21 +309,6 @@ const RobotPage = ({
               throttle={100}
             />
           </div>
-          <TextArea
-            value={state.messagebox}
-            onChange={handleChange}
-            placeholder="Enter a message that will be said by the robot"
-            autoSize={{ minRows: 1, maxRows: 1 }}
-            className={style.textBox}
-          />
-          <div />
-          <Button
-            onMouseOver={changeBackground}
-            onClick={sendText}
-            className={style.sendBtn}
-          >
-            Send
-          </Button>
         </div>
       </div>
     </div>
