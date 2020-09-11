@@ -28,6 +28,7 @@ const RobotPage = ({
     endpoint: null,
     chimeConnected: false,
     IOTConnected: false,
+    locations: [{ name: 'hey' }],
   });
 
   const [device, setDevice] = useState(new IOTDevice());
@@ -192,11 +193,11 @@ const RobotPage = ({
         data: voiceMsg,
       },
     });
-    setState({ messagebox: null });
+    setState({ ...state, messagebox: null });
   };
 
   const handleChange = (event) => {
-    setState({ messagebox: event.target.value });
+    setState({ ...state, messagebox: event.target.value });
   };
 
   const leaveRoom = () => {
@@ -217,41 +218,25 @@ const RobotPage = ({
     });
   };
 
-  const handleMenuClick = (e) => {
-    console.log('click', e);
-    if (e.key === '1') {
-      dispatch({
-        type: 'device/publishNavigate',
-        payload: {
-          location: 1,
-        },
+  const MenuComponent = () => {
+    const handleMenuClick = (e) => {
+      const location = state.locations[e.key];
+      device.callService({
+        topic: '/web_service/waypoint_sequence',
+        payload: [{
+          location: location.name,
+          task: '',
+        }],
       });
-    } else if (e.key === '2') {
-      dispatch({
-        type: 'device/publishNavigate',
-        payload: {
-          location: 2,
-        },
-      });
-    } else if (e.key === '3') {
-      dispatch({
-        type: 'device/publishNavigate',
-        payload: {
-          location: 3,
-        },
-      });
-    }
+    };
+    return (
+      <Menu onClick={handleMenuClick}>
+        {
+          state.locations.map((item, index) => <Menu.Item key={index}>{item.name}</Menu.Item>)
+        }
+      </Menu>
+    );
   };
-
-  const menu = (
-    <Menu onClick={handleMenuClick}>
-      <Menu.Item key="1">Location 1</Menu.Item>
-      <Menu.Item key="2">Location 2</Menu.Item>
-      <Menu.Item key="3">Location 3</Menu.Item>
-      <Menu.Item key="4">Location 2</Menu.Item>
-      <Menu.Item key="5">Location 3</Menu.Item>
-    </Menu>
-  );
 
   return (
     <div>
@@ -286,7 +271,7 @@ const RobotPage = ({
           <div className={style.naviBox}>
             <div className={style.navi}>
               <div trigger={['click']}>
-                {menu}
+                <MenuComponent locations={state.locations} />
               </div>
             </div>
           </div>
