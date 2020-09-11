@@ -68,7 +68,7 @@ class IOTDevice {
   }
 
   callService({ topic, callback, payload }) {
-    const responseTopic = `${topic}/output`;
+    const responseTopic = `${topic}/result`;
     this.subscribeTopic({
       topic: responseTopic,
       callback: (response) => {
