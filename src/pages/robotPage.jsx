@@ -85,6 +85,17 @@ const RobotPage = ({
           } else {
             message.success('Controls Connected.');
             setState({ ...state, IOTConnected: true });
+
+            // get locations
+            device.callService({
+              topic: '/myservice',
+              payload: {
+                data: 'hello',
+              },
+              callback: (response) => {
+                console.log(response);
+              },
+            });
           }
         },
         error: (error) => {
