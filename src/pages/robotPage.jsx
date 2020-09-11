@@ -334,24 +334,6 @@ const RobotPage = ({ user, dispatch, history }) => {
         ref={videoRef}
       />
       <div>
-        <div className={style.box}>
-          <audio ref={audioRef} />
-          <video
-            style={{
-              float: 'center',
-              position: 'fixed',
-              padding: 'auto',
-              width: '80%',
-              height: '80%',
-              background: 'black',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              textAlign: 'center',
-              zIndex: '-2',
-            }}
-            ref={videoRef}
-          />
-        </div>
         <div>
           <div className={style.naviBox}>
             <div className={style.navi}>
