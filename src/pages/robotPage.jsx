@@ -26,6 +26,11 @@ const RobotPage = ({
     attemptedJoin: false,
     messagebox: null,
     endpoint: null,
+
+    locations: [],
+  });
+
+  const [connectionState, setConnectionState] = useState({
     chimeConnected: false,
     IOTConnected: false,
   });
@@ -84,7 +89,18 @@ const RobotPage = ({
             device.disconnectDevice();
           } else {
             message.success('Controls Connected.');
-            setState({ ...state, IOTConnected: true });
+            setConnectionState({ ...state, IOTConnected: true });
+
+            // get locations
+            device.callService({
+              topic: '/web_service/retrieve_all_location',
+              payload: {
+                data: false,
+              },
+              callback: (response) => {
+                setState({ ...state, locations: response.ID });
+              },
+            });
           }
         },
         error: (error) => {
@@ -109,7 +125,7 @@ const RobotPage = ({
         callback: async ({ Meeting, Attendee }) => {
           if (isMounted) {
             await chime.init({ Meeting, Attendee });
-            setState({ ...state, chimeConnected: true });
+            setConnectionState({ ...state, chimeConnected: true });
             chime.bindVideoElement(videoRef.current);
             chime.bindAudioElement(audioRef.current);
             message.success('Video Connected.');
@@ -181,11 +197,11 @@ const RobotPage = ({
         data: voiceMsg,
       },
     });
-    setState({ messagebox: null });
+    setState({ ...state, messagebox: null });
   };
 
   const handleChange = (event) => {
-    setState({ messagebox: event.target.value });
+    setState({ ...state, messagebox: event.target.value });
   };
 
   const leaveRoom = () => {
@@ -206,41 +222,30 @@ const RobotPage = ({
     });
   };
 
-  const handleMenuClick = (e) => {
-    console.log('click', e);
-    if (e.key === '1') {
-      dispatch({
-        type: 'device/publishNavigate',
+  const MenuComponent = () => {
+    const handleMenuClick = (e) => {
+      const location = state.locations[e.key];
+      device.callService({
+        topic: '/web_service/waypoint_sequence',
         payload: {
-          location: 1,
+          sequence: [{
+            location: location.name,
+            task: '',
+          }],
+        },
+        callback: (response) => {
+          console.log(response);
         },
       });
-    } else if (e.key === '2') {
-      dispatch({
-        type: 'device/publishNavigate',
-        payload: {
-          location: 2,
-        },
-      });
-    } else if (e.key === '3') {
-      dispatch({
-        type: 'device/publishNavigate',
-        payload: {
-          location: 3,
-        },
-      });
-    }
+    };
+    return (
+      <Menu onClick={handleMenuClick}>
+        {
+          state.locations.map((item, index) => <Menu.Item key={index}>{item.name}</Menu.Item>)
+        }
+      </Menu>
+    );
   };
-
-  const menu = (
-    <Menu onClick={handleMenuClick}>
-      <Menu.Item key="1">Location 1</Menu.Item>
-      <Menu.Item key="2">Location 2</Menu.Item>
-      <Menu.Item key="3">Location 3</Menu.Item>
-      <Menu.Item key="4">Location 2</Menu.Item>
-      <Menu.Item key="5">Location 3</Menu.Item>
-    </Menu>
-  );
 
   return (
     <div>
@@ -275,7 +280,7 @@ const RobotPage = ({
           <div className={style.naviBox}>
             <div className={style.navi}>
               <div trigger={['click']}>
-                {menu}
+                <MenuComponent locations={state.locations} />
               </div>
             </div>
           </div>
