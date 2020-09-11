@@ -39,27 +39,27 @@ const LogPage = ({ dispatch, history, user }) => {
   const data = [
     {
       key: '1',
-      name: 'John Brown',
-      age: 32,
-      address: 'New York No. 1 Lake Park',
+      date: 'John Brown',
+      time: 32,
+      desc: 'New York No. 1 Lake Park',
     },
     {
       key: '2',
-      name: 'Jim Green',
-      age: 42,
-      address: 'London No. 1 Lake Park',
+      date: 'Jim Green',
+      time: 42,
+      desc: 'London No. 1 Lake Park',
     },
     {
       key: '3',
-      name: 'Joe Black',
-      age: 32,
-      address: 'Sidney No. 1 Lake Park',
+      date: 'Joe Black',
+      time: 32,
+      desc: 'Sidney No. 1 Lake Park',
     },
     {
       key: '4',
-      name: 'Jim Red',
-      age: 32,
-      address: 'London No. 2 Lake Park',
+      date: 'Jim Red',
+      time: 32,
+      desc: 'London No. 2 Lake Park',
     },
   ];
 
@@ -86,7 +86,7 @@ const LogPage = ({ dispatch, history, user }) => {
     setState({
       sortedInfo: {
         order: 'descend',
-        columnKey: 'age',
+        columnKey: 'date',
       },
     });
   };
@@ -97,11 +97,11 @@ const LogPage = ({ dispatch, history, user }) => {
       console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
     },
     getCheckboxProps: (record) => ({
-      name: record.name,
+      date: record.date,
     }),
   };
 
-  const [selectionType, setSelectionType] = useState('checkbox');
+  const [selectionType] = useState('checkbox');
 
   let { sortedInfo, filteredInfo } = state;
   sortedInfo = sortedInfo || {};
@@ -109,45 +109,39 @@ const LogPage = ({ dispatch, history, user }) => {
 
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      filters: [
-        { text: 'Joe', value: 'Joe' },
-        { text: 'Jim', value: 'Jim' },
-      ],
-      filteredValue: filteredInfo.name || null,
-      onFilter: (value, record) => record.name.includes(value),
-      sorter: (a, b) => a.name.length - b.name.length,
-      sortOrder: sortedInfo.columnKey === 'name' && sortedInfo.order,
+      title: 'Date',
+      dataIndex: 'date',
+      key: 'date',
+      sorter: (a, b) => a.date - b.date,
+      sortOrder: sortedInfo.columnKey === 'date' && sortedInfo.order,
       ellipsis: true,
     },
     {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
-      sorter: (a, b) => a.age - b.age,
-      sortOrder: sortedInfo.columnKey === 'age' && sortedInfo.order,
+      title: 'Time',
+      dataIndex: 'time',
+      key: 'time',
+      sorter: (a, b) => a.time - b.time,
+      sortOrder: sortedInfo.columnKey === 'time' && sortedInfo.order,
       ellipsis: true,
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
+      title: 'Description',
+      dataIndex: 'desc',
+      key: 'desc',
       filters: [
-        { text: 'London', value: 'London' },
-        { text: 'New York', value: 'New York' },
+        { text: 'Safe Distance Violation', value: 'Safe Distance Violation' },
+        { text: 'Face Mask Violation', value: 'Face Mask Violation' },
       ],
-      filteredValue: filteredInfo.address || null,
-      onFilter: (value, record) => record.address.includes(value),
-      sorter: (a, b) => a.address.length - b.address.length,
-      sortOrder: sortedInfo.columnKey === 'address' && sortedInfo.order,
+      filteredValue: filteredInfo.desc || null,
+      onFilter: (value, record) => record.desc.includes(value),
+      sorter: (a, b) => a.desc.length - b.desc.length,
+      sortOrder: sortedInfo.columnKey === 'desc' && sortedInfo.order,
       ellipsis: true,
     },
     {
       title: 'Action',
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'robotname',
+      key: 'robot',
       render: (text) => (
         <div>
           <Button type="primary" shape="round" onClick={showModal}>
