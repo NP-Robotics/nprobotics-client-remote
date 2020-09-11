@@ -268,18 +268,6 @@ const RobotPage = ({ user, dispatch, history }) => {
         ref={videoRef}
       />
       <div>
-        <div className={style.box}>
-          <videoRef
-            style={{
-              position: 'fixed',
-              width: '100vw',
-              height: '100vh',
-              zIndex: '-2',
-              overflow: 'hidden',
-              objectFit: 'fill',
-            }}
-          />
-        </div>
         <div>
           <div className={style.naviBox}>
             <div className={style.navi}>
