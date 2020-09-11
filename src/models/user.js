@@ -1,4 +1,4 @@
-import responsiveObserve from 'antd/lib/_util/responsiveObserve';
+import { joinMeeting, endMeeting } from '../services/chimeAPI';
 import {
   ampSignIn,
   ampSignUp,
@@ -27,19 +27,22 @@ export default {
     username: null,
     organization: null,
     robots: [],
+    robotsLoaded: false,
+    identityLoaded: false,
   },
 
   subscriptions: {
     setup({ dispatch, history, user }) {
       // eslint-disable-line
+      // gets session information of user if user is logged in.
       dispatch({ type: 'getSession' });
 
+      // route access control works here
       history.listen(({ pathname }) => {
+        // getAuthenticated throws an error if user is not authenticated
+        // This method should be called after the Auth module is configured or the user is logged in
         dispatch({
           type: 'getAuthenticated',
-          callback: () => {
-            dispatch({ type: 'getCredentials' });
-          },
           error: () => {
             if (!unauthenticatedRoutes.has(pathname)) {
               history.push('/');
@@ -101,6 +104,7 @@ export default {
     * getSession({ payload, callback, error }, { call, put }) {
       try {
         const data = yield ampGetSession();
+        const cred = yield ampGetCredentials();
         // getrobots first so loading screen will show before robots are gotten
         yield put({
           type: 'getRobots',
@@ -115,6 +119,11 @@ export default {
             jwtToken: data.accessToken.jwtToken,
             clientId: data.accessToken.payload.client_id,
             username: data.accessToken.payload.username,
+            sessionToken: cred.sessionToken,
+            accessKeyId: cred.accessKeyId,
+            secretAccessKey: cred.secretAccessKey,
+            identityId: cred.identityId,
+            identityLoaded: true,
             authenticated: true,
           },
         });
@@ -144,6 +153,7 @@ export default {
             accessKeyId: cred.accessKeyId,
             secretAccessKey: cred.secretAccessKey,
             identityId: cred.identityId,
+            identityLoaded: true,
           },
         });
         if (callback) {
@@ -204,12 +214,19 @@ export default {
 
     * getRobots({ payload, callback, error }, { call, put }) {
       const { organisation, jwtToken } = payload;
+
       try {
         let response = yield call(queryData, organisation, jwtToken);
-        response = response.map((obj) => ({
-          ...obj,
-          topics: JSON.parse(obj.topics),
-        }));
+
+        // because we store topics of robot in DB in JSON format,
+        // we got to parse it into JS object
+        if (response[0].topics) {
+          response = response.map((obj) => ({
+            ...obj,
+            topics: JSON.parse(obj.topics),
+          }));
+          console.log('response');
+        }
         if (callback) {
           callback(response);
         }
@@ -218,8 +235,51 @@ export default {
           type: 'setState',
           payload: {
             robots: response,
+            robotsLoaded: true,
           },
         });
+      } catch (err) {
+        console.log(err);
+        if (error) {
+          error(err);
+        }
+      }
+    },
+
+    * joinMeeting({ payload, callback, error }, { call, put }) {
+      const {
+        username, meetingName, region, jwtToken,
+      } = payload;
+
+      try {
+        const response = yield call(joinMeeting, username, meetingName, region, jwtToken);
+        const { Meeting, Attendee } = response.JoinInfo;
+
+        yield put({
+          type: 'setState',
+          payload: {
+            meetingResponse: Meeting,
+            attendeeResponse: Attendee,
+            joined: true,
+          },
+        });
+
+        if (callback) {
+          yield callback(response.JoinInfo);
+        }
+      } catch (err) {
+        console.log(err);
+        if (error) {
+          error(err);
+        }
+      }
+    },
+    * end({ payload, callback, error }, { call, put }) {
+      try {
+        yield put({ type: 'clearMeeting' });
+        if (callback) {
+          callback();
+        }
       } catch (err) {
         console.log(err);
         if (error) {

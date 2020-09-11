@@ -1,5 +1,5 @@
 import React, {
-  useState, useRef, useEffect, useContext,
+  useState, useRef, useEffect,
 } from 'react';
 import PropTypes from 'prop-types';
 
@@ -10,85 +10,82 @@ import {
 import { SmileOutlined, ImportOutlined } from '@ant-design/icons';
 import { Joystick } from 'react-joystick-component';
 
-import ChimeVideoStream from '../components/ChimeVideoStream';
-import { DeviceContext } from '../context/DeviceConnector';
+import IOTDevice from '../utils/IOTDevice';
+import ChimeSession from '../utils/ChimeSession';
+
 import style from './robotPage.css';
 
 const { TextArea } = Input;
 
 const RobotPage = ({
-  user, meeting, dispatch, history,
+  user, dispatch, history,
 }) => {
   const [state, setState] = useState({
     robotName: null,
     meetingName: null,
     attemptedJoin: false,
-    chimeConnect: false,
-    chatTextBox: false,
     messagebox: null,
     endpoint: null,
+    chimeConnected: false,
+    IOTConnected: false,
   });
+
+  const [device, setDevice] = useState(new IOTDevice());
+  const [chime, setChime] = useState(new ChimeSession());
 
   const joystickRef = useRef(null);
 
-  const deviceCtx = useContext(DeviceContext);
+  const audioRef = useRef(null);
+  const videoRef = useRef(null);
 
-  // prevent access if query string is missing
+  // component onMount
   useEffect(() => {
+    /*
+    - variable to check if page is mounted. If page is unmounted variable
+    - is set to false.
+    -
+    - This is to prevent memory leaks
+    */
+    let isMounted = true;
+
+    // prevent access if query string is missing
     if (!history.location.query.robotName) {
       history.push('/dashboard');
-    }
-  });
+    } else {
+    // load selected robot into local state
+      let endpoint = null;
 
-  // load selected robot into local state
-  useEffect(() => {
-    if (state.robotName === null) {
+      // meeting name
+      let meetingName = null;
+
       const { robotName } = history.location.query;
       if (user.robots.length > 0) {
+      // store selected robot information in local state
         const selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
-        console.log(selectedRobot);
+        endpoint = selectedRobot.endpoint;
+        meetingName = selectedRobot.meetingName;
+
         setState({
           ...state,
           ...selectedRobot,
         });
       }
-    }
-  }, [state, user.robots, history.location.query]);
 
-  // join meeting if all parameters are present
-  useEffect(() => {
-    if (!meeting.joined && state.meetingName != null && !state.attemptedJoin) {
-      setState({ ...state, attemptedJoin: true });
-
-      dispatch({
-        type: 'meeting/join',
-        payload: {
-          username: `${user.username}`,
-          meetingName: `${state.meetingName}`,
-          region: 'ap-southeast-1',
-          jwtToken: user.jwtToken,
-        },
-        callback: () => {
-          message.success('Joined meeting!');
-        },
-        error: () => {
-          message.error('Robot is offline');
-          deviceCtx.disconnectDevice();
-          history.push('/dashboard');
-        },
-      });
-      console.log(deviceCtx);
-
-      deviceCtx.initDevice({
-        payload: {
-          host: state.endpoint,
-          clientID: user.username,
-          accessKeyId: user.accessKeyId,
-          secretKey: user.secretAccessKey,
-          sessionToken: user.sessionToken,
-        },
+      // connect to IOT device
+      device.init({
+        host: endpoint,
+        clientID: user.username,
+        accessKeyId: user.accessKeyId,
+        secretKey: user.secretAccessKey,
+        sessionToken: user.sessionToken,
+        region: 'us-east-1',
         callback: (event) => {
-          message.success('Connected!');
+          if (!isMounted) {
+            device.disconnectDevice();
+          } else {
+            message.success('Controls Connected.');
+            setState({ ...state, IOTConnected: true });
+          }
         },
         error: (error) => {
           if (error) {
@@ -99,27 +96,49 @@ const RobotPage = ({
           return null;
         },
       });
-    }
-  }, [state, meeting, user, dispatch, history, deviceCtx]);
 
-  // cleanup when unmount
-  useEffect(() => () => {
-    if (meeting.joined) {
+      // join chime meeting
       dispatch({
-        type: 'meeting/end',
+        type: 'user/joinMeeting',
         payload: {
+          username: `${user.username}`,
+          meetingName: `${meetingName}`,
+          region: 'ap-southeast-1',
           jwtToken: user.jwtToken,
-          meetingName: state.meetingName,
+        },
+        callback: async ({ Meeting, Attendee }) => {
+          if (isMounted) {
+            await chime.init({ Meeting, Attendee });
+            setState({ ...state, chimeConnected: true });
+            chime.bindVideoElement(videoRef.current);
+            chime.bindAudioElement(audioRef.current);
+            message.success('Video Connected.');
+          }
+        },
+        error: () => {
+          message.error('Meeting room has expired');
+          history.push('/dashboard');
         },
       });
     }
-  });
+    // cleanup when unmount
+    return () => {
+      isMounted = false;
+
+      if (chime.meetingSession) {
+        chime.endMeeting();
+      }
+      if (device.device) {
+        device.disconnectDevice();
+      }
+    };
+  }, []);
 
   const joystickOnMove = ({ x, y }) => {
     console.log('move');
     const vel = y / 20;
     const angle = -x / 25;
-    deviceCtx.publishMessage({
+    device.publishMessage({
       topic: '/cmd_vel',
       payload: {
         linear: {
@@ -137,7 +156,7 @@ const RobotPage = ({
   };
 
   const joystickOnStop = () => {
-    deviceCtx.publishMessage({
+    device.publishMessage({
       topic: '/cmd_vel',
       payload: {
         linear: {
@@ -156,7 +175,7 @@ const RobotPage = ({
 
   const sendText = () => {
     const voiceMsg = state.messagebox;
-    deviceCtx.publishMessage({
+    device.publishMessage({
       topic: '/voice_message',
       payload: {
         data: voiceMsg,
@@ -170,15 +189,6 @@ const RobotPage = ({
   };
 
   const leaveRoom = () => {
-    if (meeting.joined) {
-      dispatch({
-        type: 'meeting/end',
-        payload: {
-          jwtToken: user.jwtToken,
-          meetingName: state.meetingName,
-        },
-      });
-    }
     history.push('/dashboard');
   };
 
@@ -188,7 +198,7 @@ const RobotPage = ({
   }
 
   const emoteClick = () => {
-    deviceCtx.publishMessage({
+    device.publishMessage({
       topic: '/emote',
       payload: {
         data: 'myemote',
@@ -234,17 +244,20 @@ const RobotPage = ({
 
   return (
     <div>
-      <ChimeVideoStream style={{
-        position: 'fixed',
-        margin: 'auto auto',
-        width: '100vw',
-        height: '100vh',
-        background: 'black',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        textAlign: 'center',
-        zIndex: '-2',
-      }}
+      <audio ref={audioRef} />
+      <video
+        style={{
+          position: 'fixed',
+          margin: 'auto auto',
+          width: '100vw',
+          height: '100vh',
+          background: 'black',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          textAlign: 'center',
+          zIndex: '-2',
+        }}
+        ref={videoRef}
       />
       <div>
         <div>
@@ -336,23 +349,13 @@ RobotPage.propTypes = {
     jwtToken: PropTypes.string,
     robots: PropTypes.arrayOf(PropTypes.shape({})),
   }),
-  device: PropTypes.shape({}),
-  meeting: PropTypes.shape({
-    joined: PropTypes.bool,
-  }),
-  messagebox: PropTypes.shape({}),
 };
 
 RobotPage.defaultProps = {
   // state: {},
   history: {},
   dispatch: undefined,
-  device: {},
   user: {},
-  meeting: {
-    joined: false,
-  },
-  messagebox: {},
 };
 
-export default connect(({ user, device, meeting }) => ({ user, device, meeting }))(RobotPage);
+export default connect(({ user, meeting }) => ({ user, meeting }))(RobotPage);

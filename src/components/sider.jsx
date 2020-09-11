@@ -7,8 +7,6 @@ import {
 } from 'antd';
 import {
   MenuOutlined,
-  ClusterOutlined,
-  SettingOutlined,
 } from '@ant-design/icons';
 
 const { Sider } = Layout;
