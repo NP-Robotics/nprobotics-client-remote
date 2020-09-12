@@ -1,11 +1,15 @@
-import React, { useState, useRef, useEffect, Component } from 'react';
+import React, {
+  useState, useRef, useEffect, Component,
+} from 'react';
 
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
 import { connect } from 'dva';
 
-import { Button, message, Input, Menu, Row, Col } from 'antd';
+import {
+  Button, message, Input, Menu, Row, Col,
+} from 'antd';
 import {
   SmileOutlined,
   ImportOutlined,
@@ -33,6 +37,10 @@ const RobotPage = ({ user, dispatch, history }) => {
     attemptedJoin: false,
     messagebox: null,
     endpoint: null,
+    locations: [],
+  });
+
+  const [connectionState, setConnectionState] = useState({
     chimeConnected: false,
     IOTConnected: false,
   });
@@ -68,7 +76,7 @@ const RobotPage = ({ user, dispatch, history }) => {
       const { robotName } = history.location.query;
       if (user.robots.length > 0) {
         // store selected robot information in local state
-        const selectedRobot = user.robots.find(robot => robot.robotName === robotName);
+        const selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
         endpoint = selectedRobot.endpoint;
         meetingName = selectedRobot.meetingName;
 
@@ -86,15 +94,27 @@ const RobotPage = ({ user, dispatch, history }) => {
         secretKey: user.secretAccessKey,
         sessionToken: user.sessionToken,
         region: 'us-east-1',
-        callback: event => {
+        callback: (event) => {
           if (!isMounted) {
             device.disconnectDevice();
           } else {
             message.success('Controls Connected.');
             setState({ ...state, IOTConnected: true });
+            setConnectionState({ ...state, IOTConnected: true });
+
+            // get locations
+            device.callService({
+              topic: '/web_service/retrieve_all_location',
+              payload: {
+                data: false,
+              },
+              callback: (response) => {
+                setState({ ...state, locations: response.ID });
+              },
+            });
           }
         },
-        error: error => {
+        error: (error) => {
           if (error) {
             message.error(error.message);
             return null;
@@ -116,7 +136,7 @@ const RobotPage = ({ user, dispatch, history }) => {
         callback: async ({ Meeting, Attendee }) => {
           if (isMounted) {
             await chime.init({ Meeting, Attendee });
-            setState({ ...state, chimeConnected: true });
+            setConnectionState({ ...state, chimeConnected: true });
             chime.bindVideoElement(videoRef.current);
             chime.bindAudioElement(audioRef.current);
             message.success('Video Connected.');
@@ -267,8 +287,8 @@ const RobotPage = ({ user, dispatch, history }) => {
     setState({ ...state, messagebox: null });
   };
 
-  const handleChange = event => {
-    setState({ messagebox: event.target.value });
+  const handleChange = (event) => {
+    setState({ ...state, messagebox: event.target.value });
   };
 
   const leaveRoom = () => {
@@ -290,7 +310,7 @@ const RobotPage = ({ user, dispatch, history }) => {
   };
 
   const MenuComponent = () => {
-    const handleMenuClick = e => {
+    const handleMenuClick = (e) => {
       const location = state.locations[e.key];
       device.callService({
         topic: '/web_service/waypoint_sequence',
@@ -302,7 +322,7 @@ const RobotPage = ({ user, dispatch, history }) => {
             },
           ],
         },
-        callback: response => {
+        callback: (response) => {
           console.log(response);
         },
       });
@@ -335,10 +355,21 @@ const RobotPage = ({ user, dispatch, history }) => {
       />
       <div>
         <div>
+          <Button
+            onClick={leaveRoom}
+            type="primary"
+            className={style.leaveBtn}
+          >
+            <span>
+              <ImportOutlined />
+            </span>
+          </Button>
+        </div>
+        <div>
           <div className={style.naviBox}>
             <div className={style.navi}>
               <div trigger={['click']}>
-                <Menu locations={state.locations} />
+                <MenuComponent />
               </div>
             </div>
           </div>

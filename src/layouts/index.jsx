@@ -29,7 +29,7 @@ const IndexLayout = ({ children, history, user }) => {
     );
   }
   // loading screen to ensure other user data is loaded
-  if (!user.identityLoaded || !user.robotsLoaded) {
+  if ((!user.identityLoaded || !user.robotsLoaded) && user.authenticated === true) {
     return (
       <div
         style={{

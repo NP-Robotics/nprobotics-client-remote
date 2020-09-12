@@ -94,7 +94,7 @@ const RobotFace = ({
           height: '100vh',
           backgroundImage: `url(${Face})`,
           backgroundSize: 'cover',
-          backgroundPosition: 'center center',
+          backgroundPosition: 'center',
           textAlign: 'center',
           overflow: 'hidden',
           objectFit: 'fill',
