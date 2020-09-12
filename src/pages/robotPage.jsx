@@ -1,8 +1,7 @@
 import React, {
-  useState, useRef, useEffect, Component,
+  useState, useRef, useEffect,
 } from 'react';
 
-import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
 import { connect } from 'dva';
@@ -99,7 +98,6 @@ const RobotPage = ({ user, dispatch, history }) => {
             device.disconnectDevice();
           } else {
             message.success('Controls Connected.');
-            setState({ ...state, IOTConnected: true });
             setConnectionState({ ...state, IOTConnected: true });
 
             // get locations
