@@ -1,8 +1,10 @@
 // ref: https://umijs.org/config/
 export default {
   history: 'hash',
+  treeShaking: true,
   routes: [
     {
+      treeShaking: true,
       path: '/',
       component: '../layouts/index.jsx',
       routes: [
