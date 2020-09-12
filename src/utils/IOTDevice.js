@@ -3,6 +3,7 @@ import awsIot from 'aws-iot-device-sdk';
 class IOTDevice {
   constructor() {
     this.device = null;
+    this.subscriptionCallbacks = {};
   }
 
   init({
