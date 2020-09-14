@@ -1,13 +1,11 @@
-import React, {
-  useState, useRef, useEffect,
-} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
 
 import { connect } from 'dva';
 
 import {
-  Button, message, Input, Menu, Row, Col,
+  Button, message, Input, Menu, Slider, Row, Col,
 } from 'antd';
 import {
   SmileOutlined,
@@ -37,6 +35,10 @@ const RobotPage = ({ user, dispatch, history }) => {
     messagebox: null,
     endpoint: null,
     locations: [],
+    linearSliderIntensity: 1,
+    angularSliderIntensity: 0.25,
+    frequency: 200,
+    interval: null,
   });
 
   const [connectionState, setConnectionState] = useState({
@@ -159,13 +161,32 @@ const RobotPage = ({ user, dispatch, history }) => {
     };
   }, []);
 
+  const handleLinearSliding = (value) => {
+    setState({ ...state, linearSliderIntensity: value });
+    console.log(`Linear Velocity is at level: ${state.linearSliderIntensity}`);
+  };
+
+  const handleAngularSliding = (value) => {
+    setState({ ...state, angularSliderIntensity: value });
+    console.log(`Linear Velocity is at level: ${state.angularSliderIntensity / 5}`);
+  };
+
+  const handleMouseUp = () => {
+    clearInterval(state.interval);
+  };
+
+  const handleMouseDown = (movementFunc) => {
+    const interval = setInterval(movementFunc, state.frequency);
+    setState({ ...state, interval });
+  };
+
   const handleUp = () => {
-    console.log('Straight');
+    console.log('Move forward');
     device.publishMessage({
       topic: '/cmd_vel',
       payload: {
         linear: {
-          x: 1.5,
+          x: state.sliderIntensity / 2,
           y: 0,
           z: 0,
         },
@@ -184,7 +205,7 @@ const RobotPage = ({ user, dispatch, history }) => {
       topic: '/cmd_vel',
       payload: {
         linear: {
-          x: -1.5,
+          x: -state.linearSliderIntensity / 2,
           y: 0,
           z: 0,
         },
@@ -210,7 +231,7 @@ const RobotPage = ({ user, dispatch, history }) => {
         angular: {
           x: 0,
           y: 0,
-          z: 1.5,
+          z: state.angularSliderIntensity / 5,
         },
       },
     });
@@ -229,46 +250,7 @@ const RobotPage = ({ user, dispatch, history }) => {
         angular: {
           x: 0,
           y: 0,
-          z: -1.5,
-        },
-      },
-    });
-  };
-
-  const joystickOnMove = ({ x, y }) => {
-    console.log('move');
-    const vel = y / 20;
-    const angle = -x / 25;
-    device.publishMessage({
-      topic: '/cmd_vel',
-      payload: {
-        linear: {
-          x: vel,
-          y: 0,
-          z: 0,
-        },
-        angular: {
-          x: 0,
-          y: 0,
-          z: angle,
-        },
-      },
-    });
-  };
-
-  const joystickOnStop = () => {
-    device.publishMessage({
-      topic: '/cmd_vel',
-      payload: {
-        linear: {
-          x: 0,
-          y: 0,
-          z: 0,
-        },
-        angular: {
-          x: 0,
-          y: 0,
-          z: 0,
+          z: -state.angularSliderIntensity / 5,
         },
       },
     });
@@ -293,10 +275,10 @@ const RobotPage = ({ user, dispatch, history }) => {
     history.push('/dashboard');
   };
 
-  function changeBackground(e) {
+  const changeBackground = (e) => {
     e.target.style.color = 'black';
     e.target.style.borderColor = 'black';
-  }
+  };
 
   const emoteClick = () => {
     device.publishMessage({
@@ -353,11 +335,7 @@ const RobotPage = ({ user, dispatch, history }) => {
       />
       <div>
         <div>
-          <Button
-            onClick={leaveRoom}
-            type="primary"
-            className={style.leaveBtn}
-          >
+          <Button onClick={leaveRoom} type="primary" className={style.leaveBtn}>
             <span>
               <ImportOutlined />
             </span>
@@ -386,73 +364,118 @@ const RobotPage = ({ user, dispatch, history }) => {
               Send
             </Button>
           </div>
-          <div className={style.joystickBox}>
-            <Joystick
-              ref={joystickRef}
-              size={100}
-              baseColor="grey"
-              stickColor="blue"
-              move={joystickOnMove}
-              stop={joystickOnStop}
-              throttle={100}
-            />
-          </div>
         </div>
       </div>
 
-      <div className={style.message}>
-        <div className={style.emote} trigger={['click']}>
-          <SmileOutlined onClick={emoteClick} />
+      <div>
+        <div className={style.message}>
+          <div className={style.emote} trigger={['click']}>
+            <SmileOutlined onClick={emoteClick} />
+          </div>
+          <TextArea
+            value={state.messagebox}
+            onChange={handleChange}
+            placeholder="Enter a message for the robot to say"
+            autoSize={{ minRows: 1, maxRows: 1 }}
+            className={style.textBox}
+          />
+          <Button onMouseOver={changeBackground} onClick={sendText} className={style.sendBtn}>
+            Send
+          </Button>
         </div>
-        <TextArea
-          value={state.messagebox}
-          onChange={handleChange}
-          placeholder="Enter a message for the robot to say"
-          autoSize={{ minRows: 1, maxRows: 1 }}
-          className={style.textBox}
+      </div>
+      <div>
+        <div
+          style={{
+            color: 'white',
+            position: 'fixed',
+            bottom: '15%',
+            marginLeft: '67%',
+          }}
+        >
+          Adjust Linear Velocity
+        </div>
+        <Slider
+          className={style.linearSlider}
+          min={1}
+          max={10}
+          onChange={handleLinearSliding}
+          range={false}
+          value={typeof state.linearSliderIntensity === 'number' ? state.linearSliderIntensity : 0}
         />
-        <Button onMouseOver={changeBackground} onClick={sendText} className={style.sendBtn}>
-          Send
-        </Button>
+      </div>
+      <div>
+        <div
+          style={{
+            color: 'white',
+            position: 'fixed',
+            bottom: '8%',
+            marginLeft: '67%',
+          }}
+        >
+          Adjust Angular Velocity
+        </div>
+        <Slider
+          className={style.angularSlider}
+          min={1}
+          max={10}
+          onChange={handleAngularSliding}
+          range={false}
+          value={
+            typeof state.angularSliderIntensity === 'number' ? state.angularSliderIntensity : 0
+          }
+        />
       </div>
 
       <div className={style.dpadBox}>
         <Row>
           <Col span={8}>
-            <Button onClick={handleUp} className={style.upKey}>
+            <Button
+              onMouseDown={() => {
+                handleMouseDown(handleUp);
+              }}
+              onMouseUp={handleMouseUp}
+              className={style.upKey}
+            >
               <UpCircleFilled className={style.arrowButton} />
             </Button>
           </Col>
         </Row>
         <Row>
           <div style={{ marginLeft: '45px' }}>
-            <Button onClick={handleLeft} className={style.leftKey}>
+            <Button
+              onMouseDown={() => {
+                handleMouseDown(handleLeft);
+              }}
+              onMouseUp={handleMouseUp}
+              className={style.leftKey}
+            >
               <LeftCircleFilled className={style.arrowButton} />
             </Button>
-            <Button onClick={handleRight} className={style.rightKey}>
+            <Button
+              onMouseDown={() => {
+                handleMouseDown(handleRight);
+              }}
+              onMouseUp={handleMouseUp}
+              className={style.rightKey}
+            >
               <RightCircleFilled className={style.arrowButton} />
             </Button>
           </div>
         </Row>
         <Row>
           <Col span={8}>
-            <Button onClick={handleDown} className={style.downKey}>
+            <Button
+              onMouseDown={() => {
+                handleMouseDown(handleDown);
+              }}
+              onMouseUp={handleMouseUp}
+              className={style.downKey}
+            >
               <DownCircleFilled className={style.arrowButton} />
             </Button>
           </Col>
         </Row>
-      </div>
-
-      <div className={style.joystickBox}>
-        <Joystick
-          ref={joystickRef}
-          size={100}
-          baseColor="grey"
-          stickColor="blue"
-          move={joystickOnMove}
-          stop={joystickOnStop}
-          throttle={100}
-        />
       </div>
     </div>
   );
