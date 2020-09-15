@@ -96,6 +96,8 @@ const RobotFace = ({
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           textAlign: 'center',
+          overflow: 'hidden',
+          objectFit: 'fill',
         }}
         ref={videoRef}
       />
