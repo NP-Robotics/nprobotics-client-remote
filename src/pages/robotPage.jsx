@@ -53,6 +53,8 @@ const RobotPage = ({
     */
     let isMounted = true;
 
+    // console.log(window);
+
     // prevent access if query string is missing
     if (!history.location.query.robotName) {
       history.push('/dashboard');
@@ -75,6 +77,20 @@ const RobotPage = ({
           ...selectedRobot,
         });
       }
+
+      // keyboard input handler
+      window.addEventListener('keydown', (event) => {
+        // console.log(event);
+      //  console.log(event.key);
+        switch (event.key) {
+          case 'ArrowUp': console.log('move forward'); break;
+          case 'ArrowDown': console.log('move backward'); break;
+          case 'ArrowLeft': console.log('move left'); break;
+          case 'ArrowRight': console.log('move right'); break;
+          default:
+          // do nothing
+        }
+      });
 
       // connect to IOT device
       device.init({
