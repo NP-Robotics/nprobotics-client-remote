@@ -185,7 +185,7 @@ const RobotPage = ({ user, dispatch, history }) => {
       topic: '/cmd_vel',
       payload: {
         linear: {
-          x: state.sliderIntensity / 2,
+          x: state.linearSliderIntensity/2,
           y: 0,
           z: 0,
         },
