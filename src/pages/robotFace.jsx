@@ -6,11 +6,11 @@ import { message } from 'antd';
 
 import Face from '../assets/face.jpg';
 import ChimeSession from '../utils/ChimeSession';
-import style from './robotFace.css';
 
-const RobotFace = ({
-  user, dispatch, history,
-}) => {
+import style from './robotFace.css';
+// use inline styles for Chime-related elements
+
+const RobotFace = ({ user, dispatch, history }) => {
   const [state, setState] = useState({
     robotName: null,
     meetingName: null,
@@ -96,6 +96,8 @@ const RobotFace = ({
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           textAlign: 'center',
+          overflow: 'hidden',
+          objectFit: 'fill',
         }}
         ref={videoRef}
       />

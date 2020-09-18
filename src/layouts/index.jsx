@@ -50,10 +50,7 @@ const IndexLayout = ({ children, history, user }) => {
       <HeaderComponent />
 
       <Layout style={{ textAlign: 'center' }}>
-        <Content>
-          {children}
-
-        </Content>
+        <Content>{children}</Content>
       </Layout>
     </Layout>
   );
