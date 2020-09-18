@@ -42,6 +42,9 @@ class IOTDevice {
       console.log('reconnect');
       error();
     });
+    this.device.on('message', (topic, payload) => {
+      this.subscriptionCallbacks[topic](payload);
+    });
   }
 
   disconnectDevice() {
