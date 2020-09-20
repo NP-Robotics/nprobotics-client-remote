@@ -89,20 +89,6 @@ const RobotPage = ({ user, dispatch, history }) => {
         });
       }
 
-      // keyboard input handler
-      window.addEventListener('keydown', (event) => {
-        // console.log(event);
-      //  console.log(event.key);
-        switch (event.key) {
-          case 'ArrowUp': console.log('move forward'); break;
-          case 'ArrowDown': console.log('move backward'); break;
-          case 'ArrowLeft': console.log('move left'); break;
-          case 'ArrowRight': console.log('move right'); break;
-          default:
-          // do nothing
-        }
-      });
-
       // connect to IOT device
       device.init({
         host: endpoint,
@@ -128,6 +114,23 @@ const RobotPage = ({ user, dispatch, history }) => {
                 setState({ ...state, locations: response.ID });
               },
             });
+
+            window.addEventListener('keydown', (function () {
+              let canMove = true;
+              return (e) => {
+                if (!canMove) return false;
+                canMove = false;
+                setTimeout(() => { canMove = true; }, state.frequency);
+                switch (e.key) {
+                  case 'ArrowUp': return handleUp();
+                  case 'ArrowDown': return handleDown();
+                  case 'ArrowLeft': return handleLeft();
+                  case 'ArrowRight': return handleRight();
+                  default: // do nothing
+                }
+                return null;
+              };
+            }(true)), false);
           }
         },
         error: (error) => {
