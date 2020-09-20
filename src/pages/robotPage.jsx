@@ -1,33 +1,43 @@
-import React, {
-  useState, useRef, useEffect,
-} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+
 import PropTypes from 'prop-types';
 
 import { connect } from 'dva';
+
 import {
-  Button, message, Input, Menu,
+  Button, message, Input, Menu, Slider, Row, Col,
 } from 'antd';
-import { SmileOutlined, ImportOutlined } from '@ant-design/icons';
-import { Joystick } from 'react-joystick-component';
+import {
+  SmileOutlined,
+  ImportOutlined,
+  AudioOutlined,
+  VideoCameraOutlined,
+  UpCircleFilled,
+  DownCircleFilled,
+  LeftCircleFilled,
+  RightCircleFilled,
+} from '@ant-design/icons';
 
 import IOTDevice from '../utils/IOTDevice';
 import ChimeSession from '../utils/ChimeSession';
 
 import style from './robotPage.css';
+// use inline styles for Chime elements
 
 const { TextArea } = Input;
 
-const RobotPage = ({
-  user, dispatch, history,
-}) => {
+const RobotPage = ({ user, dispatch, history }) => {
   const [state, setState] = useState({
     robotName: null,
     meetingName: null,
     attemptedJoin: false,
     messagebox: null,
     endpoint: null,
-
     locations: [],
+    linearSliderIntensity: 1,
+    angularSliderIntensity: 1,
+    frequency: 200,
+    interval: null,
   });
 
   const [connectionState, setConnectionState] = useState({
@@ -53,11 +63,13 @@ const RobotPage = ({
     */
     let isMounted = true;
 
+    // console.log(window);
+
     // prevent access if query string is missing
     if (!history.location.query.robotName) {
       history.push('/dashboard');
     } else {
-    // load selected robot into local state
+      // load selected robot into local state
       let endpoint = null;
 
       // meeting name
@@ -65,7 +77,7 @@ const RobotPage = ({
 
       const { robotName } = history.location.query;
       if (user.robots.length > 0) {
-      // store selected robot information in local state
+        // store selected robot information in local state
         const selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
         endpoint = selectedRobot.endpoint;
         meetingName = selectedRobot.meetingName;
@@ -101,6 +113,23 @@ const RobotPage = ({
                 setState({ ...state, locations: response.ID });
               },
             });
+
+            window.addEventListener('keydown', (function () {
+              let canMove = true;
+              return (e) => {
+                if (!canMove) return false;
+                canMove = false;
+                setTimeout(() => { canMove = true; }, state.frequency);
+                switch (e.key) {
+                  case 'ArrowUp': return handleUp();
+                  case 'ArrowDown': return handleDown();
+                  case 'ArrowLeft': return handleLeft();
+                  case 'ArrowRight': return handleRight();
+                  default: // do nothing
+                }
+                return null;
+              };
+            }(true)), false);
           }
         },
         error: (error) => {
@@ -150,28 +179,65 @@ const RobotPage = ({
     };
   }, []);
 
-  const joystickOnMove = ({ x, y }) => {
-    console.log('move');
-    const vel = y / 20;
-    const angle = -x / 25;
+  const handleLinearSliding = (value) => {
+    setState({ ...state, linearSliderIntensity: value });
+    console.log(`Linear Velocity is at level: ${state.linearSliderIntensity}`);
+  };
+
+  const handleAngularSliding = (value) => {
+    setState({ ...state, angularSliderIntensity: value });
+    console.log(`Angular Velocity is at level: ${state.angularSliderIntensity / 5}`);
+  };
+
+  const handleMouseUp = () => {
+    clearInterval(state.interval);
+  };
+
+  const handleMouseDown = (movementFunc) => {
+    const interval = setInterval(movementFunc, state.frequency);
+    setState({ ...state, interval });
+  };
+
+  const handleUp = () => {
+    console.log('Move forward');
     device.publishMessage({
       topic: '/cmd_vel',
       payload: {
         linear: {
-          x: vel,
+          x: state.linearSliderIntensity/2,
           y: 0,
           z: 0,
         },
         angular: {
           x: 0,
           y: 0,
-          z: angle,
+          z: 0,
         },
       },
     });
   };
 
-  const joystickOnStop = () => {
+  const handleDown = () => {
+    console.log('Backwards');
+    device.publishMessage({
+      topic: '/cmd_vel',
+      payload: {
+        linear: {
+          x: -state.linearSliderIntensity / 2,
+          y: 0,
+          z: 0,
+        },
+        angular: {
+          x: 0,
+          y: 0,
+          z: 0,
+        },
+      },
+    });
+  };
+
+  const handleLeft = () => {
+    console.log('Turn left');
     device.publishMessage({
       topic: '/cmd_vel',
       payload: {
@@ -183,7 +249,26 @@ const RobotPage = ({
         angular: {
           x: 0,
           y: 0,
+          z: state.angularSliderIntensity / 5,
+        },
+      },
+    });
+  };
+
+  const handleRight = () => {
+    console.log('Turn right');
+    device.publishMessage({
+      topic: '/cmd_vel',
+      payload: {
+        linear: {
+          x: 0,
+          y: 0,
           z: 0,
+        },
+        angular: {
+          x: 0,
+          y: 0,
+          z: -state.angularSliderIntensity / 5,
         },
       },
     });
@@ -208,10 +293,10 @@ const RobotPage = ({
     history.push('/dashboard');
   };
 
-  function changeBackground(e) {
+  const changeBackground = (e) => {
     e.target.style.color = 'black';
     e.target.style.borderColor = 'black';
-  }
+  };
 
   const emoteClick = () => {
     device.publishMessage({
@@ -228,10 +313,12 @@ const RobotPage = ({
       device.callService({
         topic: '/web_service/waypoint_sequence',
         payload: {
-          sequence: [{
-            location: location.name,
-            task: '',
-          }],
+          sequence: [
+            {
+              location: location.name,
+              task: '',
+            },
+          ],
         },
         callback: (response) => {
           console.log(response);
@@ -240,9 +327,9 @@ const RobotPage = ({
     };
     return (
       <Menu onClick={handleMenuClick}>
-        {
-          state.locations.map((item, index) => <Menu.Item key={index}>{item.name}</Menu.Item>)
-        }
+        {state.locations.map((item, index) => (
+          <Menu.Item key={index}>{item.name}</Menu.Item>
+        ))}
       </Menu>
     );
   };
@@ -266,21 +353,31 @@ const RobotPage = ({
       />
       <div>
         <div>
-          <Button
-            onClick={leaveRoom}
-            type="primary"
-            className={style.leaveBtn}
-          >
+          <Button onClick={leaveRoom} type="primary" className={style.leaveBtn}>
             <span>
               <ImportOutlined />
             </span>
           </Button>
         </div>
+        <div className={style.controlBtn}>
+          <Button type="primary">
+            <span>
+              <AudioOutlined />
+            </span>
+          </Button>
+          <div>
+            <Button type="primary">
+              <span>
+                <VideoCameraOutlined />
+              </span>
+            </Button>
+          </div>
+        </div>
         <div>
           <div className={style.naviBox}>
             <div className={style.navi}>
               <div trigger={['click']}>
-                <MenuComponent locations={state.locations} />
+                <MenuComponent />
               </div>
             </div>
           </div>
@@ -295,26 +392,122 @@ const RobotPage = ({
               autoSize={{ minRows: 1, maxRows: 1 }}
               className={style.textBox}
             />
-            <Button
-              onMouseOver={changeBackground}
-              onClick={sendText}
-              className={style.sendBtn}
-            >
+            <Button onMouseOver={changeBackground} onClick={sendText} className={style.sendBtn}>
               Send
             </Button>
           </div>
-          <div className={style.joystickBox}>
-            <Joystick
-              ref={joystickRef}
-              size={100}
-              baseColor="grey"
-              stickColor="blue"
-              move={joystickOnMove}
-              stop={joystickOnStop}
-              throttle={100}
-            />
-          </div>
         </div>
+      </div>
+
+      <div>
+        <div className={style.message}>
+          <div className={style.emote} trigger={['click']}>
+            <SmileOutlined onClick={emoteClick} />
+          </div>
+          <TextArea
+            value={state.messagebox}
+            onChange={handleChange}
+            placeholder="Enter a message for the robot to say"
+            autoSize={{ minRows: 1, maxRows: 1 }}
+            className={style.textBox}
+          />
+          <Button onMouseOver={changeBackground} onClick={sendText} className={style.sendBtn}>
+            Send
+          </Button>
+        </div>
+      </div>
+      <div>
+        <div
+          style={{
+            color: 'white',
+            position: 'fixed',
+            bottom: '15%',
+            marginLeft: '67%',
+          }}
+        >
+          Adjust Linear Velocity
+        </div>
+        <Slider
+          className={style.linearSlider}
+          min={0}
+          max={10}
+          onChange={handleLinearSliding}
+          range={false}
+          value={typeof state.linearSliderIntensity === 'number' ? state.linearSliderIntensity : 0}
+        />
+      </div>
+      <div>
+        <div
+          style={{
+            color: 'white',
+            position: 'fixed',
+            bottom: '8%',
+            marginLeft: '67%',
+          }}
+        >
+          Adjust Angular Velocity
+        </div>
+        <Slider
+          className={style.angularSlider}
+          min={0}
+          max={10}
+          onChange={handleAngularSliding}
+          range={false}
+          value={
+            typeof state.angularSliderIntensity === 'number' ? state.angularSliderIntensity : 0
+          }
+        />
+      </div>
+
+      <div className={style.dpadBox}>
+        <Row>
+          <Col span={8}>
+            <Button
+              onMouseDown={() => {
+                handleMouseDown(handleUp);
+              }}
+              onMouseUp={handleMouseUp}
+              className={style.upKey}
+            >
+              <UpCircleFilled className={style.arrowButton} />
+            </Button>
+          </Col>
+        </Row>
+        <Row>
+          <div style={{ marginLeft: '45px' }}>
+            <Button
+              onMouseDown={() => {
+                handleMouseDown(handleLeft);
+              }}
+              onMouseUp={handleMouseUp}
+              className={style.leftKey}
+            >
+              <LeftCircleFilled className={style.arrowButton} />
+            </Button>
+            <Button
+              onMouseDown={() => {
+                handleMouseDown(handleRight);
+              }}
+              onMouseUp={handleMouseUp}
+              className={style.rightKey}
+            >
+              <RightCircleFilled className={style.arrowButton} />
+            </Button>
+          </div>
+        </Row>
+        <Row>
+          <Col span={8}>
+            <Button
+              onMouseDown={() => {
+                handleMouseDown(handleDown);
+              }}
+              onMouseUp={handleMouseUp}
+              className={style.downKey}
+            >
+              <DownCircleFilled className={style.arrowButton} />
+            </Button>
+          </Col>
+        </Row>
       </div>
     </div>
   );
