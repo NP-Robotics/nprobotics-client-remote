@@ -18,12 +18,11 @@ import {
   RightCircleFilled,
 } from '@ant-design/icons';
 
-import { Joystick } from 'react-joystick-component';
-
 import IOTDevice from '../utils/IOTDevice';
 import ChimeSession from '../utils/ChimeSession';
 
 import style from './robotPage.css';
+// use inline styles for Chime elements
 
 const { TextArea } = Input;
 
@@ -36,7 +35,7 @@ const RobotPage = ({ user, dispatch, history }) => {
     endpoint: null,
     locations: [],
     linearSliderIntensity: 1,
-    angularSliderIntensity: 0.25,
+    angularSliderIntensity: 1,
     frequency: 200,
     interval: null,
   });
@@ -187,7 +186,7 @@ const RobotPage = ({ user, dispatch, history }) => {
 
   const handleAngularSliding = (value) => {
     setState({ ...state, angularSliderIntensity: value });
-    console.log(`Linear Velocity is at level: ${state.angularSliderIntensity / 5}`);
+    console.log(`Angular Velocity is at level: ${state.angularSliderIntensity / 5}`);
   };
 
   const handleMouseUp = () => {
@@ -205,7 +204,7 @@ const RobotPage = ({ user, dispatch, history }) => {
       topic: '/cmd_vel',
       payload: {
         linear: {
-          x: state.sliderIntensity / 2,
+          x: state.linearSliderIntensity/2,
           y: 0,
           z: 0,
         },
@@ -360,6 +359,20 @@ const RobotPage = ({ user, dispatch, history }) => {
             </span>
           </Button>
         </div>
+        <div className={style.controlBtn}>
+          <Button type="primary">
+            <span>
+              <AudioOutlined />
+            </span>
+          </Button>
+          <div>
+            <Button type="primary">
+              <span>
+                <VideoCameraOutlined />
+              </span>
+            </Button>
+          </div>
+        </div>
         <div>
           <div className={style.naviBox}>
             <div className={style.navi}>
@@ -416,7 +429,7 @@ const RobotPage = ({ user, dispatch, history }) => {
         </div>
         <Slider
           className={style.linearSlider}
-          min={1}
+          min={0}
           max={10}
           onChange={handleLinearSliding}
           range={false}
@@ -436,7 +449,7 @@ const RobotPage = ({ user, dispatch, history }) => {
         </div>
         <Slider
           className={style.angularSlider}
-          min={1}
+          min={0}
           max={10}
           onChange={handleAngularSliding}
           range={false}

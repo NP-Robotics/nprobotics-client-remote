@@ -18,6 +18,12 @@
   border-color: red;
 }
 
+.controlBtn {
+  margin-left: 1em;
+  margin-top: 20px;
+  position: fixed;
+}
+
 .message {
   position: fixed;
   bottom: 3%;
