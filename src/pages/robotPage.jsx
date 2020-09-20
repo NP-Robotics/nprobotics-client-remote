@@ -63,6 +63,8 @@ const RobotPage = ({ user, dispatch, history }) => {
     */
     let isMounted = true;
 
+    // console.log(window);
+
     // prevent access if query string is missing
     if (!history.location.query.robotName) {
       history.push('/dashboard');
@@ -111,6 +113,23 @@ const RobotPage = ({ user, dispatch, history }) => {
                 setState({ ...state, locations: response.ID });
               },
             });
+
+            window.addEventListener('keydown', (function () {
+              let canMove = true;
+              return (e) => {
+                if (!canMove) return false;
+                canMove = false;
+                setTimeout(() => { canMove = true; }, state.frequency);
+                switch (e.key) {
+                  case 'ArrowUp': return handleUp();
+                  case 'ArrowDown': return handleDown();
+                  case 'ArrowLeft': return handleLeft();
+                  case 'ArrowRight': return handleRight();
+                  default: // do nothing
+                }
+                return null;
+              };
+            }(true)), false);
           }
         },
         error: (error) => {
