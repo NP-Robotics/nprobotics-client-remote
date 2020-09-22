@@ -204,7 +204,7 @@ const RobotPage = ({ user, dispatch, history }) => {
       topic: '/cmd_vel',
       payload: {
         linear: {
-          x: state.linearSliderIntensity/2,
+          x: state.linearSliderIntensity / 2,
           y: 0,
           z: 0,
         },
@@ -433,7 +433,7 @@ const RobotPage = ({ user, dispatch, history }) => {
           max={10}
           onChange={handleLinearSliding}
           range={false}
-          value={typeof state.linearSliderIntensity === 'number' ? state.linearSliderIntensity : 0}
+          value={state.linearSliderIntensity}
         />
       </div>
       <div>
@@ -453,9 +453,7 @@ const RobotPage = ({ user, dispatch, history }) => {
           max={10}
           onChange={handleAngularSliding}
           range={false}
-          value={
-            typeof state.angularSliderIntensity === 'number' ? state.angularSliderIntensity : 0
-          }
+          value={state.angularSliderIntensity}
         />
       </div>
 
