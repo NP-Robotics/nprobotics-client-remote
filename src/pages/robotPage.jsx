@@ -307,15 +307,6 @@ const RobotPage = ({ user, dispatch, history }) => {
     });
   };
 
-  const muteChime = () => {
-    const muteStatus = chime.realtimeIsLocalAudioMuted(audioRef.current);
-    if (muteStatus === true) {
-      chime.realtimeMuteLocalAudio(audioRef.current);
-    } else {
-      chime.realtimeUnmuteLocalAudio(audioRef.current);
-    }
-  };
-
   const MenuComponent = () => {
     const handleMenuClick = (e) => {
       const location = state.locations[e.key];
@@ -369,7 +360,7 @@ const RobotPage = ({ user, dispatch, history }) => {
           </Button>
         </div>
         <div className={style.controlBtn}>
-          <Button type="primary" onClick={muteChime}>
+          <Button type="primary">
             <span>
               <AudioOutlined />
             </span>
