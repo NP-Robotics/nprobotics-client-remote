@@ -298,6 +298,15 @@ const RobotPage = ({ user, dispatch, history }) => {
     e.target.style.borderColor = 'black';
   };
 
+  const muteChime = () => {
+    const muteStatus = chime.realtimeIsLocalAudioMuted(audioRef.current);
+    if (muteStatus === true) {
+      chime.realtimeMuteLocalAudio(audioRef.current);
+    } else {
+      chime.realtimeUnmuteLocalAudio(audioRef.current);
+    }
+  };
+
   const emoteClick = () => {
     device.publishMessage({
       topic: '/emote',
@@ -360,7 +369,7 @@ const RobotPage = ({ user, dispatch, history }) => {
           </Button>
         </div>
         <div className={style.controlBtn}>
-          <Button type="primary">
+          <Button type="primary" onClick={muteChime}>
             <span>
               <AudioOutlined />
             </span>

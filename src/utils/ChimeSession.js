@@ -109,6 +109,19 @@ class ChimeSession {
     this.meetingSession.audioVideo.bindAudioElement(audioRef);
   }
 
+  realtimeIsLocalAudioMuted(audioRef) {
+    const results = this.meetingSession.audioVideo.realtimeIsLocalAudioMuted(audioRef);
+    return results;
+  }
+
+  realtimeUnmuteLocalAudio(audioRef) {
+    this.meetingSession.audioVideo.realtimeUnmuteLocalAudio(audioRef);
+  }
+
+  realtimeMuteLocalAudio(audioRef) {
+    this.meetingSession.audioVideo.realtimeMuteLocalAudio(audioRef);
+  }
+
   endMeeting() {
     // Select no video device (releases any previously selected device)
     this.meetingSession.audioVideo.chooseVideoInputDevice(null);
