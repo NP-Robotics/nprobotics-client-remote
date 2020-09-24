@@ -10,6 +10,7 @@ import {
 import {
   ImportOutlined,
   AudioOutlined,
+  AudioMutedOutlined,
   VideoCameraOutlined,
   UpCircleFilled,
   DownCircleFilled,
@@ -321,6 +322,14 @@ const RobotPage = ({ user, dispatch, history }) => {
     }
   };
 
+  const AudioComponent = () => {
+    if (state.audioMuted) {
+      return <AudioMutedOutlined />;
+    }
+
+    return <AudioOutlined />;
+  };
+
   const SelectComponent = () => {
     const handleOptionClick = (e) => {
       const location = state.locations[e];
@@ -382,9 +391,7 @@ const RobotPage = ({ user, dispatch, history }) => {
         </div>
         <div className={style.controlBtn}>
           <Button type="primary" onClick={muteChime}>
-            <span>
-              <AudioOutlined />
-            </span>
+            <AudioComponent />
           </Button>
           <div>
             <Button type="primary">
