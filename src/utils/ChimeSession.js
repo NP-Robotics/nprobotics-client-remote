@@ -30,13 +30,18 @@ class ChimeSession {
     this.audioOutput = await this.meetingSession.audioVideo.listAudioOutputDevices();
     this.videoInput = await this.meetingSession.audioVideo.listVideoInputDevices();
     // selecting devices from list of devices
-    const audioInputDeviceInfo = this.audioInput[0];
-    await this.meetingSession.audioVideo.chooseAudioInputDevice(audioInputDeviceInfo.deviceId);
-    const audioOutputDeviceInfo = this.audioOutput[0];
-    await this.meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDeviceInfo.deviceId);
-    const videoInputDeviceInfo = this.videoInput[0];
-    await this.meetingSession.audioVideo.chooseVideoInputDevice(videoInputDeviceInfo.deviceId);
-
+    if (this.audioInput[0]) {
+      const audioInputDeviceInfo = this.audioInput[0];
+      await this.meetingSession.audioVideo.chooseAudioInputDevice(audioInputDeviceInfo.deviceId);
+    }
+    if (this.audioOutput[0]) {
+      const audioOutputDeviceInfo = this.audioOutput[0];
+      await this.meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDeviceInfo.deviceId);
+    }
+    if (this.videoInput[0]) {
+      const videoInputDeviceInfo = this.videoInput[0];
+      await this.meetingSession.audioVideo.chooseVideoInputDevice(videoInputDeviceInfo.deviceId);
+    }
     const deviceChangeObserver = {
       audioInputsChanged: (freshAudioInputDeviceList) => {
         // An array of MediaDeviceInfo objects

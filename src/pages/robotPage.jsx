@@ -76,9 +76,10 @@ const RobotPage = ({ user, dispatch, history }) => {
       let meetingName = null;
 
       const { robotName } = history.location.query;
+      let selectedRobot = null;
       if (user.robots.length > 0) {
         // store selected robot information in local state
-        const selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
+        selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
         endpoint = selectedRobot.endpoint;
         meetingName = selectedRobot.meetingName;
 
@@ -88,6 +89,15 @@ const RobotPage = ({ user, dispatch, history }) => {
         });
       }
 
+      console.log({
+        host: endpoint,
+        clientID: user.username,
+        accessKeyId: user.accessKeyId,
+        secretKey: user.secretAccessKey,
+        sessionToken: user.sessionToken,
+        region: selectedRobot.iotRegion,
+      });
+
       // connect to IOT device
       device.init({
         host: endpoint,
@@ -95,7 +105,7 @@ const RobotPage = ({ user, dispatch, history }) => {
         accessKeyId: user.accessKeyId,
         secretKey: user.secretAccessKey,
         sessionToken: user.sessionToken,
-        region: 'us-east-1',
+        region: selectedRobot.iotRegion,
         callback: (event) => {
           if (!isMounted) {
             device.disconnectDevice();
