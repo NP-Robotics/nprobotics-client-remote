@@ -11,7 +11,8 @@ import {
   ImportOutlined,
   AudioOutlined,
   AudioMutedOutlined,
-  VideoCameraOutlined,
+  EyeOutlined,
+  EyeInvisibleOutlined,
   UpCircleFilled,
   DownCircleFilled,
   LeftCircleFilled,
@@ -40,7 +41,7 @@ const RobotPage = ({ user, dispatch, history }) => {
     frequency: 200,
     interval: null,
     audioMuted: false,
-    videoMuted: false,
+    videoStopped: false,
   });
 
   const [connectionState, setConnectionState] = useState({
@@ -185,6 +186,7 @@ const RobotPage = ({ user, dispatch, history }) => {
             setConnectionState({ ...state, chimeConnected: true });
             chime.bindVideoElement(videoRef.current);
             chime.bindAudioElement(audioRef.current);
+            await chime.startLocalVideo();
             message.success('Video Connected.');
           }
         },
@@ -322,7 +324,31 @@ const RobotPage = ({ user, dispatch, history }) => {
     }
   };
 
-  const AudioComponent = () => {
+  const stopVideo = async () => {
+    if (!state.videoStopped) {
+      chime.stopLocalVideo();
+      setState({
+        ...state,
+        videoStopped: true,
+      });
+    } else {
+      await chime.startLocalVideo();
+      setState({
+        ...state,
+        videoStopped: false,
+      });
+    }
+  };
+
+  const VideoIcon = () => {
+    if (state.videoStopped) {
+      return <EyeInvisibleOutlined />;
+    }
+
+    return <EyeOutlined />;
+  };
+
+  const AudioIcon = () => {
     if (state.audioMuted) {
       return <AudioMutedOutlined />;
     }
@@ -391,12 +417,12 @@ const RobotPage = ({ user, dispatch, history }) => {
         </div>
         <div className={style.controlBtn}>
           <Button type="primary" onClick={muteChime}>
-            <AudioComponent />
+            <AudioIcon />
           </Button>
           <div>
-            <Button type="primary">
+            <Button type="primary" onClick={stopVideo}>
               <span>
-                <VideoCameraOutlined />
+                <VideoIcon />
               </span>
             </Button>
           </div>

@@ -14,6 +14,7 @@ class ChimeSession {
     this.videoInput = null;
     this.videoOutput = null;
     this.started = false;
+    this.localTileId = null;
   }
 
   async init({ Meeting, Attendee }) {
@@ -105,12 +106,10 @@ class ChimeSession {
         if (!tileState.boundAttendeeId || tileState.localTile || tileState.isContent) {
           return;
         }
-
         this.meetingSession.audioVideo.bindVideoElement(tileState.tileId, videoRef);
       },
     };
     this.meetingSession.audioVideo.addObserver(observer);
-    this.meetingSession.audioVideo.startLocalVideoTile();
   }
 
   bindAudioElement(audioRef) {
@@ -127,6 +126,16 @@ class ChimeSession {
     if (this.started) {
       this.meetingSession.audioVideo.realtimeMuteLocalAudio(audioRef);
     }
+  }
+
+  stopLocalVideo() {
+    this.meetingSession.audioVideo.stopLocalVideoTile();
+  }
+
+  async startLocalVideo() {
+    const videoInputDeviceInfo = this.videoInput[0];
+    await this.meetingSession.audioVideo.chooseVideoInputDevice(videoInputDeviceInfo.deviceId);
+    this.meetingSession.audioVideo.startLocalVideoTile();
   }
 
   endMeeting() {
