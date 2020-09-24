@@ -8,7 +8,6 @@ import {
   Button, message, Input, Menu, Slider, Row, Col, Select,
 } from 'antd';
 import {
-  SmileOutlined,
   ImportOutlined,
   AudioOutlined,
   VideoCameraOutlined,
@@ -48,8 +47,6 @@ const RobotPage = ({ user, dispatch, history }) => {
 
   const [device, setDevice] = useState(new IOTDevice());
   const [chime, setChime] = useState(new ChimeSession());
-
-  const joystickRef = useRef(null);
 
   const audioRef = useRef(null);
   const videoRef = useRef(null);
@@ -113,6 +110,10 @@ const RobotPage = ({ user, dispatch, history }) => {
           } else {
             message.success('Controls Connected.');
             setConnectionState({ ...state, IOTConnected: true });
+            /*
+            - Perform your subscriptions and
+            - information collection from robot here
+            */
 
             // get locations
             device.callService({
@@ -125,22 +126,18 @@ const RobotPage = ({ user, dispatch, history }) => {
               },
             });
 
-            window.addEventListener('keydown', (function () {
-              let canMove = true;
-              return (e) => {
-                if (!canMove) return false;
-                canMove = false;
-                setTimeout(() => { canMove = true; }, state.frequency);
-                switch (e.key) {
-                  case 'ArrowUp': return handleUp();
-                  case 'ArrowDown': return handleDown();
-                  case 'ArrowLeft': return handleLeft();
-                  case 'ArrowRight': return handleRight();
-                  default: // do nothing
+            device.subscribeTopic({
+              topic: 'np_ros_general_message/cmd_vel/feedback',
+              callback: ({ data }) => {
+                if (data === 1) {
+                  message.warn('Obstacle ahead. Stopping forward movement');
+                } else if (data === 2) {
+                  message.warn('Obstacle behind. Stopping backwards movement');
+                } else if (data === 3) {
+                  message.warn('Obstacle beside robot. Stopping rotational movement');
                 }
-                return null;
-              };
-            }(true)), false);
+              },
+            });
           }
         },
         error: (error) => {
@@ -152,6 +149,23 @@ const RobotPage = ({ user, dispatch, history }) => {
           return null;
         },
       });
+
+      window.addEventListener('keydown', (function () {
+        let canMove = true;
+        return (e) => {
+          if (!canMove) return false;
+          canMove = false;
+          setTimeout(() => { canMove = true; }, state.frequency);
+          switch (e.key) {
+            case 'ArrowUp': return handleUp();
+            case 'ArrowDown': return handleDown();
+            case 'ArrowLeft': return handleLeft();
+            case 'ArrowRight': return handleRight();
+            default: // do nothing
+          }
+          return null;
+        };
+      }(true)), false);
 
       // join chime meeting
       dispatch({
@@ -212,7 +226,7 @@ const RobotPage = ({ user, dispatch, history }) => {
   const handleUp = () => {
     console.log('Move forward');
     device.publishMessage({
-      topic: '/cmd_vel',
+      topic: '/np_ros_general_message/cmd_vel',
       payload: {
         linear: {
           x: state.linearSliderIntensity / 2,
@@ -231,7 +245,7 @@ const RobotPage = ({ user, dispatch, history }) => {
   const handleDown = () => {
     console.log('Backwards');
     device.publishMessage({
-      topic: '/cmd_vel',
+      topic: '/np_ros_general_message/cmd_vel',
       payload: {
         linear: {
           x: -state.linearSliderIntensity / 2,
@@ -250,7 +264,7 @@ const RobotPage = ({ user, dispatch, history }) => {
   const handleLeft = () => {
     console.log('Turn left');
     device.publishMessage({
-      topic: '/cmd_vel',
+      topic: '/np_ros_general_message/cmd_vel',
       payload: {
         linear: {
           x: 0,
@@ -269,7 +283,7 @@ const RobotPage = ({ user, dispatch, history }) => {
   const handleRight = () => {
     console.log('Turn right');
     device.publishMessage({
-      topic: '/cmd_vel',
+      topic: '/np_ros_general_message/cmd_vel',
       payload: {
         linear: {
           x: 0,
@@ -285,37 +299,8 @@ const RobotPage = ({ user, dispatch, history }) => {
     });
   };
 
-  const sendText = () => {
-    const voiceMsg = state.messagebox;
-    device.publishMessage({
-      topic: '/voice_message',
-      payload: {
-        data: voiceMsg,
-      },
-    });
-    setState({ ...state, messagebox: null });
-  };
-
-  const handleChange = (event) => {
-    setState({ ...state, messagebox: event.target.value });
-  };
-
   const leaveRoom = () => {
     history.push('/dashboard');
-  };
-
-  const changeBackground = (e) => {
-    e.target.style.color = 'black';
-    e.target.style.borderColor = 'black';
-  };
-
-  const emoteClick = () => {
-    device.publishMessage({
-      topic: '/emote',
-      payload: {
-        data: 'myemote',
-      },
-    });
   };
 
   const MenuComponent = () => {
