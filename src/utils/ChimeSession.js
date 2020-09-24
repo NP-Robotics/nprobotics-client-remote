@@ -13,6 +13,8 @@ class ChimeSession {
     this.audioInput = null;
     this.videoInput = null;
     this.videoOutput = null;
+    this.started = false;
+    this.localTileId = null;
   }
 
   async init({ Meeting, Attendee }) {
@@ -61,10 +63,12 @@ class ChimeSession {
     const audioVideoObserver = {
       audioVideoDidStart: () => {
         console.log('Started');
+        this.started = true;
       },
       audioVideoDidStop: (sessionStatus) => {
         // See the "Stopping a session" section for details.
         console.log('Stopped with a session status code: ', sessionStatus.statusCode());
+        this.started = false;
       },
       audioVideoDidStartConnecting: (reconnecting) => {
         if (reconnecting) {
@@ -102,16 +106,36 @@ class ChimeSession {
         if (!tileState.boundAttendeeId || tileState.localTile || tileState.isContent) {
           return;
         }
-
         this.meetingSession.audioVideo.bindVideoElement(tileState.tileId, videoRef);
       },
     };
     this.meetingSession.audioVideo.addObserver(observer);
-    this.meetingSession.audioVideo.startLocalVideoTile();
   }
 
   bindAudioElement(audioRef) {
     this.meetingSession.audioVideo.bindAudioElement(audioRef);
+  }
+
+  unmuteAudio(audioRef) {
+    if (this.started) {
+      this.meetingSession.audioVideo.realtimeUnmuteLocalAudio(audioRef);
+    }
+  }
+
+  muteAudio(audioRef) {
+    if (this.started) {
+      this.meetingSession.audioVideo.realtimeMuteLocalAudio(audioRef);
+    }
+  }
+
+  stopLocalVideo() {
+    this.meetingSession.audioVideo.stopLocalVideoTile();
+  }
+
+  async startLocalVideo() {
+    const videoInputDeviceInfo = this.videoInput[0];
+    await this.meetingSession.audioVideo.chooseVideoInputDevice(videoInputDeviceInfo.deviceId);
+    this.meetingSession.audioVideo.startLocalVideoTile();
   }
 
   endMeeting() {

@@ -10,7 +10,9 @@ import {
 import {
   ImportOutlined,
   AudioOutlined,
-  VideoCameraOutlined,
+  AudioMutedOutlined,
+  EyeOutlined,
+  EyeInvisibleOutlined,
   UpCircleFilled,
   DownCircleFilled,
   LeftCircleFilled,
@@ -38,6 +40,8 @@ const RobotPage = ({ user, dispatch, history }) => {
     angularSliderIntensity: 5,
     frequency: 200,
     interval: null,
+    audioMuted: false,
+    videoStopped: false,
   });
 
   const [connectionState, setConnectionState] = useState({
@@ -182,6 +186,7 @@ const RobotPage = ({ user, dispatch, history }) => {
             setConnectionState({ ...state, chimeConnected: true });
             chime.bindVideoElement(videoRef.current);
             chime.bindAudioElement(audioRef.current);
+            await chime.startLocalVideo();
             message.success('Video Connected.');
           }
         },
@@ -303,31 +308,52 @@ const RobotPage = ({ user, dispatch, history }) => {
     history.push('/dashboard');
   };
 
-  const MenuComponent = () => {
-    const handleMenuClick = (e) => {
-      const location = state.locations[e.key];
-      device.callService({
-        topic: '/web_service/waypoint_sequence',
-        payload: {
-          sequence: [
-            {
-              location: location.name,
-              task: '',
-            },
-          ],
-        },
-        callback: (response) => {
-          console.log(response);
-        },
+  const muteChime = () => {
+    if (!state.audioMuted) {
+      chime.muteAudio(audioRef.current);
+      setState({
+        ...state,
+        audioMuted: true,
       });
-    };
-    return (
-      <Menu onClick={handleMenuClick}>
-        {state.locations.map((item, index) => (
-          <Menu.Item key={index}>{item.name}</Menu.Item>
-        ))}
-      </Menu>
-    );
+    } else {
+      chime.unmuteAudio(audioRef.current);
+      setState({
+        ...state,
+        audioMuted: false,
+      });
+    }
+  };
+
+  const stopVideo = async () => {
+    if (!state.videoStopped) {
+      chime.stopLocalVideo();
+      setState({
+        ...state,
+        videoStopped: true,
+      });
+    } else {
+      await chime.startLocalVideo();
+      setState({
+        ...state,
+        videoStopped: false,
+      });
+    }
+  };
+
+  const VideoIcon = () => {
+    if (state.videoStopped) {
+      return <EyeInvisibleOutlined />;
+    }
+
+    return <EyeOutlined />;
+  };
+
+  const AudioIcon = () => {
+    if (state.audioMuted) {
+      return <AudioMutedOutlined />;
+    }
+
+    return <AudioOutlined />;
   };
 
   const SelectComponent = () => {
@@ -390,15 +416,13 @@ const RobotPage = ({ user, dispatch, history }) => {
           </Button>
         </div>
         <div className={style.controlBtn}>
-          <Button type="primary">
-            <span>
-              <AudioOutlined />
-            </span>
+          <Button type="primary" onClick={muteChime}>
+            <AudioIcon />
           </Button>
           <div>
-            <Button type="primary">
+            <Button type="primary" onClick={stopVideo}>
               <span>
-                <VideoCameraOutlined />
+                <VideoIcon />
               </span>
             </Button>
           </div>
