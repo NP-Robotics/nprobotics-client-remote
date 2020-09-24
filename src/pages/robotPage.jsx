@@ -90,16 +90,6 @@ const RobotPage = ({ user, dispatch, history }) => {
           ...selectedRobot,
         });
       }
-
-      console.log({
-        host: endpoint,
-        clientID: user.username,
-        accessKeyId: user.accessKeyId,
-        secretKey: user.secretAccessKey,
-        sessionToken: user.sessionToken,
-        region: selectedRobot.iotRegion,
-      });
-
       // connect to IOT device
       device.init({
         host: endpoint,
@@ -409,18 +399,18 @@ const RobotPage = ({ user, dispatch, history }) => {
       />
       <div>
         <div>
-          <Button onClick={leaveRoom} type="primary" className={style.leaveBtn}>
+          <Button onClick={leaveRoom} type="primary" className={style.leaveBtn} size="large">
             <span>
               <ImportOutlined />
             </span>
           </Button>
         </div>
         <div className={style.controlBtn}>
-          <Button type="primary" onClick={muteChime}>
+          <Button type="primary" onClick={muteChime} size="large" style={{ marginTop: '5px' }}>
             <AudioIcon />
           </Button>
           <div>
-            <Button type="primary" onClick={stopVideo}>
+            <Button type="primary" onClick={stopVideo} size="large" style={{ marginTop: '5px' }}>
               <span>
                 <VideoIcon />
               </span>
