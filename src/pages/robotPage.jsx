@@ -38,6 +38,8 @@ const RobotPage = ({ user, dispatch, history }) => {
     angularSliderIntensity: 5,
     frequency: 200,
     interval: null,
+    audioMuted: false,
+    videoMuted: false,
   });
 
   const [connectionState, setConnectionState] = useState({
@@ -304,11 +306,18 @@ const RobotPage = ({ user, dispatch, history }) => {
   };
 
   const muteChime = () => {
-    const muteStatus = chime.realtimeIsLocalAudioMuted(audioRef.current);
-    if (muteStatus === true) {
-      chime.realtimeMuteLocalAudio(audioRef.current);
+    if (!state.audioMuted) {
+      chime.muteAudio(audioRef.current);
+      setState({
+        ...state,
+        audioMuted: true,
+      });
     } else {
-      chime.realtimeUnmuteLocalAudio(audioRef.current);
+      chime.unmuteAudio(audioRef.current);
+      setState({
+        ...state,
+        audioMuted: false,
+      });
     }
   };
 

@@ -13,6 +13,7 @@ class ChimeSession {
     this.audioInput = null;
     this.videoInput = null;
     this.videoOutput = null;
+    this.started = false;
   }
 
   async init({ Meeting, Attendee }) {
@@ -61,10 +62,12 @@ class ChimeSession {
     const audioVideoObserver = {
       audioVideoDidStart: () => {
         console.log('Started');
+        this.started = true;
       },
       audioVideoDidStop: (sessionStatus) => {
         // See the "Stopping a session" section for details.
         console.log('Stopped with a session status code: ', sessionStatus.statusCode());
+        this.started = false;
       },
       audioVideoDidStartConnecting: (reconnecting) => {
         if (reconnecting) {
@@ -114,17 +117,16 @@ class ChimeSession {
     this.meetingSession.audioVideo.bindAudioElement(audioRef);
   }
 
-  realtimeIsLocalAudioMuted(audioRef) {
-    const results = this.meetingSession.audioVideo.realtimeIsLocalAudioMuted(audioRef);
-    return results;
+  unmuteAudio(audioRef) {
+    if (this.started) {
+      this.meetingSession.audioVideo.realtimeUnmuteLocalAudio(audioRef);
+    }
   }
 
-  realtimeUnmuteLocalAudio(audioRef) {
-    this.meetingSession.audioVideo.realtimeUnmuteLocalAudio(audioRef);
-  }
-
-  realtimeMuteLocalAudio(audioRef) {
-    this.meetingSession.audioVideo.realtimeMuteLocalAudio(audioRef);
+  muteAudio(audioRef) {
+    if (this.started) {
+      this.meetingSession.audioVideo.realtimeMuteLocalAudio(audioRef);
+    }
   }
 
   endMeeting() {
