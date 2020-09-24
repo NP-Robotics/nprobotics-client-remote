@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'dva';
 
 import {
-  Button, message, Input, Menu, Slider, Row, Col,
+  Button, message, Input, Menu, Slider, Row, Col, Select,
 } from 'antd';
 import {
   SmileOutlined,
@@ -25,6 +25,7 @@ import style from './robotPage.css';
 // use inline styles for Chime elements
 
 const { TextArea } = Input;
+const { Option } = Select;
 
 const RobotPage = ({ user, dispatch, history }) => {
   const [state, setState] = useState({
@@ -344,6 +345,40 @@ const RobotPage = ({ user, dispatch, history }) => {
     );
   };
 
+  const SelectComponent = () => {
+    const handleOptionClick = (e) => {
+      const location = state.locations[e];
+      device.callService({
+        topic: '/web_service/waypoint_sequence',
+        payload: {
+          sequence: [
+            {
+              location: location.name,
+              task: '',
+            },
+          ],
+        },
+        callback: (response) => {
+          console.log(response);
+        },
+      });
+    };
+
+    return (
+      <Select
+        style={{ width: '100%' }}
+        onChange={handleOptionClick}
+        bordered
+        placeholder="Select a location"
+        size="large"
+      >
+        {state.locations.map((item, index) => (
+          <Option key={index}>{item.name}</Option>
+        ))}
+      </Select>
+    );
+  };
+
   return (
     <div>
       <audio ref={audioRef} />
@@ -384,46 +419,18 @@ const RobotPage = ({ user, dispatch, history }) => {
           </div>
         </div>
         <div>
-          <div className={style.naviBox}>
-            <div className={style.navi}>
-              <div trigger={['click']}>
-                <MenuComponent />
-              </div>
-            </div>
+          <div style={{
+            position: 'fixed',
+            width: '20%',
+            height: '30%',
+            textAlign: 'left',
+            float: 'left',
+            marginLeft: '2%',
+            bottom: '3%',
+          }}
+          >
+            <SelectComponent />
           </div>
-          <div className={style.message}>
-            <div className={style.emote} trigger={['click']}>
-              <SmileOutlined onClick={emoteClick} />
-            </div>
-            <TextArea
-              value={state.messagebox}
-              onChange={handleChange}
-              placeholder="Enter a message for the robot to say"
-              autoSize={{ minRows: 1, maxRows: 1 }}
-              className={style.textBox}
-            />
-            <Button onMouseOver={changeBackground} onClick={sendText} className={style.sendBtn}>
-              Send
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <div className={style.message}>
-          <div className={style.emote} trigger={['click']}>
-            <SmileOutlined onClick={emoteClick} />
-          </div>
-          <TextArea
-            value={state.messagebox}
-            onChange={handleChange}
-            placeholder="Enter a message for the robot to say"
-            autoSize={{ minRows: 1, maxRows: 1 }}
-            className={style.textBox}
-          />
-          <Button onMouseOver={changeBackground} onClick={sendText} className={style.sendBtn}>
-            Send
-          </Button>
         </div>
       </div>
       <div>
@@ -468,53 +475,60 @@ const RobotPage = ({ user, dispatch, history }) => {
       </div>
 
       <div className={style.dpadBox}>
-        <Row>
+        <Row style={{ margin: '8px' }}>
+          <Col span={8} />
           <Col span={8}>
             <Button
               onMouseDown={() => {
                 handleMouseDown(handleUp);
               }}
               onMouseUp={handleMouseUp}
-              className={style.upKey}
+              size="large"
             >
               <UpCircleFilled className={style.arrowButton} />
             </Button>
           </Col>
+          <Col span={8} />
         </Row>
-        <Row>
-          <div style={{ marginLeft: '45px' }}>
+        <Row style={{ margin: '8px' }}>
+          <Col span={8}>
             <Button
               onMouseDown={() => {
                 handleMouseDown(handleLeft);
               }}
               onMouseUp={handleMouseUp}
-              className={style.leftKey}
+              size="large"
             >
               <LeftCircleFilled className={style.arrowButton} />
             </Button>
+          </Col>
+          <Col span={8} />
+          <Col span={8}>
             <Button
               onMouseDown={() => {
                 handleMouseDown(handleRight);
               }}
               onMouseUp={handleMouseUp}
-              className={style.rightKey}
+              size="large"
             >
               <RightCircleFilled className={style.arrowButton} />
             </Button>
-          </div>
+          </Col>
         </Row>
-        <Row>
+        <Row style={{ margin: '8px' }}>
+          <Col span={8} />
           <Col span={8}>
             <Button
               onMouseDown={() => {
                 handleMouseDown(handleDown);
               }}
               onMouseUp={handleMouseUp}
-              className={style.downKey}
+              size="large"
             >
               <DownCircleFilled className={style.arrowButton} />
             </Button>
           </Col>
+          <Col span={8} />
         </Row>
       </div>
     </div>
