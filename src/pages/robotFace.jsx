@@ -38,7 +38,7 @@ const RobotFace = ({ user, dispatch, history }) => {
     // meeting name
     let meetingName = null;
 
-    const robotName = 'Coddie';
+    const robotName = 'uDora';
     if (user.robots.length > 0) {
       // store selected robot information in local state
       const selectedRobot = user.robots.find((robot) => robot.robotName === robotName);

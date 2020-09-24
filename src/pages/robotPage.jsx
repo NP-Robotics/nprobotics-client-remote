@@ -5,13 +5,14 @@ import PropTypes from 'prop-types';
 import { connect } from 'dva';
 
 import {
-  Button, message, Input, Menu, Slider, Row, Col,
+  Button, message, Input, Menu, Slider, Row, Col, Select,
 } from 'antd';
 import {
-  SmileOutlined,
   ImportOutlined,
   AudioOutlined,
-  VideoCameraOutlined,
+  AudioMutedOutlined,
+  EyeOutlined,
+  EyeInvisibleOutlined,
   UpCircleFilled,
   DownCircleFilled,
   LeftCircleFilled,
@@ -25,6 +26,7 @@ import style from './robotPage.css';
 // use inline styles for Chime elements
 
 const { TextArea } = Input;
+const { Option } = Select;
 
 const RobotPage = ({ user, dispatch, history }) => {
   const [state, setState] = useState({
@@ -38,6 +40,8 @@ const RobotPage = ({ user, dispatch, history }) => {
     angularSliderIntensity: 5,
     frequency: 200,
     interval: null,
+    audioMuted: false,
+    videoStopped: false,
   });
 
   const [connectionState, setConnectionState] = useState({
@@ -47,8 +51,6 @@ const RobotPage = ({ user, dispatch, history }) => {
 
   const [device, setDevice] = useState(new IOTDevice());
   const [chime, setChime] = useState(new ChimeSession());
-
-  const joystickRef = useRef(null);
 
   const audioRef = useRef(null);
   const videoRef = useRef(null);
@@ -76,9 +78,10 @@ const RobotPage = ({ user, dispatch, history }) => {
       let meetingName = null;
 
       const { robotName } = history.location.query;
+      let selectedRobot = null;
       if (user.robots.length > 0) {
         // store selected robot information in local state
-        const selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
+        selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
         endpoint = selectedRobot.endpoint;
         meetingName = selectedRobot.meetingName;
 
@@ -87,7 +90,6 @@ const RobotPage = ({ user, dispatch, history }) => {
           ...selectedRobot,
         });
       }
-
       // connect to IOT device
       device.init({
         host: endpoint,
@@ -95,13 +97,17 @@ const RobotPage = ({ user, dispatch, history }) => {
         accessKeyId: user.accessKeyId,
         secretKey: user.secretAccessKey,
         sessionToken: user.sessionToken,
-        region: 'us-east-1',
+        region: selectedRobot.iotRegion,
         callback: (event) => {
           if (!isMounted) {
             device.disconnectDevice();
           } else {
             message.success('Controls Connected.');
             setConnectionState({ ...state, IOTConnected: true });
+            /*
+            - Perform your subscriptions and
+            - information collection from robot here
+            */
 
             // get locations
             device.callService({
@@ -114,22 +120,18 @@ const RobotPage = ({ user, dispatch, history }) => {
               },
             });
 
-            window.addEventListener('keydown', (function () {
-              let canMove = true;
-              return (e) => {
-                if (!canMove) return false;
-                canMove = false;
-                setTimeout(() => { canMove = true; }, state.frequency);
-                switch (e.key) {
-                  case 'ArrowUp': return handleUp();
-                  case 'ArrowDown': return handleDown();
-                  case 'ArrowLeft': return handleLeft();
-                  case 'ArrowRight': return handleRight();
-                  default: // do nothing
+            device.subscribeTopic({
+              topic: 'np_ros_general_message/cmd_vel/feedback',
+              callback: ({ data }) => {
+                if (data === 1) {
+                  message.warn('Obstacle ahead. Stopping forward movement');
+                } else if (data === 2) {
+                  message.warn('Obstacle behind. Stopping backwards movement');
+                } else if (data === 3) {
+                  message.warn('Obstacle beside robot. Stopping rotational movement');
                 }
-                return null;
-              };
-            }(true)), false);
+              },
+            });
           }
         },
         error: (error) => {
@@ -141,6 +143,23 @@ const RobotPage = ({ user, dispatch, history }) => {
           return null;
         },
       });
+
+      window.addEventListener('keydown', (function () {
+        let canMove = true;
+        return (e) => {
+          if (!canMove) return false;
+          canMove = false;
+          setTimeout(() => { canMove = true; }, state.frequency);
+          switch (e.key) {
+            case 'ArrowUp': return handleUp();
+            case 'ArrowDown': return handleDown();
+            case 'ArrowLeft': return handleLeft();
+            case 'ArrowRight': return handleRight();
+            default: // do nothing
+          }
+          return null;
+        };
+      }(true)), false);
 
       // join chime meeting
       dispatch({
@@ -157,6 +176,7 @@ const RobotPage = ({ user, dispatch, history }) => {
             setConnectionState({ ...state, chimeConnected: true });
             chime.bindVideoElement(videoRef.current);
             chime.bindAudioElement(audioRef.current);
+            await chime.startLocalVideo();
             message.success('Video Connected.');
           }
         },
@@ -201,7 +221,7 @@ const RobotPage = ({ user, dispatch, history }) => {
   const handleUp = () => {
     console.log('Move forward');
     device.publishMessage({
-      topic: '/cmd_vel',
+      topic: '/np_ros_general_message/cmd_vel',
       payload: {
         linear: {
           x: state.linearSliderIntensity / 2,
@@ -220,7 +240,7 @@ const RobotPage = ({ user, dispatch, history }) => {
   const handleDown = () => {
     console.log('Backwards');
     device.publishMessage({
-      topic: '/cmd_vel',
+      topic: '/np_ros_general_message/cmd_vel',
       payload: {
         linear: {
           x: -state.linearSliderIntensity / 2,
@@ -239,7 +259,7 @@ const RobotPage = ({ user, dispatch, history }) => {
   const handleLeft = () => {
     console.log('Turn left');
     device.publishMessage({
-      topic: '/cmd_vel',
+      topic: '/np_ros_general_message/cmd_vel',
       payload: {
         linear: {
           x: 0,
@@ -258,7 +278,7 @@ const RobotPage = ({ user, dispatch, history }) => {
   const handleRight = () => {
     console.log('Turn right');
     device.publishMessage({
-      topic: '/cmd_vel',
+      topic: '/np_ros_general_message/cmd_vel',
       payload: {
         linear: {
           x: 0,
@@ -274,42 +294,61 @@ const RobotPage = ({ user, dispatch, history }) => {
     });
   };
 
-  const sendText = () => {
-    const voiceMsg = state.messagebox;
-    device.publishMessage({
-      topic: '/voice_message',
-      payload: {
-        data: voiceMsg,
-      },
-    });
-    setState({ ...state, messagebox: null });
-  };
-
-  const handleChange = (event) => {
-    setState({ ...state, messagebox: event.target.value });
-  };
-
   const leaveRoom = () => {
     history.push('/dashboard');
   };
 
-  const changeBackground = (e) => {
-    e.target.style.color = 'black';
-    e.target.style.borderColor = 'black';
+  const muteChime = () => {
+    if (!state.audioMuted) {
+      chime.muteAudio(audioRef.current);
+      setState({
+        ...state,
+        audioMuted: true,
+      });
+    } else {
+      chime.unmuteAudio(audioRef.current);
+      setState({
+        ...state,
+        audioMuted: false,
+      });
+    }
   };
 
-  const emoteClick = () => {
-    device.publishMessage({
-      topic: '/emote',
-      payload: {
-        data: 'myemote',
-      },
-    });
+  const stopVideo = async () => {
+    if (!state.videoStopped) {
+      chime.stopLocalVideo();
+      setState({
+        ...state,
+        videoStopped: true,
+      });
+    } else {
+      await chime.startLocalVideo();
+      setState({
+        ...state,
+        videoStopped: false,
+      });
+    }
   };
 
-  const MenuComponent = () => {
-    const handleMenuClick = (e) => {
-      const location = state.locations[e.key];
+  const VideoIcon = () => {
+    if (state.videoStopped) {
+      return <EyeInvisibleOutlined />;
+    }
+
+    return <EyeOutlined />;
+  };
+
+  const AudioIcon = () => {
+    if (state.audioMuted) {
+      return <AudioMutedOutlined />;
+    }
+
+    return <AudioOutlined />;
+  };
+
+  const SelectComponent = () => {
+    const handleOptionClick = (e) => {
+      const location = state.locations[e];
       device.callService({
         topic: '/web_service/waypoint_sequence',
         payload: {
@@ -325,12 +364,19 @@ const RobotPage = ({ user, dispatch, history }) => {
         },
       });
     };
+
     return (
-      <Menu onClick={handleMenuClick}>
+      <Select
+        style={{ width: '100%' }}
+        onChange={handleOptionClick}
+        bordered
+        placeholder="Select a location"
+        size="large"
+      >
         {state.locations.map((item, index) => (
-          <Menu.Item key={index}>{item.name}</Menu.Item>
+          <Option key={index}>{item.name}</Option>
         ))}
-      </Menu>
+      </Select>
     );
   };
 
@@ -353,67 +399,37 @@ const RobotPage = ({ user, dispatch, history }) => {
       />
       <div>
         <div>
-          <Button onClick={leaveRoom} type="primary" className={style.leaveBtn}>
+          <Button onClick={leaveRoom} type="primary" className={style.leaveBtn} size="large">
             <span>
               <ImportOutlined />
             </span>
           </Button>
         </div>
         <div className={style.controlBtn}>
-          <Button type="primary">
-            <span>
-              <AudioOutlined />
-            </span>
+          <Button type="primary" onClick={muteChime} size="large" style={{ marginTop: '5px' }}>
+            <AudioIcon />
           </Button>
           <div>
-            <Button type="primary">
+            <Button type="primary" onClick={stopVideo} size="large" style={{ marginTop: '5px' }}>
               <span>
-                <VideoCameraOutlined />
+                <VideoIcon />
               </span>
             </Button>
           </div>
         </div>
         <div>
-          <div className={style.naviBox}>
-            <div className={style.navi}>
-              <div trigger={['click']}>
-                <MenuComponent />
-              </div>
-            </div>
+          <div style={{
+            position: 'fixed',
+            width: '20%',
+            height: '30%',
+            textAlign: 'left',
+            float: 'left',
+            marginLeft: '2%',
+            bottom: '3%',
+          }}
+          >
+            <SelectComponent />
           </div>
-          <div className={style.message}>
-            <div className={style.emote} trigger={['click']}>
-              <SmileOutlined onClick={emoteClick} />
-            </div>
-            <TextArea
-              value={state.messagebox}
-              onChange={handleChange}
-              placeholder="Enter a message for the robot to say"
-              autoSize={{ minRows: 1, maxRows: 1 }}
-              className={style.textBox}
-            />
-            <Button onMouseOver={changeBackground} onClick={sendText} className={style.sendBtn}>
-              Send
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <div className={style.message}>
-          <div className={style.emote} trigger={['click']}>
-            <SmileOutlined onClick={emoteClick} />
-          </div>
-          <TextArea
-            value={state.messagebox}
-            onChange={handleChange}
-            placeholder="Enter a message for the robot to say"
-            autoSize={{ minRows: 1, maxRows: 1 }}
-            className={style.textBox}
-          />
-          <Button onMouseOver={changeBackground} onClick={sendText} className={style.sendBtn}>
-            Send
-          </Button>
         </div>
       </div>
       <div>
@@ -458,53 +474,60 @@ const RobotPage = ({ user, dispatch, history }) => {
       </div>
 
       <div className={style.dpadBox}>
-        <Row>
+        <Row style={{ margin: '8px' }}>
+          <Col span={8} />
           <Col span={8}>
             <Button
               onMouseDown={() => {
                 handleMouseDown(handleUp);
               }}
               onMouseUp={handleMouseUp}
-              className={style.upKey}
+              size="large"
             >
               <UpCircleFilled className={style.arrowButton} />
             </Button>
           </Col>
+          <Col span={8} />
         </Row>
-        <Row>
-          <div style={{ marginLeft: '45px' }}>
+        <Row style={{ margin: '8px' }}>
+          <Col span={8}>
             <Button
               onMouseDown={() => {
                 handleMouseDown(handleLeft);
               }}
               onMouseUp={handleMouseUp}
-              className={style.leftKey}
+              size="large"
             >
               <LeftCircleFilled className={style.arrowButton} />
             </Button>
+          </Col>
+          <Col span={8} />
+          <Col span={8}>
             <Button
               onMouseDown={() => {
                 handleMouseDown(handleRight);
               }}
               onMouseUp={handleMouseUp}
-              className={style.rightKey}
+              size="large"
             >
               <RightCircleFilled className={style.arrowButton} />
             </Button>
-          </div>
+          </Col>
         </Row>
-        <Row>
+        <Row style={{ margin: '8px' }}>
+          <Col span={8} />
           <Col span={8}>
             <Button
               onMouseDown={() => {
                 handleMouseDown(handleDown);
               }}
               onMouseUp={handleMouseUp}
-              className={style.downKey}
+              size="large"
             >
               <DownCircleFilled className={style.arrowButton} />
             </Button>
           </Col>
+          <Col span={8} />
         </Row>
       </div>
     </div>
