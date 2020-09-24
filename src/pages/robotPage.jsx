@@ -312,33 +312,6 @@ const RobotPage = ({ user, dispatch, history }) => {
     }
   };
 
-  const MenuComponent = () => {
-    const handleMenuClick = (e) => {
-      const location = state.locations[e.key];
-      device.callService({
-        topic: '/web_service/waypoint_sequence',
-        payload: {
-          sequence: [
-            {
-              location: location.name,
-              task: '',
-            },
-          ],
-        },
-        callback: (response) => {
-          console.log(response);
-        },
-      });
-    };
-    return (
-      <Menu onClick={handleMenuClick}>
-        {state.locations.map((item, index) => (
-          <Menu.Item key={index}>{item.name}</Menu.Item>
-        ))}
-      </Menu>
-    );
-  };
-
   const SelectComponent = () => {
     const handleOptionClick = (e) => {
       const location = state.locations[e];
