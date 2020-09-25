@@ -1,7 +1,6 @@
 // ref: https://umijs.org/config/
 export default {
   history: 'hash',
-  treeShaking: true,
   routes: [
     {
       path: '/',
