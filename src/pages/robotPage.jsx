@@ -37,8 +37,8 @@ const RobotPage = ({ user, dispatch, history }) => {
     endpoint: null,
     locations: [],
     linearSliderIntensity: 5,
-    angularSliderIntensity: 5,
-    frequency: 200,
+    angularSliderIntensity: 10,
+    frequency: 500,
     interval: null,
     audioMuted: false,
     videoStopped: false,
@@ -121,7 +121,7 @@ const RobotPage = ({ user, dispatch, history }) => {
             });
 
             device.subscribeTopic({
-              topic: 'np_ros_general_message/cmd_vel/feedback',
+              topic: '/np_ros_general_message/cmd_vel/feedback',
               callback: ({ data }) => {
                 if (data === 1) {
                   message.warn('Obstacle ahead. Stopping forward movement');
@@ -201,7 +201,7 @@ const RobotPage = ({ user, dispatch, history }) => {
 
   const handleLinearSliding = (value) => {
     setState({ ...state, linearSliderIntensity: value });
-    console.log(`Linear Velocity is at level: ${value / 2}`);
+    console.log(`Linear Velocity is at level: ${value / 20}`);
   };
 
   const handleAngularSliding = (value) => {
@@ -224,7 +224,7 @@ const RobotPage = ({ user, dispatch, history }) => {
       topic: '/np_ros_general_message/cmd_vel',
       payload: {
         linear: {
-          x: state.linearSliderIntensity / 2,
+          x: state.linearSliderIntensity / 20,
           y: 0,
           z: 0,
         },
@@ -243,7 +243,7 @@ const RobotPage = ({ user, dispatch, history }) => {
       topic: '/np_ros_general_message/cmd_vel',
       payload: {
         linear: {
-          x: -state.linearSliderIntensity / 2,
+          x: -state.linearSliderIntensity / 20,
           y: 0,
           z: 0,
         },
