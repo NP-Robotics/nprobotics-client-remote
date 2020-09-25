@@ -38,7 +38,7 @@ const RobotPage = ({ user, dispatch, history }) => {
     locations: [],
     linearSliderIntensity: 5,
     angularSliderIntensity: 10,
-    frequency: 500,
+    msgDelay: 500,
     interval: null,
     audioMuted: false,
     videoStopped: false,
@@ -189,7 +189,7 @@ const RobotPage = ({ user, dispatch, history }) => {
   */
   useEffect(() => {
     const keydownHandler = (e) => {
-      if (e.repeat) {
+      if (e.repeat || state.interval !== null) {
         return null;
       }
       switch (e.key) {
@@ -212,7 +212,7 @@ const RobotPage = ({ user, dispatch, history }) => {
       window.removeEventListener('keydown', keydownHandler);
       window.removeEventListener('keyup', keyupHandler);
     };
-  }, [state.angularSliderIntensity, state.linearSliderIntensity, state.interval]);
+  }, [state]);
 
   /* ------Handlers for sliders---------*/
   const handleLinearSliding = (value) => {
@@ -230,10 +230,11 @@ const RobotPage = ({ user, dispatch, history }) => {
 
   const handleMouseUp = () => {
     clearInterval(state.interval);
+    setState({ ...state, interval: null });
   };
 
   const handleMouseDown = (movementFunc) => {
-    const interval = setInterval(movementFunc, state.frequency);
+    const interval = setInterval(movementFunc, state.msgDelay);
     setState({ ...state, interval });
   };
 
