@@ -11,6 +11,7 @@ import {
 } from '../services/amplify';
 
 import { queryData } from '../services/dynamo';
+import { getImage, writeDesc, deleteImage } from '../services/S3';
 
 const unauthenticatedRoutes = new Set(['/', '/login', '/signup', '/resetpassword', '/forgotpassword']);
 
@@ -28,6 +29,8 @@ export default {
     organization: null,
     robots: [],
     robotsLoaded: false,
+    images: [],
+    imagesLoaded: false,
     identityLoaded: false,
   },
 
@@ -113,6 +116,13 @@ export default {
             organisation: 'NP',
           },
         });
+        /* yield put({
+          type: 'getImages',
+          payload: {
+            jwtToken: data.accessToken.jwtToken,
+            robotName: `coddie`,
+          },
+        }); */
         yield put({
           type: 'setState',
           payload: {
@@ -246,6 +256,107 @@ export default {
       }
     },
 
+    * listImages({ payload, callback, error }, { call, put }) {
+      const data = yield ampGetSession();
+      const { robotName } = payload;
+      try {
+        yield put({
+          type: 'getImages',
+          payload: {
+            jwtToken: data.accessToken.jwtToken,
+            robotName: `${robotName}`, // case sensitive
+          },
+        });
+      } catch (err) {
+        error(err);
+      }
+    },
+
+    * getImages({ payload, callback, error }, { call, put }) {
+      const { robotName, jwtToken } = payload;
+      let i = 0;
+      let h;
+      let ms;
+      let day;
+      let month;
+      let year;
+
+      try {
+        let response = yield call(getImage, robotName, jwtToken);
+
+        if (response) {
+          response = response.map((obj) => ({
+            ...obj,
+          }));
+          console.log(response);
+          for (i = 0; i < response.length; i += 1) {
+            ms = response[i].LastModified.slice(14, 16);
+            h = response[i].LastModified.slice(11, 13);
+            h = parseInt(h, 10) + 8;
+
+            day = response[i].LastModified.slice(8, 10);
+            month = response[i].LastModified.slice(6, 7);
+            year = response[i].LastModified.slice(0, 4);
+
+            if (h > 12) {
+              h -= 12;
+              response[i].LastModified = `${h}:${ms} pm`;
+            } else {
+              response[i].LastModified = `${h}:${ms}am`;
+            }
+
+            response[i].Date = `${day}/${month}/${year}`;
+
+            if (response[i].Key.includes('facemaskviolation')) {
+              response[i].desc = 'Face Mask Violation';
+            } else if (response[i].Key.includes('safedistancingviolation')) {
+              response[i].desc = 'Safe Distancing Violation';
+            }
+          }
+        }
+        if (callback) {
+          callback(response);
+        }
+
+        yield put({
+          type: 'setState',
+          payload: {
+            images: response,
+            imagesLoaded: true,
+          },
+        });
+      } catch (err) {
+        console.log(err);
+        if (error) {
+          error(err);
+        }
+      }
+    },
+
+    * writeImgDesc({ payload, callback, error }, { call, put }) {
+      const {
+        fileName,
+        file,
+        jwtToken,
+      } = payload;
+
+      try {
+        yield call(writeDesc, fileName, file, jwtToken);
+      } catch (err) {
+        error(err);
+      }
+    },
+
+    * deleteImage({ payload, callback, error }, { call, put }) {
+      const { key, jwtToken } = payload;
+
+      try {
+        yield call(deleteImage, key, jwtToken);
+      } catch (err) {
+        error(err);
+      }
+    },
+
     * joinMeeting({ payload, callback, error }, { call, put }) {
       const {
         username, meetingName, region, jwtToken,
@@ -304,6 +415,7 @@ export default {
         identityId: null,
         username: null,
         robots: [],
+        images: [],
       };
       return newState;
     },

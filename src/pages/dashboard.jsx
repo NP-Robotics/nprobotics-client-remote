@@ -25,6 +25,18 @@ const DashboardPage = ({ dispatch, history, user }) => {
     });
   };
 
+  const onOpenLog = (text) => {
+    dispatch({
+      type: 'user/listImages',
+      payload: {
+        robotName: text,
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    });
+  };
+
   const columns = [
     {
       title: 'Robot',
@@ -70,23 +82,18 @@ const DashboardPage = ({ dispatch, history, user }) => {
       dataIndex: 'robotName',
       key: 'robot',
       render: (text) => (
-        /* <div>
+        <div>
           <Link to={`/robot/?${queryString.stringify({ robotName: text })}`}>
             <Button type="primary" shape="round">
               Connect
             </Button>
           </Link>
           <Link to={`/log/?${queryString.stringify({ robotName: text })}`}>
-            <Button type="primary" shape="round" className={style.log}>
+            <Button type="primary" shape="round" className={style.log} onClick={() => onOpenLog(text)}>
               Log
             </Button>
           </Link>
-        </div> */
-        <Link to={`/robot/?${queryString.stringify({ robotName: text })}`}>
-          <Button type="primary" shape="round">
-            Connect
-          </Button>
-        </Link>
+        </div>
       ),
     },
   ];

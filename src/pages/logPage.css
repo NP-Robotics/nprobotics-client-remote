@@ -1,3 +1,5 @@
+
+
 .return{
     background-color: red;
     border-color: red;
@@ -19,4 +21,24 @@
 .delete{
     background-color: red;
     border-color: red;
+}
+
+.caseImg{
+    width: 70%;
+    height: 70%;
+    overflow: hidden;
+    object-fit: cover;
+}
+
+.caseInfo{
+    float: right;
+    width: 30%;
+    height: 30%;
+}
+
+.caseDesc{
+    text-align: center;
+    width: 80%;
+    margin-top: 2%;
+    margin-left: 12%;
 }

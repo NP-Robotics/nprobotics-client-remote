@@ -5,17 +5,24 @@ import { connect } from 'dva';
 import Link from 'umi/link';
 import queryString from 'query-string';
 import {
-  Table, Button, Space, Radio, Divider, Input, Modal,
+  Table, Button, Space, Radio, Divider, Input, Modal, message,
 } from 'antd';
 import { ImportOutlined } from '@ant-design/icons';
 import style from './logPage.css';
+
+const fs = require('fs');
+
+const { TextArea } = Input;
 
 const LogPage = ({ dispatch, history, user }) => {
   const [state, setState] = useState({
     robotName: null,
     filteredInfo: null,
     sortedInfo: null,
-    visible: false,
+    visibleDetails: false,
+    visibleDelete: false,
+    s3url: null,
+    messagebox: null,
   });
 
   const leaveRoom = () => {
@@ -35,33 +42,6 @@ const LogPage = ({ dispatch, history, user }) => {
       }
     }
   }, [state, user.robots, history.location.query]);
-
-  const data = [
-    {
-      key: '1',
-      date: 'John Brown',
-      time: 32,
-      desc: 'New York No. 1 Lake Park',
-    },
-    {
-      key: '2',
-      date: 'Jim Green',
-      time: 42,
-      desc: 'London No. 1 Lake Park',
-    },
-    {
-      key: '3',
-      date: 'Joe Black',
-      time: 32,
-      desc: 'Sidney No. 1 Lake Park',
-    },
-    {
-      key: '4',
-      date: 'Jim Red',
-      time: 32,
-      desc: 'London No. 2 Lake Park',
-    },
-  ];
 
   const handleChange = (pagination, filters, sorter) => {
     console.log('Various parameters', pagination, filters, sorter);
@@ -110,18 +90,18 @@ const LogPage = ({ dispatch, history, user }) => {
   const columns = [
     {
       title: 'Date',
-      dataIndex: 'date',
-      key: 'date',
-      sorter: (a, b) => a.date - b.date,
-      sortOrder: sortedInfo.columnKey === 'date' && sortedInfo.order,
+      dataIndex: 'Date',
+      key: 'Date',
+      sorter: (a, b) => a.Date - b.Date,
+      sortOrder: sortedInfo.columnKey === 'Date' && sortedInfo.order,
       ellipsis: true,
     },
     {
       title: 'Time',
-      dataIndex: 'time',
-      key: 'time',
-      sorter: (a, b) => a.time - b.time,
-      sortOrder: sortedInfo.columnKey === 'time' && sortedInfo.order,
+      dataIndex: 'LastModified',
+      key: 'LastModified',
+      sorter: (a, b) => a.LastModified - b.LastModified,
+      sortOrder: sortedInfo.columnKey === 'LastModified' && sortedInfo.order,
       ellipsis: true,
     },
     {
@@ -140,54 +120,170 @@ const LogPage = ({ dispatch, history, user }) => {
     },
     {
       title: 'Action',
-      dataIndex: 'robotname',
-      key: 'robot',
+      dataIndex: 'Key',
+      key: 'Key',
       render: (text) => (
         <div>
-          <Button type="primary" shape="round" onClick={showModal}>
+          <Button type="primary" shape="round" onClick={() => showDetailsModal(text)}>
             Details
           </Button>
-          <Link to={`/log/?${queryString.stringify({ robotName: text })}`}>
-            <Button type="primary" shape="round" className={style.delete}>
-              Delete
-            </Button>
-          </Link>
+          <Button type="primary" shape="round" className={style.delete} onClick={() => showDeleteModal(text)}>
+            Delete
+          </Button>
         </div>
       ),
     },
   ];
 
-  const showModal = () => {
+  const data = user.images.map((obj, index) => ({ key: index, ...obj }));
+
+  const showDetailsModal = (text) => {
     setState({
-      visible: true,
+      visibleDetails: true,
+      s3url: text,
     });
   };
 
-  const handleOk = (e) => {
-    console.log(e);
+  const showDeleteModal = (text) => {
     setState({
-      visible: false,
+      visibleDelete: true,
+      s3url: text,
     });
   };
 
-  const handleCancel = (e) => {
+  const handleSave = (e) => {
     console.log(e);
     setState({
-      visible: false,
+      visibleDetails: false,
+    });
+    const text = state.messagebox;
+    let fileName = state.s3url;
+    if (fileName.includes('.jpg')) {
+      fileName = fileName.replace('.jpg', 'desc.txt');
+    } else if (fileName.includes('.jpeg')) {
+      fileName = fileName.replace('.jpeg', 'desc.txt');
+    } else if (fileName.includes('.png')) {
+      fileName = fileName.replace('.png', 'desc.txt');
+    }
+    // var element = document.createElement("a");
+    // const file = new Blob([text], { type: 'text/plain' });
+    // element.href = URL.createObjectURL(file);
+    // document.body.appendChild(element); // Required for this to work in FireFox
+    /* dispatch({
+      type: 'user/writeImgDesc',
+      payload:{
+        fileName: fileName,
+        file: file,
+      },
+      error: (err) => {
+        message.info(err.message);
+        console.log(err);
+      }
+    }); */
+  };
+
+  const handleCancelDetails = (e) => {
+    console.log(e);
+    setState({
+      visibleDetails: false,
+    });
+  };
+
+  const handleDelete = (e) => {
+    console.log(e);
+    setState({
+      visibleDelete: false,
+    });
+    dispatch({
+      type: 'user/deleteImage',
+      payload: {
+        key: state.s3url,
+      },
+      error: (err) => {
+        message.info(err.message);
+        console.log(err);
+      },
+    });
+  };
+
+  const handleCancelDelete = (e) => {
+    console.log(e);
+    setState({
+      visibleDelete: false,
+    });
+  };
+
+  const handleDescChange = (event) => {
+    setState({
+      messagebox: event.target.value,
+      visibleDetails: true,
+      s3url: state.s3url,
     });
   };
 
   return (
     <div>
       <Modal
-        title="Basic Modal"
-        visible={state.visible}
-        onOk={handleOk}
-        onCancel={handleCancel}
+        title="Case Details"
+        visible={state.visibleDetails}
+        onOk={handleSave}
+        onCancel={handleCancelDetails}
+        width="60%"
+        footer={[
+          <Button key="back" onClick={handleCancelDetails}>
+            Cancel
+          </Button>,
+          <Button key="submit" type="primary" onClick={handleSave}>
+            Save
+          </Button>,
+        ]}
       >
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
+        <div>
+          <img src={`https://nprobotics-images.s3.amazonaws.com/${state.s3url}`} alt="Case" className={style.caseImg} />
+          <div className={style.caseInfo}>
+            <div className={style.caseDesc}>
+              <h3>Add Description To Case:</h3>
+              <TextArea
+                value={state.messagebox}
+                onChange={handleDescChange}
+                placeholder="Enter additional description to this case"
+                autoSize={{ minRows: 3, maxRows: 3 }}
+              />
+            </div>
+          </div>
+        </div>
+      </Modal>
+      <Modal
+        title="Case Details"
+        visible={state.visibleDelete}
+        onOk={handleDelete}
+        onCancel={handleCancelDelete}
+        width="60%"
+        footer={[
+          <Button key="back" onClick={handleCancelDelete}>
+            Cancel
+          </Button>,
+          <Button key="submit" type="primary" onClick={handleDelete}>
+            Delete
+          </Button>,
+        ]}
+      >
+        <div>
+          <img src={`https://nprobotics-images.s3.amazonaws.com/${state.s3url}`} alt="Case" className={style.caseImg} />
+          <div className={style.caseInfo}>
+            <div className={style.caseDesc}>
+              <h3>Case Description:</h3>
+              <TextArea
+                value={state.messagebox}
+                onChange={handleDescChange}
+                placeholder=""
+                autoSize={{ minRows: 3, maxRows: 3 }}
+              >
+                {state.messagebox}
+              </TextArea>
+            </div>
+          </div>
+        </div>
       </Modal>
       <div>
         <Button
@@ -238,6 +334,7 @@ LogPage.propTypes = {
     sessionToken: PropTypes.string,
     jwtToken: PropTypes.string,
     robots: PropTypes.arrayOf(PropTypes.shape({})),
+    images: PropTypes.arrayOf(PropTypes.shape({})),
   }),
   device: PropTypes.shape({}),
   meeting: PropTypes.shape({
