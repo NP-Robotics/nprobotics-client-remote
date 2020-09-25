@@ -64,7 +64,8 @@ const RobotFace = ({ user, dispatch, history }) => {
           await chime.init({ Meeting, Attendee });
           chime.bindVideoElement(videoRef.current);
           chime.bindAudioElement(audioRef.current);
-          message.success('Joined meeting!');
+          await chime.startLocalVideo();
+          message.success('Video Connected.');
         }
       },
       error: () => {
