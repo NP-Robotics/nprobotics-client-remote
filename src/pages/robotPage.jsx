@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'dva';
 
 import {
-  Button, message, Input, Menu, Slider, Row, Col, Select,
+  Button, message, Input, Slider, Row, Col, Select,
 } from 'antd';
 import {
   ImportOutlined,
@@ -90,6 +90,7 @@ const RobotPage = ({ user, dispatch, history }) => {
           ...selectedRobot,
         });
       }
+
       // connect to IOT device
       device.init({
         host: endpoint,
@@ -104,10 +105,10 @@ const RobotPage = ({ user, dispatch, history }) => {
           } else {
             message.success('Controls Connected.');
             setConnectionState({ ...state, IOTConnected: true });
-            /*
+            /*--------------------------------------------------
             - Perform your subscriptions and
             - information collection from robot here
-            */
+            ----------------------------------------------------*/
 
             // get locations
             device.callService({
@@ -143,23 +144,6 @@ const RobotPage = ({ user, dispatch, history }) => {
           return null;
         },
       });
-
-      window.addEventListener('keydown', (function () {
-        let canMove = true;
-        return (e) => {
-          if (!canMove) return false;
-          canMove = false;
-          setTimeout(() => { canMove = true; }, state.frequency);
-          switch (e.key) {
-            case 'ArrowUp': return handleUp();
-            case 'ArrowDown': return handleDown();
-            case 'ArrowLeft': return handleLeft();
-            case 'ArrowRight': return handleRight();
-            default: // do nothing
-          }
-          return null;
-        };
-      }(true)), false);
 
       // join chime meeting
       dispatch({
@@ -199,6 +183,38 @@ const RobotPage = ({ user, dispatch, history }) => {
     };
   }, []);
 
+  /*
+  - useEffect for adding keyboard controls to the DOM. Runs when
+  - sliderintensity or interval inside the state updates.
+  */
+  useEffect(() => {
+    const keydownHandler = (e) => {
+      if (e.repeat) {
+        return null;
+      }
+      switch (e.key) {
+        case 'ArrowUp': return handleMouseDown(handleUp);
+        case 'ArrowDown': return handleMouseDown(handleDown);
+        case 'ArrowLeft': return handleMouseDown(handleLeft);
+        case 'ArrowRight': return handleMouseDown(handleRight);
+        default: // do nothing
+      }
+      return null;
+    };
+
+    const keyupHandler = () => {
+      handleMouseUp();
+    };
+    window.addEventListener('keydown', keydownHandler);
+    window.addEventListener('keyup', keyupHandler);
+
+    return () => {
+      window.removeEventListener('keydown', keydownHandler);
+      window.removeEventListener('keyup', keyupHandler);
+    };
+  }, [state.angularSliderIntensity, state.linearSliderIntensity, state.interval]);
+
+  /* ------Handlers for sliders---------*/
   const handleLinearSliding = (value) => {
     setState({ ...state, linearSliderIntensity: value });
     console.log(`Linear Velocity is at level: ${value / 20}`);
@@ -208,6 +224,9 @@ const RobotPage = ({ user, dispatch, history }) => {
     setState({ ...state, angularSliderIntensity: value });
     console.log(`Angular Velocity is at level: ${value / 5}`);
   };
+  /*----------------------------------*/
+
+  /* ------Handlers for D-Pad---------*/
 
   const handleMouseUp = () => {
     clearInterval(state.interval);
@@ -293,6 +312,9 @@ const RobotPage = ({ user, dispatch, history }) => {
       },
     });
   };
+  /*---------------------------------*/
+
+  /* ------Handlers for Chime interaction---------*/
 
   const leaveRoom = () => {
     history.push('/dashboard');
@@ -345,6 +367,7 @@ const RobotPage = ({ user, dispatch, history }) => {
 
     return <AudioOutlined />;
   };
+  /*---------------------------------*/
 
   const SelectComponent = () => {
     const handleOptionClick = (e) => {
