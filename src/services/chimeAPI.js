@@ -1,22 +1,23 @@
 import makeRequest from '../utils/request';
 
 const makeChimeRequest = (action, payload) => {
-  const url = `ve5bhz6ga3.execute-api.us-east-1.amazonaws.com/Prod/${action}`;
+  const url = `2tqfe67uy9.execute-api.us-east-1.amazonaws.com/dev/${action}`;
   const response = makeRequest(url, payload);
   return response;
 };
 
-export const joinMeeting = (name, title, region, jwtToken) => {
-  const action = 'join';
+export const joinMeeting = (username, meetingName, region, isRobot, jwtToken) => {
+  const action = 'joinMeeting';
   const response = makeChimeRequest(action, {
     method: 'post',
     headers: {
       Authorization: `Bearer ${jwtToken}`,
     },
     params: {
-      name,
-      title,
+      username,
+      meetingName,
       region,
+      isRobot,
     },
     skipErrorHandler: true,
   });
@@ -24,14 +25,14 @@ export const joinMeeting = (name, title, region, jwtToken) => {
 };
 
 export const endMeeting = (meetingName, jwtToken) => {
-  const action = 'end';
+  const action = 'endMeeting';
   const response = makeChimeRequest(action, {
     method: 'post',
     headers: {
       Authorization: `Bearer ${jwtToken}`,
     },
     params: {
-      title: meetingName,
+      meetingName,
     },
     skipErrorHandler: true,
   });

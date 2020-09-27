@@ -152,6 +152,7 @@ const RobotPage = ({ user, dispatch, history }) => {
           username: `${user.username}`,
           meetingName: `${meetingName}`,
           region: 'ap-southeast-1',
+          isRobot: false,
           jwtToken: user.jwtToken,
         },
         callback: async ({ Meeting, Attendee }) => {
@@ -165,7 +166,7 @@ const RobotPage = ({ user, dispatch, history }) => {
           }
         },
         error: () => {
-          message.error('Meeting room has expired');
+          message.error('Robot is offline.');
           history.push('/dashboard');
         },
       });

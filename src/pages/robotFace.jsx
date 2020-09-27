@@ -57,6 +57,7 @@ const RobotFace = ({ user, dispatch, history }) => {
         username: `${user.username}`,
         meetingName: `${meetingName}`,
         region: 'ap-southeast-1',
+        isRobot: true,
         jwtToken: user.jwtToken,
       },
       callback: async ({ Meeting, Attendee }) => {
@@ -69,7 +70,7 @@ const RobotFace = ({ user, dispatch, history }) => {
         }
       },
       error: () => {
-        message.error('Robot is offline');
+        message.error('This should never happen');
         history.push('/dashboard');
       },
     });
