@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import PropTypes, { element } from 'prop-types';
 import { connect } from 'dva';
 
 import Link from 'umi/link';
@@ -9,8 +9,6 @@ import {
 } from 'antd';
 import { ImportOutlined } from '@ant-design/icons';
 import style from './logPage.css';
-
-const fs = require('fs');
 
 const { TextArea } = Input;
 
@@ -165,21 +163,23 @@ const LogPage = ({ dispatch, history, user }) => {
     } else if (fileName.includes('.png')) {
       fileName = fileName.replace('.png', 'desc.txt');
     }
-    // var element = document.createElement("a");
+    // const element = document.createElement('a');
     // const file = new Blob([text], { type: 'text/plain' });
     // element.href = URL.createObjectURL(file);
+    // element.download();
     // document.body.appendChild(element); // Required for this to work in FireFox
-    /* dispatch({
+    // element.click();
+    dispatch({
       type: 'user/writeImgDesc',
-      payload:{
-        fileName: fileName,
-        file: file,
+      payload: {
+        fileName,
+        // file,
       },
       error: (err) => {
         message.info(err.message);
         console.log(err);
-      }
-    }); */
+      },
+    });
   };
 
   const handleCancelDetails = (e) => {
