@@ -21,6 +21,7 @@ const LogPage = ({ dispatch, history, user }) => {
     visibleDelete: false,
     s3url: null,
     messagebox: null,
+    selectedRowsDlt: [],
   });
 
   const leaveRoom = () => {
@@ -49,33 +50,17 @@ const LogPage = ({ dispatch, history, user }) => {
     });
   };
 
-  const clearFilters = () => {
-    setState({ filteredInfo: null });
-  };
-
-  const clearAll = () => {
-    setState({
-      filteredInfo: null,
-      sortedInfo: null,
-    });
-  };
-
-  const setAgeSort = () => {
-    setState({
-      sortedInfo: {
-        order: 'descend',
-        columnKey: 'date',
-      },
-    });
-  };
-
   // rowSelection object indicates the need for row selection
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
       console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+      setState({
+        selectedRowsDlt: selectedRows,
+      });
+      console.log('Log', state.selectedRowsDlt);
     },
     getCheckboxProps: (record) => ({
-      date: record.date,
+      Date: record.Date,
     }),
   };
 
@@ -90,7 +75,33 @@ const LogPage = ({ dispatch, history, user }) => {
       title: 'Date',
       dataIndex: 'Date',
       key: 'Date',
-      sorter: (a, b) => a.Date - b.Date,
+      sorter: (a, b) => {
+        const aDate = JSON.stringify(a.Date);
+        let ayear = aDate.slice(6, 10);
+        let amonth = aDate.slice(4, 5);
+        let aday = aDate.slice(1, 3);
+        ayear = parseInt(ayear, 10);
+        amonth = parseInt(amonth, 10);
+        aday = parseInt(aday, 10);
+
+        const bDate = JSON.stringify(b.Date);
+        let byear = bDate.slice(6, 10);
+        let bmonth = bDate.slice(4, 5);
+        let bday = bDate.slice(1, 3);
+        byear = parseInt(byear, 10);
+        bmonth = parseInt(bmonth, 10);
+        bday = parseInt(bday, 10);
+
+        if ((ayear - byear) === 0) {
+          if ((amonth - bmonth === 0)) {
+            return aday - bday;
+          }
+
+          return amonth - bmonth;
+        }
+
+        return ayear - byear;
+      },
       sortOrder: sortedInfo.columnKey === 'Date' && sortedInfo.order,
       ellipsis: true,
     },
@@ -98,7 +109,38 @@ const LogPage = ({ dispatch, history, user }) => {
       title: 'Time',
       dataIndex: 'LastModified',
       key: 'LastModified',
-      sorter: (a, b) => a.LastModified - b.LastModified,
+      sorter: (a, b) => {
+        const aLM = JSON.stringify(a.LastModified);
+        console.log(a);
+        let ahr = aLM.slice(1, 3);
+        let amin = aLM.slice(3, 5);
+        const aday = aLM.slice(6, 8);
+        if (ahr.includes(':')) {
+          ahr = aLM.slice(1, 2);
+        }
+        ahr = parseInt(ahr, 10);
+        amin = parseInt(amin, 10);
+        console.log(ahr);
+        console.log(amin);
+        console.log(aday);
+
+        const bLM = JSON.stringify(b.LastModified);
+        console.log(b);
+        let bhr = bLM.slice(1, 3);
+        let bmin = bLM.slice(3, 5);
+        const bday = bLM.slice(6, 8);
+        if (bhr.includes(':')) {
+          bhr = bLM.slice(1, 2);
+        }
+        bhr = parseInt(bhr, 10);
+        bmin = parseInt(bmin, 10);
+
+        if ((ahr - bhr) === 0) {
+          return amin - bmin;
+        }
+
+        return ahr - bhr;
+      },
       sortOrder: sortedInfo.columnKey === 'LastModified' && sortedInfo.order,
       ellipsis: true,
     },
@@ -112,9 +154,6 @@ const LogPage = ({ dispatch, history, user }) => {
       ],
       filteredValue: filteredInfo.desc || null,
       onFilter: (value, record) => record.desc.includes(value),
-      sorter: (a, b) => a.desc.length - b.desc.length,
-      sortOrder: sortedInfo.columnKey === 'desc' && sortedInfo.order,
-      ellipsis: true,
     },
     {
       title: 'Action',
@@ -163,12 +202,12 @@ const LogPage = ({ dispatch, history, user }) => {
     } else if (fileName.includes('.png')) {
       fileName = fileName.replace('.png', 'desc.txt');
     }
-    // const element = document.createElement('a');
+    // const fileelement = document.createElement('a');
     // const file = new Blob([text], { type: 'text/plain' });
-    // element.href = URL.createObjectURL(file);
-    // element.download();
-    // document.body.appendChild(element); // Required for this to work in FireFox
-    // element.click();
+    // fileelement.href = URL.createObjectURL(file);
+    // fileelement.download();
+    // document.body.appendChild(fileelement); // Required for this to work in FireFox
+    // fileelement.click();
     dispatch({
       type: 'user/writeImgDesc',
       payload: {
@@ -218,6 +257,23 @@ const LogPage = ({ dispatch, history, user }) => {
       messagebox: event.target.value,
       visibleDetails: true,
       s3url: state.s3url,
+    });
+  };
+
+  const handleDeleteMultiple = (e) => {
+    console.log(e);
+    setState({
+      visibleDelete: false,
+    });
+    dispatch({
+      type: 'user/deleteImage',
+      payload: {
+        key: state.s3url,
+      },
+      error: (err) => {
+        message.info(err.message);
+        console.log(err);
+      },
     });
   };
 
@@ -298,9 +354,8 @@ const LogPage = ({ dispatch, history, user }) => {
       </div>
       <div className={style.table}>
         <Space style={{ marginBottom: 16 }}>
-          <Button onClick={setAgeSort}>Sort age</Button>
-          <Button onClick={clearFilters}>Clear filters</Button>
-          <Button onClick={clearAll}>Clear filters and sorters</Button>
+          <Button onClick={handleDeleteMultiple}>Search</Button>
+          <Button onClick={handleDeleteMultiple}>Delete Multiple</Button>
         </Space>
         <Table
           rowSelection={{
