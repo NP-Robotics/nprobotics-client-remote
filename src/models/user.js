@@ -359,11 +359,12 @@ export default {
 
     * joinMeeting({ payload, callback, error }, { call, put }) {
       const {
-        username, meetingName, region, jwtToken,
+        username, meetingName, region, jwtToken, isRobot,
       } = payload;
 
       try {
-        const response = yield call(joinMeeting, username, meetingName, region, jwtToken);
+        const response = yield call(joinMeeting, username, meetingName, region, isRobot, jwtToken);
+        console.log(response);
         const { Meeting, Attendee } = response.JoinInfo;
 
         yield put({
@@ -386,7 +387,9 @@ export default {
       }
     },
     * end({ payload, callback, error }, { call, put }) {
+      const { meetingName, jwtToken } = payload;
       try {
+        yield call(endMeeting, meetingName, jwtToken);
         yield put({ type: 'clearMeeting' });
         if (callback) {
           callback();

@@ -6,11 +6,11 @@ import { message } from 'antd';
 
 import Face from '../assets/face.jpg';
 import ChimeSession from '../utils/ChimeSession';
-import style from './robotFace.css';
 
-const RobotFace = ({
-  user, dispatch, history,
-}) => {
+import style from './robotFace.css';
+// use inline styles for Chime-related elements
+
+const RobotFace = ({ user, dispatch, history }) => {
   const [state, setState] = useState({
     robotName: null,
     meetingName: null,
@@ -38,7 +38,7 @@ const RobotFace = ({
     // meeting name
     let meetingName = null;
 
-    const robotName = 'Coddie';
+    const robotName = 'uDora';
     if (user.robots.length > 0) {
       // store selected robot information in local state
       const selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
@@ -57,6 +57,7 @@ const RobotFace = ({
         username: `${user.username}`,
         meetingName: `${meetingName}`,
         region: 'ap-southeast-1',
+        isRobot: true,
         jwtToken: user.jwtToken,
       },
       callback: async ({ Meeting, Attendee }) => {
@@ -64,11 +65,12 @@ const RobotFace = ({
           await chime.init({ Meeting, Attendee });
           chime.bindVideoElement(videoRef.current);
           chime.bindAudioElement(audioRef.current);
-          message.success('Joined meeting!');
+          await chime.startLocalVideo();
+          message.success('Video Connected.');
         }
       },
       error: () => {
-        message.error('Robot is offline');
+        message.error('This should never happen');
         history.push('/dashboard');
       },
     });
@@ -96,6 +98,8 @@ const RobotFace = ({
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           textAlign: 'center',
+          overflow: 'hidden',
+          objectFit: 'fill',
         }}
         ref={videoRef}
       />
