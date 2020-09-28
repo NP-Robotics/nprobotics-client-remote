@@ -7,7 +7,7 @@ import queryString from 'query-string';
 import {
   Table, Button, Space, Radio, Divider, Input, Modal, message,
 } from 'antd';
-import { ImportOutlined } from '@ant-design/icons';
+import { ImportOutlined, SearchOutlined } from '@ant-design/icons';
 import style from './logPage.css';
 
 const { TextArea } = Input;
@@ -22,6 +22,7 @@ const LogPage = ({ dispatch, history, user }) => {
     s3url: null,
     messagebox: null,
     selectedRowsDlt: [],
+    search: null,
   });
 
   const leaveRoom = () => {
@@ -57,7 +58,6 @@ const LogPage = ({ dispatch, history, user }) => {
       setState({
         selectedRowsDlt: selectedRows,
       });
-      console.log('Log', state.selectedRowsDlt);
     },
     getCheckboxProps: (record) => ({
       Date: record.Date,
@@ -120,9 +120,6 @@ const LogPage = ({ dispatch, history, user }) => {
         }
         ahr = parseInt(ahr, 10);
         amin = parseInt(amin, 10);
-        console.log(ahr);
-        console.log(amin);
-        console.log(aday);
 
         const bLM = JSON.stringify(b.LastModified);
         console.log(b);
@@ -135,14 +132,24 @@ const LogPage = ({ dispatch, history, user }) => {
         bhr = parseInt(bhr, 10);
         bmin = parseInt(bmin, 10);
 
-        if ((ahr - bhr) === 0) {
-          return amin - bmin;
+        if (aday.includes('pm')) {
+          if (bday.includes('pm')) {
+            if ((ahr - bhr) === 0) {
+              return amin - bmin;
+            }
+
+            return ahr - bhr;
+          }
+
+          return aday > bday;
         }
 
-        return ahr - bhr;
+        return aday < bday;
       },
       sortOrder: sortedInfo.columnKey === 'LastModified' && sortedInfo.order,
       ellipsis: true,
+      filteredValue: filteredInfo.desc || null,
+      onFilter: (record) => record.desc.includes(state.search),
     },
     {
       title: 'Description',
@@ -261,19 +268,30 @@ const LogPage = ({ dispatch, history, user }) => {
   };
 
   const handleDeleteMultiple = (e) => {
+    let i = 0;
     console.log(e);
+    console.log('Log', state.selectedRowsDlt);
+    for (i = 0; i < state.selectedRowsDlt.length; i += 1) {
+      dispatch({
+        type: 'user/deleteImage',
+        payload: {
+          key: state.selectedRowsDlt[i].Key,
+        },
+        error: (err) => {
+          message.info(err.message);
+          console.log(err);
+        },
+      });
+    }
+  };
+
+  const handleSearch = () => {
+    console.log(state.search);
+  };
+
+  const searchChange = (event) => {
     setState({
-      visibleDelete: false,
-    });
-    dispatch({
-      type: 'user/deleteImage',
-      payload: {
-        key: state.s3url,
-      },
-      error: (err) => {
-        message.info(err.message);
-        console.log(err);
-      },
+      search: event.target.value,
     });
   };
 
@@ -354,7 +372,17 @@ const LogPage = ({ dispatch, history, user }) => {
       </div>
       <div className={style.table}>
         <Space style={{ marginBottom: 16 }}>
-          <Button onClick={handleDeleteMultiple}>Search</Button>
+          <Input
+            value={state.search}
+            onChange={searchChange}
+            onPressEnter={handleSearch}
+            className={style.search}
+            placeholder="Search"
+          />
+          <Button onClick={handleSearch}>
+            <SearchOutlined />
+            Search
+          </Button>
           <Button onClick={handleDeleteMultiple}>Delete Multiple</Button>
         </Space>
         <Table

@@ -42,3 +42,8 @@
     margin-top: 2%;
     margin-left: 12%;
 }
+
+.search{
+    width: 100%;
+    display: 'block';
+}
