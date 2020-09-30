@@ -41,7 +41,7 @@ const RobotFace = ({ user, dispatch, history }) => {
     let endpoint = null;
     let meetingName = null;
 
-    const robotName = 'uDora';
+    const { robotName } = history.location.query;
     let selectedRobot = null;
     if (user.robots.length > 0) {
       // store selected robot information in local state
@@ -55,41 +55,43 @@ const RobotFace = ({ user, dispatch, history }) => {
       });
     }
 
-    bridge.initIOT({
-      host: endpoint,
-      clientID: user.username,
-      accessKeyId: user.accessKeyId,
-      secretKey: user.secretAccessKey,
-      sessionToken: user.sessionToken,
-      region: selectedRobot.iotRegion,
-      callback: (event) => {
-        if (!isMounted) {
-          bridge.disconnectDevice();
-        } else {
-          message.success('IOT Core Connected.');
+    if (selectedRobot.rosConfig != null) {
+      bridge.initIOT({
+        host: endpoint,
+        clientID: user.username,
+        accessKeyId: user.accessKeyId,
+        secretKey: user.secretAccessKey,
+        sessionToken: user.sessionToken,
+        region: selectedRobot.iotRegion,
+        callback: (event) => {
+          if (!isMounted) {
+            bridge.disconnectDevice();
+          } else {
+            message.success('IOT Core Connected.');
           /*--------------------------------------------------
           - Perform your subscriptions and
           - information collection from robot here
           ----------------------------------------------------*/
-        }
-      },
-      error: (error) => {
-        if (error) {
-          message.error(error.message);
+          }
+        },
+        error: (error) => {
+          if (error) {
+            message.error(error.message);
+            return null;
+          }
+          message.warn('Unable to connect to Robot');
           return null;
-        }
-        message.warn('Unable to connect to Robot');
-        return null;
-      },
-    });
+        },
+      });
 
-    bridge.initROS({
-      url: selectedRobot.rosbridgeUrl,
-      bridgeConfig: JSON.parse(selectedRobot.rosConfig),
-      callback: () => {
-        message.success('ROSBridge connected.');
-      },
-    });
+      bridge.initROS({
+        url: selectedRobot.rosbridgeUrl,
+        bridgeConfig: selectedRobot.rosConfig,
+        callback: () => {
+          message.success('ROSBridge connected.');
+        },
+      });
+    }
 
     // join chime meeting
     dispatch({
@@ -122,6 +124,9 @@ const RobotFace = ({ user, dispatch, history }) => {
 
       if (chime.meetingSession) {
         chime.endMeeting();
+      }
+
+      if (bridge.ros) {
         bridge.cleanup();
       }
     };

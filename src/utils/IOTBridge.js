@@ -114,7 +114,6 @@ class IOTBridge {
 
   cleanupRos() {
     this.ros.close();
-    console.log('i ran');
     delete this.subscribersROS;
     delete this.publishersROS;
     delete this.servicesROS;

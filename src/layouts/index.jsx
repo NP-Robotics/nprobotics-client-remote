@@ -7,7 +7,7 @@ import HeaderComponent from '../components/header';
 const { Content } = Layout;
 
 const headerless = new Set([
-  '/robotface',
+  '/robotface/',
   '/login',
   '/forgotpassword',
   '/resetpassword',

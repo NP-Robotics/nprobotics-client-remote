@@ -220,13 +220,16 @@ export default {
 
         // because we store topics of robot in DB in JSON format,
         // we got to parse it into JS object
-        if (response[0].topics) {
-          response = response.map((obj) => ({
-            ...obj,
-            topics: JSON.parse(obj.topics),
-          }));
-          console.log('response');
-        }
+        response = response.map((item) => {
+          if (item.rosConfig) {
+            return ({
+              ...item,
+              rosConfig: JSON.parse(item.rosConfig),
+            });
+          }
+
+          return item;
+        });
         if (callback) {
           callback(response);
         }
@@ -253,7 +256,6 @@ export default {
 
       try {
         const response = yield call(joinMeeting, username, meetingName, region, isRobot, jwtToken);
-        console.log(response);
         const { Meeting, Attendee } = response.JoinInfo;
 
         yield put({
