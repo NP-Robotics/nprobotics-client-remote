@@ -70,23 +70,44 @@ const DashboardPage = ({ dispatch, history, user }) => {
       dataIndex: 'robotName',
       key: 'robot',
       render: (text) => (
-        /* <div>
+        <span>
           <Link to={`/robot/?${queryString.stringify({ robotName: text })}`}>
             <Button type="primary" shape="round">
               Connect
             </Button>
           </Link>
-          <Link to={`/robot/?${queryString.stringify({ robotName: text })}`}>
-            <Button type="primary" shape="round" className={style.log}>
-              Log
+          <Link to={`/configuration/?${queryString.stringify({ robotName: text })}`}>
+            <Button
+              type="primary"
+              shape="round"
+              style={
+            {
+              margin: '0px 5px',
+              borderColor: 'MediumSeaGreen',
+              backgroundColor: 'MediumSeaGreen',
+            }
+            }
+            >
+              Configure
             </Button>
           </Link>
-        </div> */
-        <Link to={`/robot/?${queryString.stringify({ robotName: text })}`}>
-          <Button type="primary" shape="round">
-            Connect
-          </Button>
-        </Link>
+          <Link to={`/robotface/?${queryString.stringify({ robotName: text })}`}>
+            <Button
+              type="primary"
+              shape="round"
+              style={
+            {
+              margin: '0px 5px',
+              borderColor: 'DarkOrange',
+              backgroundColor: 'DarkOrange',
+            }
+            }
+            >
+              Start ROS-Cloud Bridge
+            </Button>
+          </Link>
+        </span>
+
       ),
     },
   ];
