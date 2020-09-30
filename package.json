@@ -23,6 +23,7 @@
     "react-dom": "^16.8.6",
     "react-joystick-component": "^1.4.0",
     "react-spring": "^8.0.27",
+    "roslib": "^1.1.0",
     "swup": "^2.0.11",
     "umi": "^2.7.7",
     "umi-plugin-react": "^1.15.8",

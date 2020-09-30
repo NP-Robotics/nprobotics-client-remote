@@ -6,6 +6,7 @@ import { message } from 'antd';
 
 import Face from '../assets/face.jpg';
 import ChimeSession from '../utils/ChimeSession';
+import IOTBridge from '../utils/IOTBridge';
 
 import style from './robotFace.css';
 // use inline styles for Chime-related elements
@@ -22,6 +23,7 @@ const RobotFace = ({ user, dispatch, history }) => {
   });
 
   const [chime, setChime] = useState(new ChimeSession());
+  const [bridge, setBridge] = useState(new IOTBridge());
 
   const audioRef = useRef(null);
   const videoRef = useRef(null);
@@ -35,20 +37,59 @@ const RobotFace = ({ user, dispatch, history }) => {
     */
     let isMounted = true;
 
-    // meeting name
+    // load selected robot into local state
+    let endpoint = null;
     let meetingName = null;
 
     const robotName = 'uDora';
+    let selectedRobot = null;
     if (user.robots.length > 0) {
       // store selected robot information in local state
-      const selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
+      selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
+      endpoint = selectedRobot.endpoint;
       meetingName = selectedRobot.meetingName;
-      console.log(meetingName);
+
       setState({
         ...state,
         ...selectedRobot,
       });
     }
+
+    bridge.initIOT({
+      host: endpoint,
+      clientID: user.username,
+      accessKeyId: user.accessKeyId,
+      secretKey: user.secretAccessKey,
+      sessionToken: user.sessionToken,
+      region: selectedRobot.iotRegion,
+      callback: (event) => {
+        if (!isMounted) {
+          bridge.disconnectDevice();
+        } else {
+          message.success('IOT Core Connected.');
+          /*--------------------------------------------------
+          - Perform your subscriptions and
+          - information collection from robot here
+          ----------------------------------------------------*/
+        }
+      },
+      error: (error) => {
+        if (error) {
+          message.error(error.message);
+          return null;
+        }
+        message.warn('Unable to connect to Robot');
+        return null;
+      },
+    });
+
+    bridge.initROS({
+      url: selectedRobot.rosbridgeUrl,
+      bridgeConfig: JSON.parse(selectedRobot.rosConfig),
+      callback: () => {
+        message.success('ROSBridge connected.');
+      },
+    });
 
     // join chime meeting
     dispatch({
@@ -66,7 +107,7 @@ const RobotFace = ({ user, dispatch, history }) => {
           chime.bindVideoElement(videoRef.current);
           chime.bindAudioElement(audioRef.current);
           await chime.startLocalVideo();
-          message.success('Video Connected.');
+          message.success('Chime Connected.');
         }
       },
       error: () => {
