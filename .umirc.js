@@ -38,6 +38,10 @@ export default {
           path: '/robotface',
           component: '../pages/robotFace.jsx',
         },
+        {
+          path: '/configuration',
+          component: '../pages/configuration.jsx',
+        },
       ]
     },
 
