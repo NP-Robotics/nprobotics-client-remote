@@ -122,6 +122,7 @@ const RobotFace = ({ user, dispatch, history }) => {
 
       if (chime.meetingSession) {
         chime.endMeeting();
+        bridge.cleanup();
       }
     };
   }, []);

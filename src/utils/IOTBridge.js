@@ -102,9 +102,22 @@ class IOTBridge {
     });
   }
 
+  cleanup() {
+    this.disconnectDevice();
+    this.cleanupRos();
+  }
+
   disconnectDevice() {
     console.log('device ended');
     this.device.end();
+  }
+
+  cleanupRos() {
+    this.ros.close();
+    console.log('i ran');
+    delete this.subscribersROS;
+    delete this.publishersROS;
+    delete this.servicesROS;
   }
 
   publishMessage({ topic, payload }) {
