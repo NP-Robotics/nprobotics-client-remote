@@ -54,7 +54,7 @@ export default {
         antd: true,
         dva: true,
         dynamicImport: { webpackChunkName: true },
-        title: 'nprobotics-client-remote',
+        title: 'SGRobotCloud',
         dll: false,
         routes: {
           exclude: [
