@@ -42,81 +42,86 @@ const RobotFace = ({ user, dispatch, history }) => {
     let meetingName = null;
 
     const { robotName } = history.location.query;
-    let selectedRobot = null;
-    if (user.robots.length > 0) {
+
+    if (robotName == null) {
+      history.push('/dashboard');
+    } else {
+      let selectedRobot = null;
+      if (user.robots.length > 0) {
       // store selected robot information in local state
-      selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
-      endpoint = selectedRobot.endpoint;
-      meetingName = selectedRobot.meetingName;
+        selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
+        endpoint = selectedRobot.endpoint;
+        meetingName = selectedRobot.meetingName;
 
-      setState({
-        ...state,
-        ...selectedRobot,
-      });
-    }
+        setState({
+          ...state,
+          ...selectedRobot,
+        });
+      }
 
-    if (selectedRobot.rosConfig != null) {
-      bridge.initIOT({
-        host: endpoint,
-        clientID: user.username,
-        accessKeyId: user.accessKeyId,
-        secretKey: user.secretAccessKey,
-        sessionToken: user.sessionToken,
-        region: selectedRobot.iotRegion,
-        callback: (event) => {
-          if (!isMounted) {
-            bridge.disconnectDevice();
-          } else {
-            message.success('IOT Core Connected.');
-          /*--------------------------------------------------
+      if (selectedRobot.rosConfig != null) {
+        bridge.initIOT({
+          host: endpoint,
+          clientID: user.username,
+          accessKeyId: user.accessKeyId,
+          secretKey: user.secretAccessKey,
+          sessionToken: user.sessionToken,
+          region: selectedRobot.iotRegion,
+          callback: (event) => {
+            if (!isMounted) {
+              bridge.disconnectDevice();
+            } else {
+              message.success('IOT Core Connected.');
+              /*--------------------------------------------------
           - Perform your subscriptions and
           - information collection from robot here
           ----------------------------------------------------*/
-          }
-        },
-        error: (error) => {
-          if (error) {
-            message.error(error.message);
+            }
+          },
+          error: (error) => {
+            if (error) {
+              message.error(error.message);
+              return null;
+            }
+            message.warn('Unable to connect to Robot');
             return null;
-          }
-          message.warn('Unable to connect to Robot');
-          return null;
-        },
-      });
+          },
+        });
 
-      bridge.initROS({
-        url: selectedRobot.rosbridgeUrl,
-        bridgeConfig: selectedRobot.rosConfig,
-        callback: () => {
-          message.success('ROSBridge connected.');
+        bridge.initROS({
+          url: selectedRobot.rosbridgeUrl,
+          bridgeConfig: selectedRobot.rosConfig,
+          callback: () => {
+            message.success('ROSBridge connected.');
+          },
+        });
+      }
+
+      // join chime meeting
+      dispatch({
+        type: 'user/joinMeeting',
+        payload: {
+          username: `${user.username}`,
+          meetingName: `${meetingName}`,
+          region: 'ap-southeast-1',
+          isRobot: true,
+          jwtToken: user.jwtToken,
+        },
+        callback: async ({ Meeting, Attendee }) => {
+          if (isMounted) {
+            await chime.init({ Meeting, Attendee });
+            chime.bindVideoElement(videoRef.current);
+            chime.bindAudioElement(audioRef.current);
+            await chime.startLocalVideo();
+            message.success('Chime Connected.');
+          }
+        },
+        error: () => {
+          message.error('This should never happen');
+          history.push('/dashboard');
         },
       });
     }
-
-    // join chime meeting
-    dispatch({
-      type: 'user/joinMeeting',
-      payload: {
-        username: `${user.username}`,
-        meetingName: `${meetingName}`,
-        region: 'ap-southeast-1',
-        isRobot: true,
-        jwtToken: user.jwtToken,
-      },
-      callback: async ({ Meeting, Attendee }) => {
-        if (isMounted) {
-          await chime.init({ Meeting, Attendee });
-          chime.bindVideoElement(videoRef.current);
-          chime.bindAudioElement(audioRef.current);
-          await chime.startLocalVideo();
-          message.success('Chime Connected.');
-        }
-      },
-      error: () => {
-        message.error('This should never happen');
-        history.push('/dashboard');
-      },
-    });
 
     // cleanup when unmount
     return () => {

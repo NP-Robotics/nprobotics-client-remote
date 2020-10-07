@@ -167,7 +167,7 @@ const RobotPage = ({ user, dispatch, history }) => {
         },
         error: () => {
           message.error('Robot is offline.');
-          // history.push('/dashboard');
+          history.push('/dashboard');
         },
       });
     }

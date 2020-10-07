@@ -15,9 +15,9 @@ class ChimeSession {
     this.videoOutput = null;
     this.started = false;
     this.localTileId = null;
-    this.chosenAudioInput = 'default';
-    this.chosenVideoInput = 'default';
-    this.chosenAudioOutput = 'default';
+    this.chosenAudioInput = null;
+    this.chosenVideoInput = null;
+    this.chosenAudioOutput = null;
   }
 
   async init({ Meeting, Attendee }) {
@@ -37,14 +37,17 @@ class ChimeSession {
     // selecting devices from list of devices
     if (this.audioInput[0]) {
       const audioInputDeviceInfo = this.audioInput[0];
+      this.chosenAudioInput = audioInputDeviceInfo.deviceId;
       await this.meetingSession.audioVideo.chooseAudioInputDevice(audioInputDeviceInfo.deviceId);
     }
     if (this.audioOutput[0]) {
       const audioOutputDeviceInfo = this.audioOutput[0];
+      this.chosenAudioOutput = audioOutputDeviceInfo.deviceId;
       await this.meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDeviceInfo.deviceId);
     }
     if (this.videoInput[0]) {
       const videoInputDeviceInfo = this.videoInput[0];
+      this.chosenVideoInput = videoInputDeviceInfo.deviceId;
       await this.meetingSession.audioVideo.chooseVideoInputDevice(videoInputDeviceInfo.deviceId);
     }
     const deviceChangeObserver = {
@@ -150,7 +153,7 @@ class ChimeSession {
   }
 
   async startLocalVideo() {
-    if (this.started) {
+    if (this.meetingSession.audioVideo != null) {
       await this.meetingSession.audioVideo.chooseVideoInputDevice(this.chosenVideoInput);
       this.meetingSession.audioVideo.startLocalVideoTile();
     }
