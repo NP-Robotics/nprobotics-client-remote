@@ -422,6 +422,67 @@ const RobotPage = ({ user, dispatch, history }) => {
         }}
         ref={videoRef}
       />
+      <Row
+        style={{
+          width: '30%',
+          height: '30%',
+          float: 'right',
+          margin: '10px',
+        }}
+        gutter={[16, 16]}
+      >
+        <Col span={8}>
+          <Select style={{ width: '100%' }} placeholder="Webcam" onChange={async (e) => { await chime.changeVideoInput(e); }}>
+            {
+            (() => {
+              if (Array.isArray(chime.videoInput)) {
+                return (
+                  chime.videoInput.map((item) => (
+                    <Option key={item.deviceId}>{item.label}</Option>
+                  ))
+                );
+              }
+
+              return null;
+            })()
+          }
+          </Select>
+        </Col>
+        <Col span={8}>
+          <Select style={{ width: '100%' }} placeholder="Speaker" onChange={async (e) => { await chime.changeAudioOutput(e); }}>
+            {
+            (() => {
+              if (Array.isArray(chime.audioOutput)) {
+                return (
+                  chime.audioOutput.map((item) => (
+                    <Option key={item.deviceId}>{item.label}</Option>
+                  ))
+                );
+              }
+
+              return null;
+            })()
+          }
+          </Select>
+        </Col>
+        <Col span={8}>
+          <Select style={{ width: '100%' }} placeholder="Microphone" onChange={async (e) => { await chime.changeAudioInput(e); }}>
+            {
+            (() => {
+              if (Array.isArray(chime.audioInput)) {
+                return (
+                  chime.audioInput.map((item) => (
+                    <Option key={item.deviceId}>{item.label}</Option>
+                  ))
+                );
+              }
+
+              return null;
+            })()
+          }
+          </Select>
+        </Col>
+      </Row>
       <div>
         <div>
           <Button onClick={leaveRoom} type="primary" className={style.leaveBtn} size="large">
@@ -442,6 +503,7 @@ const RobotPage = ({ user, dispatch, history }) => {
             </Button>
           </div>
         </div>
+
         <div>
           <div style={{
             position: 'fixed',

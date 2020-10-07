@@ -15,6 +15,9 @@ class ChimeSession {
     this.videoOutput = null;
     this.started = false;
     this.localTileId = null;
+    this.chosenAudioInput = null;
+    this.chosenVideoInput = null;
+    this.chosenAudioOutput = null;
   }
 
   async init({ Meeting, Attendee }) {
@@ -34,28 +37,28 @@ class ChimeSession {
     // selecting devices from list of devices
     if (this.audioInput[0]) {
       const audioInputDeviceInfo = this.audioInput[0];
+      this.chosenAudioInput = audioInputDeviceInfo.deviceId;
       await this.meetingSession.audioVideo.chooseAudioInputDevice(audioInputDeviceInfo.deviceId);
     }
     if (this.audioOutput[0]) {
       const audioOutputDeviceInfo = this.audioOutput[0];
+      this.chosenAudioOutput = audioOutputDeviceInfo.deviceId;
       await this.meetingSession.audioVideo.chooseAudioOutputDevice(audioOutputDeviceInfo.deviceId);
     }
     if (this.videoInput[0]) {
       const videoInputDeviceInfo = this.videoInput[0];
+      this.chosenVideoInput = videoInputDeviceInfo.deviceId;
       await this.meetingSession.audioVideo.chooseVideoInputDevice(videoInputDeviceInfo.deviceId);
     }
     const deviceChangeObserver = {
       audioInputsChanged: (freshAudioInputDeviceList) => {
-        // An array of MediaDeviceInfo objects
-        freshAudioInputDeviceList.forEach((mediaDeviceInfo) => {
-          console.log(`Device ID: ${mediaDeviceInfo.deviceId} Microphone: ${mediaDeviceInfo.label}`);
-        });
+        this.audioInput = freshAudioInputDeviceList;
       },
       audioOutputsChanged: (freshAudioOutputDeviceList) => {
-        console.log('Audio outputs updated: ', freshAudioOutputDeviceList);
+        this.audioOutput = freshAudioOutputDeviceList;
       },
       videoInputsChanged: (freshVideoInputDeviceList) => {
-        console.log('Video inputs updated: ', freshVideoInputDeviceList);
+        this.videoInput = freshVideoInputDeviceList;
       },
     };
     this.meetingSession.audioVideo.addDeviceChangeObserver(deviceChangeObserver);
@@ -129,13 +132,31 @@ class ChimeSession {
   }
 
   stopLocalVideo() {
-    this.meetingSession.audioVideo.stopLocalVideoTile();
+    if (this.started) {
+      this.meetingSession.audioVideo.stopLocalVideoTile();
+    }
+  }
+
+  async changeAudioOutput(id) {
+    this.chosenAudioOutput = id;
+    await this.meetingSession.audioVideo.chooseAudioOutputDevice(id);
+  }
+
+  async changeAudioInput(id) {
+    this.chosenAudioInput = id;
+    await this.meetingSession.audioVideo.chooseAudioInputDevice(id);
+  }
+
+  async changeVideoInput(id) {
+    this.chosenVideoInput = id;
+    await this.meetingSession.audioVideo.chooseVideoInputDevice(id);
   }
 
   async startLocalVideo() {
-    const videoInputDeviceInfo = this.videoInput[0];
-    await this.meetingSession.audioVideo.chooseVideoInputDevice(videoInputDeviceInfo.deviceId);
-    this.meetingSession.audioVideo.startLocalVideoTile();
+    if (this.meetingSession.audioVideo != null) {
+      await this.meetingSession.audioVideo.chooseVideoInputDevice(this.chosenVideoInput);
+      this.meetingSession.audioVideo.startLocalVideoTile();
+    }
   }
 
   endMeeting() {
