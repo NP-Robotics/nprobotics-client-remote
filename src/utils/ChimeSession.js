@@ -15,6 +15,9 @@ class ChimeSession {
     this.videoOutput = null;
     this.started = false;
     this.localTileId = null;
+    this.chosenAudioInput = 'default';
+    this.chosenVideoInput = 'default';
+    this.chosenAudioOutput = 'default';
   }
 
   async init({ Meeting, Attendee }) {
@@ -46,16 +49,13 @@ class ChimeSession {
     }
     const deviceChangeObserver = {
       audioInputsChanged: (freshAudioInputDeviceList) => {
-        // An array of MediaDeviceInfo objects
-        freshAudioInputDeviceList.forEach((mediaDeviceInfo) => {
-          console.log(`Device ID: ${mediaDeviceInfo.deviceId} Microphone: ${mediaDeviceInfo.label}`);
-        });
+        this.audioInput = freshAudioInputDeviceList;
       },
       audioOutputsChanged: (freshAudioOutputDeviceList) => {
-        console.log('Audio outputs updated: ', freshAudioOutputDeviceList);
+        this.audioOutput = freshAudioOutputDeviceList;
       },
       videoInputsChanged: (freshVideoInputDeviceList) => {
-        console.log('Video inputs updated: ', freshVideoInputDeviceList);
+        this.videoInput = freshVideoInputDeviceList;
       },
     };
     this.meetingSession.audioVideo.addDeviceChangeObserver(deviceChangeObserver);
@@ -129,13 +129,31 @@ class ChimeSession {
   }
 
   stopLocalVideo() {
-    this.meetingSession.audioVideo.stopLocalVideoTile();
+    if (this.started) {
+      this.meetingSession.audioVideo.stopLocalVideoTile();
+    }
+  }
+
+  async changeAudioOutput(id) {
+    this.chosenAudioOutput = id;
+    await this.meetingSession.audioVideo.chooseAudioOutputDevice(id);
+  }
+
+  async changeAudioInput(id) {
+    this.chosenAudioInput = id;
+    await this.meetingSession.audioVideo.chooseAudioInputDevice(id);
+  }
+
+  async changeVideoInput(id) {
+    this.chosenVideoInput = id;
+    await this.meetingSession.audioVideo.chooseVideoInputDevice(id);
   }
 
   async startLocalVideo() {
-    const videoInputDeviceInfo = this.videoInput[0];
-    await this.meetingSession.audioVideo.chooseVideoInputDevice(videoInputDeviceInfo.deviceId);
-    this.meetingSession.audioVideo.startLocalVideoTile();
+    if (this.started) {
+      await this.meetingSession.audioVideo.chooseVideoInputDevice(this.chosenVideoInput);
+      this.meetingSession.audioVideo.startLocalVideoTile();
+    }
   }
 
   endMeeting() {
