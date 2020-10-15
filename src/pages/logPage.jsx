@@ -29,23 +29,55 @@ const LogPage = ({ dispatch, history, user }) => {
     history.push('/dashboard');
   };
 
+  // component onMount
   useEffect(() => {
-    if (state.robotName === null) {
+    /*
+    - variable to check if page is mounted. If page is unmounted variable
+    - is set to false.
+    -
+    - This is to prevent memory leaks
+    */
+    let isMounted = true;
+
+    // console.log(window);
+
+    // prevent access if query string is missing
+    if (!history.location.query.robotName) {
+      history.push('/dashboard');
+    } else {
       const { robotName } = history.location.query;
+      let selectedImage = null;
       if (user.robots.length > 0) {
-        const selectedRobot = user.robots.find((robot) => robot.robotName === robotName);
-        console.log(selectedRobot);
+        // store selected robot information in local state
+        selectedImage = user.images.find((image) => image.robotName === robotName);
+
         setState({
           ...state,
-          ...selectedRobot,
+          ...selectedImage,
         });
       }
+      // list images
+      dispatch({
+        type: 'user/listImages',
+        payload: {
+          variable: 'robotName',
+          data: `'${robotName}'`,
+        },
+        error: (err) => {
+          console.log(err);
+        },
+      });
     }
-  }, [state, user.robots, history.location.query]);
+    // cleanup when unmount
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleChange = (pagination, filters, sorter) => {
     console.log('Various parameters', pagination, filters, sorter);
     setState({
+      ...state,
       filteredInfo: filters,
       sortedInfo: sorter,
     });
@@ -56,6 +88,7 @@ const LogPage = ({ dispatch, history, user }) => {
     onChange: (selectedRowKeys, selectedRows) => {
       console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
       setState({
+        ...state,
         selectedRowsDlt: selectedRows,
       });
     },
@@ -73,105 +106,41 @@ const LogPage = ({ dispatch, history, user }) => {
   const columns = [
     {
       title: 'Date',
-      dataIndex: 'Date',
-      key: 'Date',
-      sorter: (a, b) => {
-        const aDate = JSON.stringify(a.Date);
-        let ayear = aDate.slice(6, 10);
-        let amonth = aDate.slice(4, 5);
-        let aday = aDate.slice(1, 3);
-        ayear = parseInt(ayear, 10);
-        amonth = parseInt(amonth, 10);
-        aday = parseInt(aday, 10);
-
-        const bDate = JSON.stringify(b.Date);
-        let byear = bDate.slice(6, 10);
-        let bmonth = bDate.slice(4, 5);
-        let bday = bDate.slice(1, 3);
-        byear = parseInt(byear, 10);
-        bmonth = parseInt(bmonth, 10);
-        bday = parseInt(bday, 10);
-
-        if ((ayear - byear) === 0) {
-          if ((amonth - bmonth === 0)) {
-            return aday - bday;
-          }
-
-          return amonth - bmonth;
-        }
-
-        return ayear - byear;
-      },
-      sortOrder: sortedInfo.columnKey === 'Date' && sortedInfo.order,
+      dataIndex: 'date',
+      key: 'date',
+      sorter: (a, b) => a - b,
+      sortOrder: sortedInfo.columnKey === 'date' && sortedInfo.order,
       ellipsis: true,
     },
     {
       title: 'Time',
-      dataIndex: 'LastModified',
-      key: 'LastModified',
-      sorter: (a, b) => {
-        const aLM = JSON.stringify(a.LastModified);
-        console.log(a);
-        let ahr = aLM.slice(1, 3);
-        let amin = aLM.slice(3, 5);
-        const aday = aLM.slice(6, 8);
-        if (ahr.includes(':')) {
-          ahr = aLM.slice(1, 2);
-        }
-        ahr = parseInt(ahr, 10);
-        amin = parseInt(amin, 10);
-
-        const bLM = JSON.stringify(b.LastModified);
-        console.log(b);
-        let bhr = bLM.slice(1, 3);
-        let bmin = bLM.slice(3, 5);
-        const bday = bLM.slice(6, 8);
-        if (bhr.includes(':')) {
-          bhr = bLM.slice(1, 2);
-        }
-        bhr = parseInt(bhr, 10);
-        bmin = parseInt(bmin, 10);
-
-        if (aday.includes('pm')) {
-          if (bday.includes('pm')) {
-            if ((ahr - bhr) === 0) {
-              return amin - bmin;
-            }
-
-            return ahr - bhr;
-          }
-
-          return aday > bday;
-        }
-
-        return aday < bday;
-      },
-      sortOrder: sortedInfo.columnKey === 'LastModified' && sortedInfo.order,
+      dataIndex: 'time',
+      key: 'time',
+      sorter: (a, b) => a - b,
+      sortOrder: sortedInfo.columnKey === 'time' && sortedInfo.order,
       ellipsis: true,
-      filteredValue: filteredInfo.desc || null,
-      onFilter: (record) => record.desc.includes(state.search),
     },
     {
       title: 'Description',
-      dataIndex: 'desc',
-      key: 'desc',
+      dataIndex: 'caseDescription',
+      key: 'caseDescription',
       filters: [
         { text: 'Safe Distance Violation', value: 'Safe Distance Violation' },
         { text: 'Face Mask Violation', value: 'Face Mask Violation' },
       ],
-      filteredValue: filteredInfo.desc || null,
-      onFilter: (value, record) => record.desc.includes(value),
+      filteredValue: filteredInfo.caseDescription || null,
+      onFilter: (value, record) => record.caseDescription.includes(value),
     },
     {
       title: 'Action',
-      dataIndex: 'Key',
-      key: 'Key',
-      render: (text) => (
+      dataIndex: 'imageLink',
+      key: 'imageLink',
+      render: (text, index) => (
         <div>
-          <Button type="primary" shape="round" onClick={() => showDetailsModal(text)}>
+          <Button type="primary" shape="round" onClick={() => showDetailsModal(text, index)}>
             Details
           </Button>
-          <Button type="primary" shape="round" className={style.delete} onClick={() => showDeleteModal(text)}>
+          <Button type="primary" shape="round" className={style.delete} onClick={() => showDeleteModal(text, index)}>
             Delete
           </Button>
         </div>
@@ -181,15 +150,20 @@ const LogPage = ({ dispatch, history, user }) => {
 
   const data = user.images.map((obj, index) => ({ key: index, ...obj }));
 
-  const showDetailsModal = (text) => {
+  const showDetailsModal = (text, index) => {
+    console.log(index);
     setState({
+      ...state,
+      messagebox: `${index.addDescription}`,
       visibleDetails: true,
       s3url: text,
     });
   };
 
-  const showDeleteModal = (text) => {
+  const showDeleteModal = (text, index) => {
     setState({
+      ...state,
+      messagebox: `${index.addDescription}`,
       visibleDelete: true,
       s3url: text,
     });
@@ -198,28 +172,14 @@ const LogPage = ({ dispatch, history, user }) => {
   const handleSave = (e) => {
     console.log(e);
     setState({
+      ...state,
       visibleDetails: false,
     });
-    const text = state.messagebox;
-    let fileName = state.s3url;
-    if (fileName.includes('.jpg')) {
-      fileName = fileName.replace('.jpg', 'desc.txt');
-    } else if (fileName.includes('.jpeg')) {
-      fileName = fileName.replace('.jpeg', 'desc.txt');
-    } else if (fileName.includes('.png')) {
-      fileName = fileName.replace('.png', 'desc.txt');
-    }
-    // const fileelement = document.createElement('a');
-    // const file = new Blob([text], { type: 'text/plain' });
-    // fileelement.href = URL.createObjectURL(file);
-    // fileelement.download();
-    // document.body.appendChild(fileelement); // Required for this to work in FireFox
-    // fileelement.click();
     dispatch({
       type: 'user/writeImgDesc',
       payload: {
-        fileName,
-        // file,
+        imageLink: `'${state.s3url}'`,
+        addDescription: `'${state.messagebox}'`,
       },
       error: (err) => {
         message.info(err.message);
@@ -231,6 +191,7 @@ const LogPage = ({ dispatch, history, user }) => {
   const handleCancelDetails = (e) => {
     console.log(e);
     setState({
+      ...state,
       visibleDetails: false,
     });
   };
@@ -238,12 +199,13 @@ const LogPage = ({ dispatch, history, user }) => {
   const handleDelete = (e) => {
     console.log(e);
     setState({
+      ...state,
       visibleDelete: false,
     });
     dispatch({
-      type: 'user/deleteImage',
+      type: 'user/deleteImageByLink',
       payload: {
-        key: state.s3url,
+        imageLink: `'${state.s3url}'`,
       },
       error: (err) => {
         message.info(err.message);
@@ -255,12 +217,14 @@ const LogPage = ({ dispatch, history, user }) => {
   const handleCancelDelete = (e) => {
     console.log(e);
     setState({
+      ...state,
       visibleDelete: false,
     });
   };
 
   const handleDescChange = (event) => {
     setState({
+      ...state,
       messagebox: event.target.value,
       visibleDetails: true,
       s3url: state.s3url,
@@ -272,10 +236,11 @@ const LogPage = ({ dispatch, history, user }) => {
     console.log(e);
     console.log('Log', state.selectedRowsDlt);
     for (i = 0; i < state.selectedRowsDlt.length; i += 1) {
+      console.log('Log', state.selectedRowsDlt[i].imageID);
       dispatch({
-        type: 'user/deleteImage',
+        type: 'user/deleteDBData',
         payload: {
-          key: state.selectedRowsDlt[i].Key,
+          imageID: state.selectedRowsDlt[i].imageID,
         },
         error: (err) => {
           message.info(err.message);
@@ -287,10 +252,21 @@ const LogPage = ({ dispatch, history, user }) => {
 
   const handleSearch = () => {
     console.log(state.search);
+    dispatch({
+      type: 'user/searchBar',
+      payload: {
+        searchData: state.search,
+      },
+      error: (err) => {
+        message.info(err.message);
+        console.log(err);
+      },
+    });
   };
 
   const searchChange = (event) => {
     setState({
+      ...state,
       search: event.target.value,
     });
   };
@@ -313,7 +289,7 @@ const LogPage = ({ dispatch, history, user }) => {
         ]}
       >
         <div>
-          <img src={`https://nprobotics-images.s3.amazonaws.com/${state.s3url}`} alt="Case" className={style.caseImg} />
+          <img src={`${state.s3url}`} alt="Case" className={style.caseImg} />
           <div className={style.caseInfo}>
             <div className={style.caseDesc}>
               <h3>Add Description To Case:</h3>
@@ -328,7 +304,7 @@ const LogPage = ({ dispatch, history, user }) => {
         </div>
       </Modal>
       <Modal
-        title="Case Details"
+        title="Confirm Delete Case"
         visible={state.visibleDelete}
         onOk={handleDelete}
         onCancel={handleCancelDelete}
@@ -343,7 +319,7 @@ const LogPage = ({ dispatch, history, user }) => {
         ]}
       >
         <div>
-          <img src={`https://nprobotics-images.s3.amazonaws.com/${state.s3url}`} alt="Case" className={style.caseImg} />
+          <img src={`${state.s3url}`} alt="Case" className={style.caseImg} />
           <div className={style.caseInfo}>
             <div className={style.caseDesc}>
               <h3>Case Description:</h3>

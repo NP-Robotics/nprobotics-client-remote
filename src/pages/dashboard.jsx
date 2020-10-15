@@ -26,10 +26,13 @@ const DashboardPage = ({ dispatch, history, user }) => {
   };
 
   const onOpenLog = (text) => {
+    let data = text;
+    data = `'${data}'`;
     dispatch({
       type: 'user/listImages',
       payload: {
-        robotName: text,
+        variable: 'robotName',
+        data,
       },
       error: (err) => {
         console.log(err);

@@ -1,3 +1,4 @@
+import Search from 'antd/lib/input/Search';
 import { joinMeeting, endMeeting } from '../services/chimeAPI';
 import {
   ampSignIn,
@@ -11,7 +12,10 @@ import {
 } from '../services/amplify';
 
 import { queryData } from '../services/dynamo';
-import { getImage, writeDesc, deleteImage } from '../services/S3';
+import {
+  getImage, writeDesc, deleteImage, deleteImageByLink,
+  getAddDesc, queryDBData, searchBar, deleteDBData,
+} from '../services/RDS';
 
 const unauthenticatedRoutes = new Set(['/', '/login', '/signup', '/resetpassword', '/forgotpassword']);
 
@@ -31,7 +35,11 @@ export default {
     robotsLoaded: false,
     images: [],
     imagesLoaded: false,
+    imagesID: [],
+    imagesIDLoaded: false,
     identityLoaded: false,
+    addDesc: [],
+    addDescLoaded: false,
   },
 
   subscriptions: {
@@ -257,14 +265,15 @@ export default {
     },
 
     * listImages({ payload, callback, error }, { call, put }) {
-      const data = yield ampGetSession();
-      const { robotName } = payload;
+      const sess = yield ampGetSession();
+      const { variable, data } = payload;
       try {
         yield put({
           type: 'getImages',
           payload: {
-            jwtToken: data.accessToken.jwtToken,
-            robotName: `${robotName}`, // case sensitive
+            jwtToken: sess.accessToken.jwtToken,
+            variable: `${variable}`,
+            data: `${data}`,
           },
         });
       } catch (err) {
@@ -273,16 +282,15 @@ export default {
     },
 
     * getImages({ payload, callback, error }, { call, put }) {
-      const { robotName, jwtToken } = payload;
+      const { variable, data, jwtToken } = payload;
       let i = 0;
       let h;
       let ms;
       let day;
       let month;
       let year;
-
       try {
-        let response = yield call(getImage, robotName, jwtToken);
+        let response = yield call(getImage, variable, data, jwtToken);
 
         if (response) {
           response = response.map((obj) => ({
@@ -290,28 +298,23 @@ export default {
           }));
           console.log(response);
           for (i = 0; i < response.length; i += 1) {
-            ms = response[i].LastModified.slice(14, 16);
-            h = response[i].LastModified.slice(11, 13);
-            h = parseInt(h, 10) + 8;
+            ms = response[i].time.slice(3, 5);
+            h = response[i].time.slice(0, 2);
 
-            day = response[i].LastModified.slice(8, 10);
-            month = response[i].LastModified.slice(6, 7);
-            year = response[i].LastModified.slice(0, 4);
+            day = response[i].date.slice(8, 10);
+            month = response[i].date.slice(5, 7);
+            year = response[i].date.slice(0, 4);
 
             if (h > 12) {
               h -= 12;
-              response[i].LastModified = `${h}:${ms} pm`;
+              response[i].time = `${h}:${ms} pm`;
+            } else if (h === 12) {
+              response[i].time = `${h}:${ms} pm`;
             } else {
-              response[i].LastModified = `${h}:${ms}am`;
+              response[i].time = `${h}:${ms} am`;
             }
 
-            response[i].Date = `${day}/${month}/${year}`;
-
-            if (response[i].Key.includes('facemaskviolation')) {
-              response[i].desc = 'Face Mask Violation';
-            } else if (response[i].Key.includes('safedistancingviolation')) {
-              response[i].desc = 'Safe Distancing Violation';
-            }
+            response[i].date = `${day}/${month}/${year}`;
           }
         }
         if (callback) {
@@ -333,25 +336,142 @@ export default {
       }
     },
 
-    * writeImgDesc({ payload, callback, error }, { call, put }) {
-      const {
-        fileName,
-        file,
-        jwtToken,
-      } = payload;
-
+    * getAddDesc({ payload, callback, error }, { call, put }) {
+      const { imageLink, jwtToken } = payload;
       try {
-        yield call(writeDesc, fileName, file, jwtToken);
+        let response = yield call(getAddDesc, imageLink, jwtToken);
+
+        if (response) {
+          response = response.map((obj) => ({
+            ...obj,
+          }));
+          console.log(response);
+        }
+        if (callback) {
+          callback(response);
+        }
+
+        yield put({
+          type: 'setState',
+          payload: {
+            addDesc: response,
+            addDescLoaded: true,
+          },
+        });
       } catch (err) {
         error(err);
       }
     },
 
-    * deleteImage({ payload, callback, error }, { call, put }) {
-      const { key, jwtToken } = payload;
-
+    * searchBar({ payload, callback, error }, { call, put }) {
+      const { searchData, jwtToken } = payload;
+      let x = 0;
+      let i = 0;
+      let h;
+      let ms;
+      let day;
+      let month;
+      let year;
+      let violationArray = [];
+      let search = searchData;
       try {
-        yield call(deleteImage, key, jwtToken);
+        if (searchData.includes('pm')) {
+          h = searchData.slice(0, 2);
+          if (h !== 12) {
+            h = parseInt(h, 10) + 12;
+          }
+          ms = searchData.slice(3, 5);
+          search = `${h}:${ms}:00`;
+        } else if (searchData.includes('am')) {
+          h = searchData.slice(0, 2);
+          ms = searchData.slice(3, 5);
+          search = `${h}:${ms}:00`;
+        } else if (/\d/.test(searchData)) {
+          day = searchData.slice(0, 2);
+          month = searchData.slice(3, 5);
+          year = searchData.slice(6, 10);
+          search = `${year}-${month}-${day}`;
+        } else if (searchData.toLowerCase().includes('violation')) {
+          violationArray = searchData.toLowerCase().split(' ');
+          console.log(violationArray);
+          for (x = 0; x <= searchData.split.length; x += 1) {
+            violationArray[x] = violationArray[x].charAt(0).toUpperCase()
+            + violationArray[x].substring(1);
+          }
+          search = violationArray.join(' ');
+        }
+        let response = yield call(searchBar, search, jwtToken);
+
+        if (response) {
+          response = response.map((obj) => ({
+            ...obj,
+          }));
+          console.log(response);
+          for (i = 0; i < response.length; i += 1) {
+            ms = response[i].time.slice(3, 5);
+            h = response[i].time.slice(0, 2);
+
+            day = response[i].date.slice(8, 10);
+            month = response[i].date.slice(5, 7);
+            year = response[i].date.slice(0, 4);
+
+            if (h > 12) {
+              h -= 12;
+              response[i].time = `${h}:${ms} pm`;
+            } else if (h === 12) {
+              response[i].time = `${h}:${ms} pm`;
+            } else {
+              response[i].time = `${h}:${ms} am`;
+            }
+
+            response[i].date = `${day}/${month}/${year}`;
+          }
+        }
+        if (callback) {
+          callback(response);
+        }
+
+        yield put({
+          type: 'setState',
+          payload: {
+            images: response,
+            imagesLoaded: true,
+          },
+        });
+      } catch (err) {
+        error(err);
+      }
+    },
+
+    * writeImgDesc({ payload, callback, error }, { call, put }) {
+      const {
+        imageLink,
+        addDescription,
+        jwtToken,
+      } = payload;
+      try {
+        yield call(writeDesc, imageLink, addDescription, jwtToken);
+        window.location.reload();
+      } catch (err) {
+        error(err);
+      }
+    },
+
+    * deleteImageByLink({ payload, callback, error }, { call, put }) {
+      const { imageLink, jwtToken } = payload;
+      try {
+        yield call(deleteImageByLink, imageLink, jwtToken);
+        window.location.reload();
+      } catch (err) {
+        error(err);
+      }
+    },
+
+    * deleteDBData({ payload, callback, error }, { call, put }) {
+      const { imageID, jwtToken } = payload;
+      try {
+        yield call(deleteDBData, imageID, jwtToken);
+        window.location.reload();
       } catch (err) {
         error(err);
       }
