@@ -76,7 +76,7 @@ const DashboardPage = ({ dispatch, history, user }) => {
               Connect
             </Button>
           </Link>
-          <Link to={`/configuration/?${queryString.stringify({ robotName: text })}`}>
+          <Link to={`/configuration/?${queryString.stringify({ robotName: text, configPos: 'ros' })}`}>
             <Button
               type="primary"
               shape="round"
