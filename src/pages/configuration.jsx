@@ -27,8 +27,9 @@ const RosTopicForm = ({ name }) => (
         <div>
           {fields.map((field) => {
             const {
-              fieldName, key, isListField, fieldKey,
+              key, isListField, fieldKey,
             } = field;
+            const fieldName = field.name;
             return (
               <Row gutter={16} key={key}>
                 <Col span={11}>
