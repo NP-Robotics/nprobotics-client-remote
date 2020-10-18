@@ -25,7 +25,6 @@ const LoginPage = ({ dispatch, history }) => {
       },
       callback: (user) => {
         console.log('Login Success');
-        console.log(user);
         history.push('/dashboard');
       },
       error: (err) => {

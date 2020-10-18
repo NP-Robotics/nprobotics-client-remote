@@ -31,7 +31,6 @@ export const ampSignOut = async () => {
 };
 
 export const ampSignUp = async (username, password, email, name, organisation) => {
-  console.log(organisation);
   try {
     const user = await Auth.signUp({
       username,

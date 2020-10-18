@@ -25,7 +25,7 @@ export default {
     secretAccessKey: null,
     identityId: null,
     username: null,
-    organization: null,
+    organisation: null,
     robots: [],
     robotsLoaded: false,
     identityLoaded: false,
@@ -168,12 +168,18 @@ export default {
     * getAuthenticated({ callback, error }, { call, put }) {
       try {
         const user = yield ampGetAuthenticated();
-        console.log(user);
 
         yield put({
           type: 'getRobots',
           payload: {
             jwtToken: user.signInUserSession.accessToken.jwtToken,
+            organisation: user.attributes['custom:organisation'],
+          },
+        });
+
+        yield put({
+          type: 'setState',
+          payload: {
             organisation: user.attributes['custom:organisation'],
           },
         });
@@ -206,7 +212,6 @@ export default {
       const { username } = payload;
       const { code } = payload;
       const { newPassword } = payload;
-      console.log('success', payload);
       try {
         const usr = yield apmForgotPasswordSubmit(username, code, newPassword);
         callback(usr);

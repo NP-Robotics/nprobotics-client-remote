@@ -5,6 +5,7 @@ class IOTBridge {
   constructor() {
     this.device = null;
     this.clientId = null;
+    this.organisation = null;
     this.ros = null;
     this.subscriptionCallbacks = {};
     this.subscribersROS = {};
@@ -65,6 +66,7 @@ class IOTBridge {
   initIOT({
     host,
     clientId,
+    organisation,
     accessKeyId,
     secretKey,
     sessionToken,
@@ -83,6 +85,7 @@ class IOTBridge {
     });
 
     this.clientId = clientId;
+    this.organisation = organisation;
 
     this.device.on('connect', () => {
       console.log('connected!');
@@ -123,7 +126,7 @@ class IOTBridge {
   }
 
   topicWithClientId(topic) {
-    return `${this.clientId}${topic}`;
+    return `${this.organisation}/${this.clientId}${topic}`;
   }
 
   publishMessage({ topic, payload }) {
@@ -141,21 +144,6 @@ class IOTBridge {
     topic = this.topicWithClientId(topic);
     this.device.unsubscribe(topic);
     delete this.subscriptionCallbacks[topic];
-  }
-
-  callService({ topic, callback, payload }) {
-    topic = this.topicWithClientId(topic);
-    const responseTopic = `${topic}/result`;
-    this.subscribeTopic({
-      topic: responseTopic,
-      callback: (response) => {
-        if (callback) {
-          callback(response);
-        }
-        this.unsubscribeTopic(responseTopic);
-      },
-    });
-    this.publishMessage({ topic, payload });
   }
 
   // util function to subscibe to messages on ROS with callback

@@ -4,6 +4,7 @@ class IOTDevice {
   constructor() {
     this.device = null;
     this.clientId = null;
+    this.organisation = null;
     this.subscriptionCallbacks = {};
   }
 
@@ -11,6 +12,7 @@ class IOTDevice {
     host,
     clientId,
     thingId,
+    organisation,
     accessKeyId,
     secretKey,
     sessionToken,
@@ -29,6 +31,7 @@ class IOTDevice {
     });
 
     this.clientId = thingId;
+    this.organisation = organisation;
 
     this.device.on('connect', () => {
       console.log('connected!');
@@ -57,12 +60,11 @@ class IOTDevice {
   }
 
   topicWithClientId(topic) {
-    return `${this.clientId}${topic}`;
+    return `${this.organisation}/${this.clientId}${topic}`;
   }
 
   publishMessage({ topic, payload }) {
     topic = this.topicWithClientId(topic);
-
     this.device.publish(topic, JSON.stringify(payload));
   }
 
@@ -79,7 +81,6 @@ class IOTDevice {
   }
 
   callService({ topic, callback, payload }) {
-    topic = this.topicWithClientId(topic);
     const responseTopic = `${topic}/result`;
     this.subscribeTopic({
       topic: responseTopic,

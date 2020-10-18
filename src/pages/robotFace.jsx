@@ -68,6 +68,7 @@ const RobotFace = ({ user, dispatch, history }) => {
           secretKey: user.secretAccessKey,
           sessionToken: user.sessionToken,
           region: selectedRobot.iotRegion,
+          organisation: user.organisation,
           callback: (event) => {
             if (!isMounted) {
               bridge.disconnectDevice();
@@ -178,6 +179,7 @@ RobotFace.propTypes = {
     sessionToken: PropTypes.string,
     jwtToken: PropTypes.string,
     robots: PropTypes.arrayOf(PropTypes.shape({})),
+    organisation: PropTypes.string,
   }),
 };
 

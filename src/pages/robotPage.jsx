@@ -95,6 +95,7 @@ const RobotPage = ({ user, dispatch, history }) => {
       device.init({
         host: endpoint,
         clientId: user.username,
+        organisation: user.organisation,
         thingId: selectedRobot.clientId,
         accessKeyId: user.accessKeyId,
         secretKey: user.secretAccessKey,
@@ -640,6 +641,7 @@ RobotPage.propTypes = {
     sessionToken: PropTypes.string,
     jwtToken: PropTypes.string,
     robots: PropTypes.arrayOf(PropTypes.shape({})),
+    organisation: PropTypes.string,
   }),
 };
 
