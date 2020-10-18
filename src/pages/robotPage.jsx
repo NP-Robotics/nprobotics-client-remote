@@ -94,7 +94,8 @@ const RobotPage = ({ user, dispatch, history }) => {
       // connect to IOT device
       device.init({
         host: endpoint,
-        clientID: user.username,
+        clientId: user.username,
+        thingId: selectedRobot.clientId,
         accessKeyId: user.accessKeyId,
         secretKey: user.secretAccessKey,
         sessionToken: user.sessionToken,

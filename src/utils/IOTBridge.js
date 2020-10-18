@@ -4,6 +4,7 @@ import ROSLIB from 'roslib';
 class IOTBridge {
   constructor() {
     this.device = null;
+    this.clientId = null;
     this.ros = null;
     this.subscriptionCallbacks = {};
     this.subscribersROS = {};
@@ -81,6 +82,8 @@ class IOTBridge {
       region,
     });
 
+    this.clientId = clientId;
+
     this.device.on('connect', () => {
       console.log('connected!');
       callback();
@@ -119,21 +122,29 @@ class IOTBridge {
     delete this.servicesROS;
   }
 
+  topicWithClientId(topic) {
+    return `${this.clientId}${topic}`;
+  }
+
   publishMessage({ topic, payload }) {
+    topic = this.topicWithClientId(topic);
     this.device.publish(topic, JSON.stringify(payload));
   }
 
   subscribeTopic({ topic, callback }) {
+    topic = this.topicWithClientId(topic);
     this.device.subscribe(topic);
     this.subscriptionCallbacks[topic] = (payload) => callback(JSON.parse(payload.toString()));
   }
 
   unsubscribeTopic(topic) {
+    topic = this.topicWithClientId(topic);
     this.device.unsubscribe(topic);
     delete this.subscriptionCallbacks[topic];
   }
 
   callService({ topic, callback, payload }) {
+    topic = this.topicWithClientId(topic);
     const responseTopic = `${topic}/result`;
     this.subscribeTopic({
       topic: responseTopic,

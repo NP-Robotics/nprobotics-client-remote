@@ -3,12 +3,14 @@ import awsIot from 'aws-iot-device-sdk';
 class IOTDevice {
   constructor() {
     this.device = null;
+    this.clientId = null;
     this.subscriptionCallbacks = {};
   }
 
   init({
     host,
     clientId,
+    thingId,
     accessKeyId,
     secretKey,
     sessionToken,
@@ -25,6 +27,8 @@ class IOTDevice {
       sessionToken,
       region,
     });
+
+    this.clientId = thingId;
 
     this.device.on('connect', () => {
       console.log('connected!');
@@ -52,21 +56,30 @@ class IOTDevice {
     this.device.end();
   }
 
+  topicWithClientId(topic) {
+    return `${this.clientId}${topic}`;
+  }
+
   publishMessage({ topic, payload }) {
+    topic = this.topicWithClientId(topic);
+
     this.device.publish(topic, JSON.stringify(payload));
   }
 
   subscribeTopic({ topic, callback }) {
+    topic = this.topicWithClientId(topic);
     this.device.subscribe(topic);
     this.subscriptionCallbacks[topic] = (payload) => callback(JSON.parse(payload.toString()));
   }
 
   unsubscribeTopic(topic) {
+    topic = this.topicWithClientId(topic);
     this.device.unsubscribe(topic);
     delete this.subscriptionCallbacks[topic];
   }
 
   callService({ topic, callback, payload }) {
+    topic = this.topicWithClientId(topic);
     const responseTopic = `${topic}/result`;
     this.subscribeTopic({
       topic: responseTopic,

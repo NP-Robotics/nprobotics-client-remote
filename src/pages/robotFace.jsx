@@ -14,6 +14,7 @@ import style from './robotFace.css';
 const RobotFace = ({ user, dispatch, history }) => {
   const [state, setState] = useState({
     robotName: null,
+    clientId: null,
     meetingName: null,
     attemptedJoin: false,
     chimeConnect: false,
@@ -62,7 +63,7 @@ const RobotFace = ({ user, dispatch, history }) => {
       if (selectedRobot.rosConfig != null) {
         bridge.initIOT({
           host: endpoint,
-          clientID: user.username,
+          clientId: selectedRobot.clientId,
           accessKeyId: user.accessKeyId,
           secretKey: user.secretAccessKey,
           sessionToken: user.sessionToken,
