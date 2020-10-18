@@ -12,7 +12,6 @@ import {
 
 import Link from 'umi/link';
 import queryString from 'query-string';
-import { propTypes } from 'react-bootstrap/esm/Image';
 import style from './dashboard.css';
 import SiderComponent from '../components/sider';
 
