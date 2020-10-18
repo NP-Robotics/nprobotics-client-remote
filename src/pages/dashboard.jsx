@@ -43,7 +43,7 @@ const DashboardPage = ({ dispatch, history, user }) => {
       key: 'organisation',
       render: (text) => <p>{text}</p>,
     },
-    {
+    /* {
       title: 'Online',
       dataIndex: 'isOnline',
       key: 'online',
@@ -64,7 +64,7 @@ const DashboardPage = ({ dispatch, history, user }) => {
         }
         return <p>No</p>;
       },
-    },
+    }, */
     {
       title: 'Action',
       dataIndex: 'robotName',
