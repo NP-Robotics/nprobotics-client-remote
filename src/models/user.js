@@ -92,10 +92,11 @@ export default {
         password,
         email,
         name,
+        organisation,
       } = payload;
 
       try {
-        const usr = yield call(ampSignUp, username, password, email, name);
+        const usr = yield call(ampSignUp, username, password, email, name, organisation);
         callback(usr);
       } catch (err) {
         error(err);
@@ -105,14 +106,7 @@ export default {
       try {
         const data = yield ampGetSession();
         const cred = yield ampGetCredentials();
-        // getrobots first so loading screen will show before robots are gotten
-        yield put({
-          type: 'getRobots',
-          payload: {
-            jwtToken: data.accessToken.jwtToken,
-            organisation: 'NP',
-          },
-        });
+
         yield put({
           type: 'setState',
           payload: {
@@ -174,6 +168,15 @@ export default {
     * getAuthenticated({ callback, error }, { call, put }) {
       try {
         const user = yield ampGetAuthenticated();
+        console.log(user);
+
+        yield put({
+          type: 'getRobots',
+          payload: {
+            jwtToken: user.signInUserSession.accessToken.jwtToken,
+            organisation: user.attributes['custom:organisation'],
+          },
+        });
 
         if (callback) {
           callback(user);

@@ -27,6 +27,7 @@ const SignUpPage = ({ history, dispatch }) => {
         password: values.password,
         email: values.email,
         name: values.name,
+        organisation: values.organisation,
       },
       callback: (user) => {
         console.log('Sign Up Successful');
@@ -116,6 +117,11 @@ const SignUpPage = ({ history, dispatch }) => {
 
           <div className={style.text}>Email</div>
           <Form.Item name="email" rules={[{ required: true, message: 'Please input your email' }]}>
+            <Input className={style.textbox} />
+          </Form.Item>
+
+          <div className={style.text}>Organisation</div>
+          <Form.Item name="organisation" rules={[{ required: true, message: 'Please input your organisation' }]}>
             <Input className={style.textbox} />
           </Form.Item>
 
