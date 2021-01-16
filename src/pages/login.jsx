@@ -47,9 +47,6 @@ const LoginPage = ({ dispatch, history }) => {
   return (
     <div>
       <div className={style.background}>
-        <Link to="/">
-          <img src={NPLogo} alt="Ngee Ann Logo" className={style.image} />
-        </Link>
         <div className={style.box}>
           <div className={style.header}>Sign in to your account</div>
           <Form

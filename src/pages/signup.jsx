@@ -55,11 +55,6 @@ const SignUpPage = ({ history, dispatch }) => {
 
   return (
     <div className={style.main}>
-      <div>
-        <Link to="/">
-          <img src={NPLogo} alt="Ngee Ann Logo" className={style.image} />
-        </Link>
-      </div>
 
       <div className={style.box}>
         <h1 className={style.header}>Sign Up </h1>

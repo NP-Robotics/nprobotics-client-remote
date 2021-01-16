@@ -7,8 +7,6 @@ import { Layout, Menu, Button } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import style from './header.css';
 
-import NPLogo from '../assets/np_logo.png';
-
 const { Header } = Layout;
 const { SubMenu } = Menu;
 
@@ -62,9 +60,6 @@ const HeaderComponent = ({ user, dispatch }) => {
   };
   return (
     <Header className={style.headerBar}>
-      <Link to="/">
-        <img src={NPLogo} className={style.logo} alt="NPLogo" />
-      </Link>
       <Menu theme="dark" mode="horizontal" style={{ float: 'right', marginRight: '50px' }}>
         <SubMenu key="user" icon={<UserOutlined />} title={user.username} className={style.subMenu}>
           {profileItems()}
