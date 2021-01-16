@@ -30,7 +30,7 @@ export const ampSignOut = async () => {
   }
 };
 
-export const ampSignUp = async (username, password, email, name) => {
+export const ampSignUp = async (username, password, email, name, organisation) => {
   try {
     const user = await Auth.signUp({
       username,
@@ -38,6 +38,7 @@ export const ampSignUp = async (username, password, email, name) => {
       attributes: {
         email, // optional
         name,
+        'custom:organisation': organisation,
         // other custom attributes
       },
     });

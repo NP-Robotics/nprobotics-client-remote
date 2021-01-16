@@ -25,7 +25,7 @@ export default {
     secretAccessKey: null,
     identityId: null,
     username: null,
-    organization: null,
+    organisation: null,
     robots: [],
     robotsLoaded: false,
     identityLoaded: false,
@@ -92,10 +92,11 @@ export default {
         password,
         email,
         name,
+        organisation,
       } = payload;
 
       try {
-        const usr = yield call(ampSignUp, username, password, email, name);
+        const usr = yield call(ampSignUp, username, password, email, name, organisation);
         callback(usr);
       } catch (err) {
         error(err);
@@ -105,14 +106,7 @@ export default {
       try {
         const data = yield ampGetSession();
         const cred = yield ampGetCredentials();
-        // getrobots first so loading screen will show before robots are gotten
-        yield put({
-          type: 'getRobots',
-          payload: {
-            jwtToken: data.accessToken.jwtToken,
-            organisation: 'NP',
-          },
-        });
+
         yield put({
           type: 'setState',
           payload: {
@@ -175,6 +169,21 @@ export default {
       try {
         const user = yield ampGetAuthenticated();
 
+        yield put({
+          type: 'getRobots',
+          payload: {
+            jwtToken: user.signInUserSession.accessToken.jwtToken,
+            organisation: user.attributes['custom:organisation'],
+          },
+        });
+
+        yield put({
+          type: 'setState',
+          payload: {
+            organisation: user.attributes['custom:organisation'],
+          },
+        });
+
         if (callback) {
           callback(user);
         }
@@ -203,7 +212,6 @@ export default {
       const { username } = payload;
       const { code } = payload;
       const { newPassword } = payload;
-      console.log('success', payload);
       try {
         const usr = yield apmForgotPasswordSubmit(username, code, newPassword);
         callback(usr);

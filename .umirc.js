@@ -8,7 +8,7 @@ export default {
       routes: [
         {
           path: '/',
-          component: '../pages/index.jsx',
+          component: '../pages/login.jsx',
         },
         {
           path: '/login',

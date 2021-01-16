@@ -7,7 +7,8 @@
     "no-use-before-define": [0],
     "no-lonely-if": [1],
     "react-hooks/exhaustive-deps": [0],
-    "react/no-array-index-key": [0]
+    "react/no-array-index-key": [0],
+    "no-param-reassign": [1]
   }, 
   "env": {
     "browser": true,

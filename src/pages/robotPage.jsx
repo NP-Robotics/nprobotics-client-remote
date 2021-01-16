@@ -94,7 +94,9 @@ const RobotPage = ({ user, dispatch, history }) => {
       // connect to IOT device
       device.init({
         host: endpoint,
-        clientID: user.username,
+        clientId: user.username,
+        organisation: user.organisation,
+        thingId: selectedRobot.clientId,
         accessKeyId: user.accessKeyId,
         secretKey: user.secretAccessKey,
         sessionToken: user.sessionToken,
@@ -167,7 +169,7 @@ const RobotPage = ({ user, dispatch, history }) => {
         },
         error: () => {
           message.error('Robot is offline.');
-          // history.push('/dashboard');
+          history.push('/dashboard');
         },
       });
     }
@@ -639,6 +641,7 @@ RobotPage.propTypes = {
     sessionToken: PropTypes.string,
     jwtToken: PropTypes.string,
     robots: PropTypes.arrayOf(PropTypes.shape({})),
+    organisation: PropTypes.string,
   }),
 };
 
