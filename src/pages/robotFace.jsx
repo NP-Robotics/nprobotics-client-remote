@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'dva';
 import { message } from 'antd';
 
-import Face from '../assets/face.jpg';
+import Face from '../assets/neutral.gif';
 import ChimeSession from '../utils/ChimeSession';
 import IOTBridge from '../utils/IOTBridge';
 
