@@ -1,7 +1,7 @@
 import request from 'umi-request';
 
 const makeRequest = (url, options) => {
-  const requestUrl = `https://cors-anywhere.herokuapp.com/${url}`;
+  const requestUrl = `https://sheltered-meadow-88333.herokuapp.com/${url}`;
   try {
     const response = request(requestUrl, options);
     return response;
